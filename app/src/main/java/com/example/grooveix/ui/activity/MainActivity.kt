@@ -1,12 +1,12 @@
-package com.example.grooveix
+package com.example.grooveix.ui.activity
 
 import android.os.Bundle
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.example.grooveix.R
 import com.example.grooveix.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
