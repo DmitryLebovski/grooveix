@@ -1,4 +1,4 @@
-package com.example.grooveix.ui.home
+package com.example.grooveix.ui.viewmodels
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

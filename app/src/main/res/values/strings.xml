@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">grooveix</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
+    <string name="title_tracks">Треки</string>
+    <string name="title_playlists">Плейлисты</string>
+    <string name="title_favorite">Избранное</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

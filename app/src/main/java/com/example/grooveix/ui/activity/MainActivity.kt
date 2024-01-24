@@ -1,12 +1,12 @@
-package com.example.grooveix
+package com.example.grooveix.ui.activity
 
 import android.os.Bundle
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.example.grooveix.R
 import com.example.grooveix.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -26,10 +26,16 @@ class MainActivity : AppCompatActivity() {
         // menu should be considered as top level destinations.
         val appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications
+                R.id.navigation_tracks, R.id.navigation_favorites, R.id.navigation_playlists
             )
         )
-        setupActionBarWithNavController(navController, appBarConfiguration)
+
+        val badgeDrawable = navView.getBadge(navView.id)
+        if (badgeDrawable != null) {
+            badgeDrawable.isVisible = false
+            badgeDrawable.clearText()
+        }
+
         navView.setupWithNavController(navController)
     }
 }
