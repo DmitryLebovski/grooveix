@@ -4,4 +4,9 @@
     <string name="title_playlists">Плейлисты</string>
     <string name="title_favorite">Избранное</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="welcome1">Добро пожаловать в grooveix</string>
+    <string name="continue1">Продолжить</string>
+    <string name="welcome2">для работы grooveix запрашивает следующие разрешения:</string>
+    <string name="memory">Память</string>
+    <string name="memory_welcome">Доступ к памяти для воиспроизведедения музыкальных файлов</string>
 </resources>
