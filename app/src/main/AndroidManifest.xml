@@ -2,7 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
 
@@ -17,15 +18,23 @@
         android:theme="@style/Theme.Grooveix"
         tools:targetApi="31">
         <activity
-            android:name=".ui.activity.MainActivity"
-            android:exported="true"
-            android:screenOrientation="fullSensor">
+            android:name=".ui.activity.PermissionActivity"
+            android:exported="false"
+            android:label="@string/title_activity_permission"
+            android:theme="@style/Theme.Grooveix" />
+        <activity
+            android:name=".ui.activity.SplashActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".ui.activity.MainActivity"
+            android:exported="true"
+            android:screenOrientation="fullSensor" />
     </application>
 
 </manifest>

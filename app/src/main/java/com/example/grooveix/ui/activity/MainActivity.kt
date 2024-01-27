@@ -1,6 +1,9 @@
 package com.example.grooveix.ui.activity
 
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import android.view.View
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
@@ -8,6 +11,7 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import com.example.grooveix.R
 import com.example.grooveix.databinding.ActivityMainBinding
+import pub.devrel.easypermissions.EasyPermissions
 
 class MainActivity : AppCompatActivity() {
 
@@ -28,12 +32,23 @@ class MainActivity : AppCompatActivity() {
             )
         )
 
-        val badgeDrawable = navView.getBadge(navView.id)
-        if (badgeDrawable != null) {
-            badgeDrawable.isVisible = false
-            badgeDrawable.clearText()
+        if (!hasStoragePermission()) {
+            Intent(this@MainActivity, PermissionActivity::class.java).also {
+                startActivity(it)
+                this@MainActivity.finish()
+            }
         }
 
         navView.setupWithNavController(navController)
+    }
+
+    private fun hasStoragePermission(): Boolean {
+        return EasyPermissions.hasPermissions(
+            this,
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+                android.Manifest.permission.READ_MEDIA_AUDIO
+            else
+                android.Manifest.permission.READ_EXTERNAL_STORAGE
+        )
     }
 }

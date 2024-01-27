@@ -13,9 +13,6 @@ import com.example.grooveix.ui.viewmodels.DashboardViewModel
 class FavoriteFragment : Fragment() {
 
     private var _binding: FragmentDashboardBinding? = null
-
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
 
     override fun onCreateView(

@@ -9,7 +9,8 @@
         android:id="@+id/navigation_tracks"
         android:name="com.example.grooveix.ui.fragment.TrackFragment"
         android:label="@string/title_tracks"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home" >
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_favorites"

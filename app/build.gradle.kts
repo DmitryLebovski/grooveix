@@ -55,7 +55,12 @@ dependencies {
     implementation("me.zhanghai.android.fastscroll:library:1.3.0")
     implementation("com.google.code.gson:gson:2.10")
     implementation("androidx.core:core-splashscreen:1.0.1")
+    implementation("androidx.cardview:cardview:1.0.0")
+    implementation("pl.droidsonroids.gif:android-gif-drawable:1.2.28")
+    implementation("androidx.fragment:fragment-ktx:1.6.2")
+    implementation("pub.devrel:easypermissions:3.0.0")
 
+    annotationProcessor("com.github.bumptech.glide:compiler:4.14.2")
     annotationProcessor("com.github.bumptech.glide:compiler:4.14.2")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
