@@ -3,17 +3,14 @@ package com.example.grooveix.ui.activity
 import android.annotation.SuppressLint
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
-import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
 import com.example.grooveix.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import pub.devrel.easypermissions.EasyPermissions
 
 @SuppressLint("CustomSplashScreen")
 class SplashActivity : AppCompatActivity() {
@@ -42,13 +39,11 @@ class SplashActivity : AppCompatActivity() {
     }
 
     private fun hasStoragePermission(): Boolean {
-        return EasyPermissions.hasPermissions(
-            this,
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
-                android.Manifest.permission.READ_MEDIA_AUDIO
-            else
-                android.Manifest.permission.READ_EXTERNAL_STORAGE
-        )
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            (checkSelfPermission(android.Manifest.permission.READ_MEDIA_AUDIO) == PackageManager.PERMISSION_GRANTED)
+        } else {
+            (checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
+        }
     }
 
     override fun onPause() {

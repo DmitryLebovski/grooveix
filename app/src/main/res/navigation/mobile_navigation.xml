@@ -13,10 +13,10 @@
     </fragment>
 
     <fragment
-        android:id="@+id/navigation_favorites"
-        android:name="com.example.grooveix.ui.fragment.FavoriteFragment"
+        android:id="@+id/navigation_search"
+        android:name="com.example.grooveix.ui.fragment.SearchFragment"
         android:label="@string/title_favorite"
-        tools:layout="@layout/fragment_dashboard" />
+        tools:layout="@layout/fragment_search" />
 
     <fragment
         android:id="@+id/navigation_playlists"
