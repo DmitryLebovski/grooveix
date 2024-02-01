@@ -9,6 +9,7 @@
     <string name="continue1">продолжить</string>
     <string name="welcome2">приложению также необходимо предоставить следущие разрешения:</string>
     <string name="memory">хранилище</string>
+    <string name="error">Произошла неизвестная ошибка. Перезайдите в приложение</string>
     <string name="memory_welcome">доступ к хранилищу для воспроизведения музыкальных файлов</string>
     <string name="grooveix">grooveix</string>
     <string name="permission_error">Откройте разрешения и дайте доступ к хранилищу</string>

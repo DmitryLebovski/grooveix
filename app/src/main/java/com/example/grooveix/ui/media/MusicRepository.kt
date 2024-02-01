@@ -4,19 +4,19 @@ import androidx.lifecycle.LiveData
 
 class MusicRepository(private val musicRoom: MusicRoom) {
 
-    val loadTracks: LiveData<List<Track>> = musicRoom.getSongsOrderByTitle()
+    val loadTracks: LiveData<List<Track>> = musicRoom.getSongListOrderByTitle()
 
-    suspend fun insertTrack(song: Track) {
-        musicRoom.insert(song)
+    suspend fun insertTrack(track: Track) {
+        musicRoom.insert(track)
     }
 
-    suspend fun deleteSong(song: Track) {
-        musicRoom.delete(song)
+    suspend fun deleteTrack(track: Track) {
+        musicRoom.delete(track)
     }
 
-    suspend fun updateSong(song: Track){
-        musicRoom.update(song)
+    suspend fun updateTrack(track: Track){
+        musicRoom.update(track)
     }
 
-    suspend fun getSongById(songId: Long): Track? = musicRoom.getSongById(songId)
+    suspend fun getTrackById(trackId: Long): Track? = musicRoom.getTrackById(trackId)
 }

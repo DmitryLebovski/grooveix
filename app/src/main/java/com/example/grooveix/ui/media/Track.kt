@@ -15,5 +15,4 @@ data class Track(
     @ColumnInfo(name = "track_artist") var artist: String,
     @ColumnInfo(name = "track_album") var album: String,
     @ColumnInfo(name = "track_album_id") val albumId: String,
-    @ColumnInfo(name = "track_year") var year: String
-) : Parcelable
+    ) : Parcelable
