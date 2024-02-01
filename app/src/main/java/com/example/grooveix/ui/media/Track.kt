@@ -8,12 +8,12 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 @Entity(tableName = "grooveix_library")
-data class Song(
-    @PrimaryKey val songId: Long,
-    @ColumnInfo(name = "song_track") var track: Int,
-    @ColumnInfo(name = "song_title") var title: String,
-    @ColumnInfo(name = "song_artist") var artist: String,
-    @ColumnInfo(name = "song_album") var album: String,
-    @ColumnInfo(name = "song_album_id") val albumId: String,
-    @ColumnInfo(name = "song_year") var year: String
+data class Track(
+    @PrimaryKey val trackId: Long,
+    @ColumnInfo(name = "track_track") var track: Int,
+    @ColumnInfo(name = "track_title") var title: String,
+    @ColumnInfo(name = "track_artist") var artist: String,
+    @ColumnInfo(name = "track_album") var album: String,
+    @ColumnInfo(name = "track_album_id") val albumId: String,
+    @ColumnInfo(name = "track_year") var year: String
 ) : Parcelable
