@@ -21,9 +21,6 @@ class TrackFragment : Fragment() {
     ): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
-
-        val mainActivity = activity as MainActivity?
-
         return root
     }
 

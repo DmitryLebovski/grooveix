@@ -11,16 +11,20 @@ import android.media.AudioAttributes
 import android.media.AudioFocusRequest
 import android.media.AudioManager
 import android.media.AudioManager.AUDIOFOCUS_REQUEST_GRANTED
-import android.media.MediaMetadata
 import android.media.MediaPlayer
 import android.media.MediaPlayer.MEDIA_ERROR_IO
 import android.media.session.PlaybackState.STATE_NONE
+import android.media.session.PlaybackState.STATE_PAUSED
+import android.media.session.PlaybackState.STATE_SKIPPING_TO_NEXT
+import android.media.session.PlaybackState.STATE_STOPPED
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.os.ResultReceiver
 import android.provider.MediaStore
 import android.service.media.MediaBrowserService
 import android.support.v4.media.MediaBrowserCompat
+import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
@@ -153,7 +157,6 @@ class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListe
                                 setOnCompletionListener {
                                     val inRepeat = mediaSessionCompat.controller.repeatMode
                                     when {
-                                        //TODO
                                         inRepeat == REPEAT_MODE_ONE -> {}
                                         inRepeat == REPEAT_MODE_ALL ||
                                                 playQueue.isNotEmpty() &&
@@ -184,7 +187,267 @@ class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListe
             }
         }
 
+        override fun onPause() {
+            super.onPause()
+            mediaPlayer?.pause()
+            setMediaPlaybackState(STATE_PAUSED, getBundleWithSongDuration())
+            //TODO: update Notification Player
+        }
+
+        override fun onSkipToQueueItem(id: Long) {
+            super.onSkipToQueueItem(id)
+
+            if (playQueue.find { it.queueId == id } != null) {
+                val playState = mediaSessionCompat.controller.playbackState.state
+                currentlyPlayingQueueItemId = id
+                onPrepare()
+                if (playState == STATE_PLAYING || playState == STATE_SKIPPING_TO_NEXT) {
+                    onPlay()
+                }
+            }
+        }
+
+        override fun onSkipToNext() {
+            super.onSkipToNext()
+
+            val repeatMode = mediaSessionCompat.controller.repeatMode
+            currentlyPlayingQueueItemId = when {
+                playQueue[playQueue.size - 1].queueId != currentlyPlayingQueueItemId -> {
+                    val indexOfCurrentQueueItem = playQueue.indexOfFirst {
+                        it.queueId == currentlyPlayingQueueItemId
+                    }
+                    playQueue[indexOfCurrentQueueItem + 1].queueId
+                }
+                //if mode of repeat = all - set queue for 1 item after finishing
+                repeatMode == REPEAT_MODE_ALL -> playQueue[0].queueId
+                else -> return
+            }
+            onSkipToQueueItem(currentlyPlayingQueueItemId)
+        }
+
+        override fun onSkipToPrevious() {
+            super.onSkipToPrevious()
+
+            if (playQueue.isNotEmpty()) {
+                if (mediaPlayer != null && mediaPlayer!!.currentPosition > 5000 ||
+                    currentlyPlayingQueueItemId == playQueue[0].queueId) onSeekTo(0L)
+            } else {
+                val indexOfCurrentQueueItem = playQueue.indexOfFirst {
+                    it.queueId == currentlyPlayingQueueItemId
+                }
+                currentlyPlayingQueueItemId = playQueue[indexOfCurrentQueueItem - 1].queueId
+                onSkipToQueueItem(currentlyPlayingQueueItemId)
+            }
+        }
+
+        override fun onStop() {
+            super.onStop()
+
+            playQueue.clear()
+            mediaSessionCompat.setQueue(playQueue)
+            currentlyPlayingQueueItemId = -1L
+            if (mediaPlayer != null) {
+                mediaPlayer?.stop()
+                mediaPlayer?.release()
+                mediaPlayer = null
+                stopForeground(STOP_FOREGROUND_REMOVE)
+
+                val audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
+                audioManager.abandonAudioFocusRequest(afRequest)
+            }
+            setMediaPlaybackState(STATE_STOPPED)
+            stopSelf()
+        }
+
+        override fun onSeekTo(pos: Long) {
+            super.onSeekTo(pos)
+
+            mediaPlayer?.apply {
+                if (pos > this.duration.toLong()) return@apply
+
+                val ifWasPlayed = this.isPlaying
+                if (ifWasPlayed) this.pause()
+
+                this.seekTo(pos.toInt())
+
+                if (ifWasPlayed) {
+                    this.start()
+                    setMediaPlaybackState(STATE_PLAYING, getBundleWithSongDuration())
+                } else setMediaPlaybackState(STATE_PAUSED, getBundleWithSongDuration())
+            }
+        }
+
+        override fun onAddQueueItem(description: MediaDescriptionCompat?) {
+            onAddQueueItem(description, playQueue.size)
+        }
+
+        override fun onAddQueueItem(description: MediaDescriptionCompat?, index: Int) {
+            super.onAddQueueItem(description, index)
+
+            val sortedQueue = playQueue.sortedByDescending {
+                it.queueId
+            }
+            val presetQueueId = description?.extras?.getLong("queue_id")
+            val queueId = when {
+                presetQueueId != null && sortedQueue.find { it.queueId == presetQueueId } == null -> {
+                    presetQueueId
+                }
+                sortedQueue.isNotEmpty() -> sortedQueue[0].queueId + 1
+                else -> 0
+            }
+
+            val queueItem = MediaSessionCompat.QueueItem(description, queueId)
+            try {
+                playQueue.add(index, queueItem)
+            } catch (exception: IndexOutOfBoundsException) {
+                playQueue.add(playQueue.size, queueItem)
+            }
+
+            mediaSessionCompat.setQueue(playQueue)
+        }
+        override fun onFastForward() {
+            super.onFastForward()
+
+            val newPlaybackPosition = mediaPlayer?.currentPosition?.plus(5000) ?: return
+            if (newPlaybackPosition > (mediaPlayer?.duration ?: return)) onSkipToNext()
+            else onSeekTo(newPlaybackPosition.toLong())
+        }
+
+        override fun onRewind() {
+            super.onRewind()
+
+            val newPlaybackPosition = mediaPlayer?.currentPosition?.minus(5000) ?: return
+            if (newPlaybackPosition < 0) onSkipToPrevious()
+            else onSeekTo(newPlaybackPosition.toLong())
+        }
+
+        override fun onCommand(command: String?, extras: Bundle?, cb: ResultReceiver?) {
+            super.onCommand(command, extras, cb)
+
+            when (command) {
+
+                "MOVE_QUEUE_ITEM" -> {
+                    extras?.let {
+                        val queueItemId = it.getLong("queueItemId", -1L)
+                        val newIndex = it.getInt("newIndex", -1)
+                        if (queueItemId == -1L || newIndex == -1 || newIndex >= playQueue.size) return@let
+
+                        val oldIndex = playQueue.indexOfFirst { queueItem -> queueItem.queueId == queueItemId }
+                        if (oldIndex == -1) return@let
+                        val queueItem = playQueue[oldIndex]
+                        playQueue.removeAt(oldIndex)
+                        playQueue.add(newIndex, queueItem)
+                        mediaSessionCompat.setQueue(playQueue)
+                    }
+                }
+
+                "REMOVE_QUEUE_ITEM" -> {
+                    extras?.let {
+                        val queueItemId = extras.getLong("queueItemId", -1L)
+                        when (queueItemId) {
+                            -1L -> return@let
+                            currentlyPlayingQueueItemId -> onSkipToNext()
+                        }
+                        playQueue.removeIf { it.queueId == queueItemId }
+                        setPlayQueue()
+                    }
+                }
+
+                "SET_REPEAT_MODE" -> {
+                    extras?.let {
+                        val repeatMode = extras.getInt("REPEAT_MODE",
+                            PlaybackStateCompat.REPEAT_MODE_NONE
+                        )
+                        mediaSessionCompat.setRepeatMode(repeatMode)
+                    }
+                }
+
+                "SET_SHUFFLE_MODE" -> {
+                    extras?.let {
+                        val shuffleMode = extras.getInt("SHUFFLE_MODE",
+                            PlaybackStateCompat.SHUFFLE_MODE_NONE
+                        )
+                        mediaSessionCompat.setShuffleMode(shuffleMode)
+
+                        if (shuffleMode == PlaybackStateCompat.SHUFFLE_MODE_ALL) {
+                            getCurrentQueueItem()?.let { currentQueueItem ->
+                                playQueue.remove(currentQueueItem)
+                                playQueue.shuffle()
+                                playQueue.add(0, currentQueueItem)
+                            }
+                        } else {
+                            playQueue.sortBy { it.queueId }
+                        }
+//
+//                        val adapter = PlayQueueAdapter(activity = MainActivity(), fragment = PlayQueueFragment())
+//                        adapter.playQueue.clear()
+//                        adapter.playQueue.addAll(playQueue)
+//                        adapter.notifyDataSetChanged()
+
+                        setPlayQueue()
+                    }
+                }
+
+                "UPDATE_QUEUE_ITEM" -> {
+                    extras?.let {
+                        val queueItemId = it.getLong("queue_id")
+
+                        val index = playQueue.indexOfFirst { item ->
+                            item.queueId == queueItemId
+                        }
+
+                        if (index == -1) return
+
+                        val extrasBundle = Bundle().apply {
+                            putString("album", it.getString("album"))
+                            putString("album_id", it.getString("album_id"))
+                        }
+
+                        val mediaDescription = MediaDescriptionCompat.Builder()
+                            .setExtras(extrasBundle)
+                            .setMediaId(playQueue[index].description.mediaId)
+                            .setSubtitle(it.getString("artist"))
+                            .setTitle(it.getString("title"))
+                            .build()
+
+                        playQueue.removeAt(index)
+                        val updatedQueueItem =
+                            MediaSessionCompat.QueueItem(mediaDescription, queueItemId)
+                        playQueue.add(index, updatedQueueItem)
+
+                        if (queueItemId == currentlyPlayingQueueItemId) {
+                            setCurrentMetadata()
+                            //refreshNotification()
+                        }
+                        setPlayQueue()
+                    }
+                }
+            }
+        }
     }
+
+    private fun setCurrentMetadata() {
+        val currentQueueItem = getCurrentQueueItem() ?: return
+        val currentQueueItemDescription = currentQueueItem.description
+        val metadataBuilder= MediaMetadataCompat.Builder().apply {
+            putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, currentQueueItemDescription.mediaId)
+            putString(MediaMetadataCompat.METADATA_KEY_TITLE, currentQueueItemDescription.title.toString())
+            putString(MediaMetadataCompat.METADATA_KEY_ARTIST, currentQueueItemDescription.subtitle.toString())
+            val extras = currentQueueItemDescription.extras
+            val albumName = extras?.getString("album") ?: getString(R.string.unknown_album)
+            putString(MediaMetadataCompat.METADATA_KEY_ALBUM, albumName)
+            val albumId = extras?.getString("album_id")
+            putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, getArtworkByAlbumId(albumId))
+            putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, albumId)
+        }
+        mediaSessionCompat.setMetadata(metadataBuilder.build())
+    }
+
+    private fun setPlayQueue() {
+        mediaSessionCompat.setQueue(playQueue)
+        setMediaPlaybackState(mediaSessionCompat.controller.playbackState.state)
+    }
+
 
     private fun setCurrentData() {
         val currentQueueItem = getCurrentQueueItem() ?: return
@@ -196,7 +459,7 @@ class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListe
 
             val additional = currentQueueItemDescription.extras
             putString(MediaMetadataCompat.METADATA_KEY_ALBUM,
-                additional?.getString("album") ?: "Unknown album")
+                additional?.getString("album") ?: getString(R.string.unknown_album))
             putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, getArtworkByAlbumId(
                 additional?.getString("album_id"))
             )
