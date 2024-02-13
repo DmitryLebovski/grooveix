@@ -7,20 +7,21 @@
     android:background="?attr/colorSurface"
     android:paddingBottom="24dp">
 
+
     <androidx.cardview.widget.CardView
-        android:id="@+id/artwork"
+        android:id="@+id/artworkIm"
         android:layout_width="300dp"
         android:layout_height="0dp"
         android:clickable="true"
         app:cardCornerRadius="16dp"
-        android:layout_marginTop="128dp"
+        android:layout_marginTop="68dp"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
-            android:id="@+id/artworkIm"
+            android:id="@+id/artwork"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
     </androidx.cardview.widget.CardView>
@@ -50,6 +51,15 @@
         app:layout_constraintTop_toBottomOf="@+id/currentSeekBar" />
 
     <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnLyrics"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/outline_library_music_24"
+        app:layout_constraintStart_toStartOf="@+id/currentButtonRepeat"
+        app:layout_constraintTop_toBottomOf="@+id/currentButtonRepeat" />
+
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/currentButtonShuffle"
         android:layout_width="36dp"
         android:layout_height="36dp"
@@ -60,6 +70,15 @@
         app:layout_constraintStart_toEndOf="@+id/btnForward"
         app:layout_constraintTop_toBottomOf="@+id/currentSeekBar" />
 
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnQueue"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/baseline_handle_24"
+        app:layout_constraintEnd_toEndOf="@+id/currentButtonShuffle"
+        app:layout_constraintTop_toBottomOf="@+id/currentButtonShuffle" />
+
     <TextView
         android:id="@+id/title"
         android:layout_width="wrap_content"
@@ -68,11 +87,11 @@
         android:singleLine="true"
         android:text="yes, and?"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="128dp"
+        android:layout_marginTop="24dp"
         android:textColor="?attr/colorOnSurface"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/artwork" />
+        app:layout_constraintTop_toBottomOf="@+id/artworkIm" />
 
     <TextView
         android:id="@+id/artist"
@@ -150,7 +169,7 @@
         android:layout_width="70dp"
         android:layout_height="70dp"
         android:layout_marginTop="16dp"
-        android:background="@drawable/ic_play_pause"
+        android:background="@drawable/baseline_play_arrow_24"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/currentSeekBar" />

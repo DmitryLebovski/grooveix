@@ -9,7 +9,7 @@ import kotlinx.coroutines.launch
 class MusicViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository: MusicRepository
-    private val loadTracks: LiveData<List<Track>>
+    val loadTracks: LiveData<List<Track>>
 
     init {
         val musicRoom = MusicDatabase.getDatabase(application).musicRoom()

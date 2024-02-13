@@ -9,6 +9,7 @@
     <string name="continue1">продолжить</string>
     <string name="welcome2">приложению также необходимо предоставить следущие разрешения:</string>
     <string name="memory">хранилище</string>
+    <string name="remove_from_queue">Удалить из очереди</string>
     <string name="error">Произошла неизвестная ошибка. Перезайдите в приложение</string>
     <string name="memory_welcome">доступ к хранилищу для воспроизведения музыкальных файлов</string>
     <string name="grooveix">grooveix</string>
@@ -16,4 +17,11 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_permission">PermissionActivity</string>
     <string name="unknown_album">Неизвестно</string>
+    <string name="play_next">Играть следующим</string>
+    <string name="add_to_favorite">Добавить в избранное</string>
+    <string name="add_to_playlist">Добавить в плейлист</string>
+    <string name="play_queue">Очередь\n</string>
+    <string name="shuffle">Перемешать</string>
+    <string name="search_hint">Поиск песни</string>
+    <string name="added_to_queue">Трек %1$s добавлен в очередь</string>
 </resources>

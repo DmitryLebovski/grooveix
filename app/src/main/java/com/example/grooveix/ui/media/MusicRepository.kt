@@ -14,7 +14,7 @@ class MusicRepository(private val musicRoom: MusicRoom) {
         musicRoom.delete(track)
     }
 
-    suspend fun updateTrack(track: Track){
+    suspend fun updateTrack(track: Track) {
         musicRoom.update(track)
     }
 

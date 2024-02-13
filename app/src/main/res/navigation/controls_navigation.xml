@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:startDestination="@+id/nav_controls">
+
+    <fragment
+        android:id="@+id/nav_controls"
+        android:name="com.example.grooveix.ui.fragment.MiniPlayerFragment"
+        android:label=""
+        tools:layout="@layout/fragment_mini_player" />
+
+    <fragment
+        android:id="@+id/nav_currently_playing"
+        android:name="com.example.grooveix.ui.fragment.PlayerFragment"
+        android:label=""
+        tools:layout="@layout/fragment_player" />
+</navigation>

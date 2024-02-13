@@ -32,6 +32,7 @@ import android.support.v4.media.session.PlaybackStateCompat.REPEAT_MODE_ALL
 import android.support.v4.media.session.PlaybackStateCompat.REPEAT_MODE_ONE
 import android.support.v4.media.session.PlaybackStateCompat.STATE_PLAYING
 import android.text.TextUtils
+import android.view.KeyEvent
 import android.widget.Toast
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
@@ -40,16 +41,10 @@ import androidx.media.AudioManagerCompat.AUDIOFOCUS_GAIN
 import androidx.media.MediaBrowserServiceCompat
 import com.example.grooveix.R
 import java.io.File
-import java.io.IOException
 import java.lang.IllegalArgumentException
 import java.lang.IllegalStateException
 import java.lang.NullPointerException
 
-
-const val ACTION_PREVIOUS = "previous"
-const val ACTION_PLAYP = "play"
-const val ACTION_PAUSEP = "pause"
-const val ACTION_NEXT = "next"
 class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListener {
 
     private val channelId = "grooveix music"
@@ -57,8 +52,30 @@ class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListe
     private val handler = Handler(Looper.getMainLooper())
     private var mediaPlayer: MediaPlayer? = null
     private val playQueue: MutableList<MediaSessionCompat.QueueItem> = mutableListOf()
-    private lateinit var afRequest: AudioFocusRequest
+    private lateinit var audioFocusRequest: AudioFocusRequest
     private lateinit var mediaSessionCompat: MediaSessionCompat
+
+    // for audio focus change
+    private val afChangeListener = AudioManager.OnAudioFocusChangeListener { focusChange ->
+        when (focusChange) {
+            AudioManager.AUDIOFOCUS_LOSS, AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> {
+                mediaSessionCompat.controller.transportControls.pause()
+            }
+
+            AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> mediaPlayer?.setVolume(0.3f, 0.3f)
+            AudioManager.AUDIOFOCUS_GAIN -> mediaPlayer?.setVolume(1.0f, 1.0f)
+        }
+    }
+
+    private var playbackPositionRunnable = object : Runnable {
+        override fun run() {
+            try {
+                if (mediaPlayer?.isPlaying == true) setMediaPlaybackState(PlaybackStateCompat.STATE_PLAYING)
+            } finally {
+                handler.postDelayed(this, 1000L)
+            }
+        }
+    }
 
     override fun onCreate() {
         super.onCreate()
@@ -85,7 +102,6 @@ class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListe
                 return
             }
 
-            //if nothing in queue right now - set queue from beginning of trackList
             if (currentlyPlayingQueueItemId == -1L) currentlyPlayingQueueItemId = playQueue[0].queueId
 
             mediaPlayer?.apply {
@@ -138,7 +154,7 @@ class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListe
                     val audioManager = applicationContext.getSystemService(Context.AUDIO_SERVICE)
                             as AudioManager
 
-                    afRequest = AudioFocusRequest.Builder(AUDIOFOCUS_GAIN).run {
+                    audioFocusRequest = AudioFocusRequest.Builder(AUDIOFOCUS_GAIN).run {
                         setAudioAttributes(AudioAttributes.Builder().run {
                             setOnAudioFocusChangeListener(afChangeListener)
                             setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
@@ -147,8 +163,8 @@ class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListe
                         build()
                     }
 
-                    val afRequest = audioManager.requestAudioFocus(afRequest)
-                    if (afRequest == AUDIOFOCUS_REQUEST_GRANTED) {
+                    val audioFocusRequestOutcome = audioManager.requestAudioFocus(audioFocusRequest)
+                    if (audioFocusRequestOutcome == AUDIOFOCUS_REQUEST_GRANTED) {
                         startService(Intent(applicationContext, MediaBrowserService::class.java))
                         mediaSessionCompat.isActive = true
                         try {
@@ -218,7 +234,6 @@ class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListe
                     }
                     playQueue[indexOfCurrentQueueItem + 1].queueId
                 }
-                //if mode of repeat = all - set queue for 1 item after finishing
                 repeatMode == REPEAT_MODE_ALL -> playQueue[0].queueId
                 else -> return
             }
@@ -253,7 +268,7 @@ class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListe
                 stopForeground(STOP_FOREGROUND_REMOVE)
 
                 val audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
-                audioManager.abandonAudioFocusRequest(afRequest)
+                audioManager.abandonAudioFocusRequest(audioFocusRequest)
             }
             setMediaPlaybackState(STATE_STOPPED)
             stopSelf()
@@ -417,12 +432,31 @@ class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListe
 
                         if (queueItemId == currentlyPlayingQueueItemId) {
                             setCurrentMetadata()
+                            //TODO
                             //refreshNotification()
                         }
                         setPlayQueue()
                     }
                 }
             }
+        }
+
+        //TODO: FIX DEPRECATION
+        override fun onMediaButtonEvent(mediaButtonEvent: Intent?): Boolean {
+            val key: KeyEvent? = mediaButtonEvent?.getParcelableExtra(Intent.EXTRA_KEY_EVENT)
+            if (key != null && mediaPlayer != null) {
+                when(key.keyCode) {
+                    KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE -> {
+                        if (mediaPlayer!!.isPlaying) onPause()
+                        else onPlay()
+                    }
+                    KeyEvent.KEYCODE_MEDIA_PLAY -> onPlay()
+                    KeyEvent.KEYCODE_MEDIA_PAUSE -> onPause()
+                    KeyEvent.KEYCODE_MEDIA_NEXT -> onSkipToNext()
+                    KeyEvent.KEYCODE_MEDIA_PREVIOUS-> onSkipToPrevious()
+                }
+            }
+            return super.onMediaButtonEvent(mediaButtonEvent)
         }
     }
 
@@ -493,6 +527,8 @@ class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListe
         return super.onStartCommand(intent, flags, startId)
     }
 
+
+
     private fun setMediaPlaybackState(state: Int, bundle: Bundle? = null) {
         val playbackPosition = mediaPlayer?.currentPosition?.toLong() ?: 0L
         val playbackSpeed = mediaPlayer?.playbackParams?.speed ?: 0f
@@ -503,31 +539,10 @@ class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListe
         mediaSessionCompat.setPlaybackState(playbackStateBuilder.build())
     }
 
-    private var playbackPositionRunnable = object : Runnable {
-        override fun run() {
-            try {
-                if (mediaPlayer?.isPlaying == true) setMediaPlaybackState(PlaybackStateCompat.STATE_PLAYING)
-            } finally {
-                handler.postDelayed(this, 1000L)
-            }
-        }
-    }
-
+    //pausing playback when device is disconnected
     private val noisyReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             if (mediaPlayer != null && mediaPlayer!!.isPlaying) mediaSessionCallback.onPause()
-        }
-    }
-
-    // for audio focus change
-    private val afChangeListener = AudioManager.OnAudioFocusChangeListener { focusChange ->
-        when (focusChange) {
-            AudioManager.AUDIOFOCUS_LOSS, AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> {
-                mediaSessionCompat.controller.transportControls.pause()
-            }
-
-            AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> mediaPlayer?.setVolume(0.3f, 0.3f)
-            AudioManager.AUDIOFOCUS_GAIN -> mediaPlayer?.setVolume(1.0f, 1.0f)
         }
     }
 
