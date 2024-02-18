@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.codersguidebook.recyclerviewfastscroller.RecyclerViewScrollbar
 import com.example.grooveix.R
 import com.example.grooveix.ui.activity.MainActivity
+import com.example.grooveix.ui.fragment.TrackFragment
 import com.example.grooveix.ui.media.Track
 
 class TrackAdapter(private val activity: MainActivity):
@@ -25,22 +26,22 @@ class TrackAdapter(private val activity: MainActivity):
     inner class SongsViewHolder(itemView: View) :
         RecyclerView.ViewHolder(itemView) {
 
-        internal var mArtwork = itemView.findViewById<View>(R.id.artwork) as ImageView
-        internal var mTitle = itemView.findViewById<View>(R.id.title) as TextView
-        internal var mArtist = itemView.findViewById<View>(R.id.artist) as TextView
-        internal var mMenu = itemView.findViewById<Button>(R.id.btnMenu)
+            internal var mArtwork = itemView.findViewById<View>(R.id.artwork) as ImageView
+            internal var mTitle = itemView.findViewById<View>(R.id.title) as TextView
+            internal var mArtist = itemView.findViewById<View>(R.id.artist) as TextView
+            internal var mMenu = itemView.findViewById<Button>(R.id.btnMenu)
 
-        init {
-            itemView.isClickable = true
-            itemView.setOnClickListener {
-                activity.playNewPlayQueue(songs, layoutPosition)
-            }
+            init {
+                itemView.isClickable = true
+                itemView.setOnClickListener {
+                    activity.playNewPlayQueue(songs, layoutPosition)
+                }
 
-            itemView.setOnLongClickListener{
-                activity.showSongPopup(it, songs[layoutPosition])
-                return@setOnLongClickListener true
+                itemView.setOnLongClickListener{
+                    activity.showSongPopup(it, songs[layoutPosition])
+                    return@setOnLongClickListener true
+                }
             }
-        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SongsViewHolder {
@@ -58,7 +59,6 @@ class TrackAdapter(private val activity: MainActivity):
             activity.showSongPopup(it, current)
         }
     }
-
     override fun getItemCount() = songs.size
 
     fun processNewSongs(newSongs: List<Track>) {
@@ -73,7 +73,6 @@ class TrackAdapter(private val activity: MainActivity):
                     notifyItemInserted(index)
                 }
                 song.trackId != songs[index].trackId -> {
-                    // Check if the song is a new entry to the list
                     val songIsNewEntry = songs.find { it.trackId == song.trackId } == null
                     if (songIsNewEntry) {
                         songs.add(index, song)
@@ -81,7 +80,6 @@ class TrackAdapter(private val activity: MainActivity):
                         continue
                     }
 
-                    // Check if the song has been removed from the list
                     fun songIdsDoNotMatchAtCurrentIndex(): Boolean {
                         return newSongs.find { it.trackId == songs[index].trackId } == null
                     }
@@ -99,7 +97,6 @@ class TrackAdapter(private val activity: MainActivity):
                                 numberOfItemsRemoved)
                         }
 
-                        // Check if removing the song(s) has fixed the list
                         if (song.trackId == songs[index].trackId) continue
                     }
                 }

@@ -27,6 +27,7 @@ import android.support.v4.media.session.PlaybackStateCompat.*
 import android.util.Size
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -34,19 +35,21 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.signature.ObjectKey
 import com.example.grooveix.R
 import com.example.grooveix.databinding.ActivityMainBinding
+import com.example.grooveix.ui.fragment.MiniPlayerFragment
+import com.example.grooveix.ui.fragment.TrackFragment
 import com.example.grooveix.ui.media.MediaContentObserver
 import com.example.grooveix.ui.media.MusicPlayerService
 import com.example.grooveix.ui.media.MusicViewModel
 import com.example.grooveix.ui.media.QueueViewModel
 import com.example.grooveix.ui.media.Track
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
@@ -66,6 +69,10 @@ class MainActivity : AppCompatActivity() {
     private val playQueueViewModel: QueueViewModel by viewModels()
     private lateinit var mediaBrowser: MediaBrowserCompat
     private lateinit var musicViewModel: MusicViewModel
+    private lateinit var bottomSheetBehavior: BottomSheetBehavior<FrameLayout>
+
+    private val playerState: Int
+        get() = bottomSheetBehavior.state
 
     private val connectionCallbacks = object : MediaBrowserCompat.ConnectionCallback() {
         override fun onConnected() {
@@ -170,6 +177,8 @@ class MainActivity : AppCompatActivity() {
 //        }
     }
 
+
+
     override fun onResume() {
         super.onResume()
         volumeControlStream = AudioManager.STREAM_MUSIC
@@ -228,9 +237,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         when {
-            shuffle -> setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_ALL)
-            mediaControllerCompat.shuffleMode == PlaybackStateCompat.SHUFFLE_MODE_ALL -> setShuffleMode(
-                PlaybackStateCompat.SHUFFLE_MODE_NONE
+            shuffle -> setShuffleMode(SHUFFLE_MODE_ALL)
+            mediaControllerCompat.shuffleMode == SHUFFLE_MODE_ALL -> setShuffleMode(
+                SHUFFLE_MODE_NONE
             )
         }
     }
@@ -401,8 +410,7 @@ class MainActivity : AppCompatActivity() {
             MediaStore.Audio.Media.TITLE,
             MediaStore.Audio.Media.ARTIST,
             MediaStore.Audio.Media.ALBUM,
-            MediaStore.Audio.Media.ALBUM_ID,
-            MediaStore.Audio.Media.YEAR
+            MediaStore.Audio.Media.ALBUM_ID
         )
         val sortOrder = MediaStore.Audio.Media.TITLE + " ASC"
         return contentResolver.query(
@@ -451,7 +459,6 @@ class MainActivity : AppCompatActivity() {
         val id = cursor.getLong(idColumn)
         var trackString = cursor.getString(trackColumn) ?: "1001"
 
-        // The Track value will be stored in the format 1xxx where the first digit is the disc number
         val track = try {
             when (trackString.length) {
                 4 -> trackString.toInt()
@@ -475,6 +482,7 @@ class MainActivity : AppCompatActivity() {
         val artist = cursor.getString(artistColumn) ?: "Unknown artist"
         val album = cursor.getString(albumColumn) ?: "Unknown album"
         val albumId = cursor.getString(albumIDColumn) ?: "unknown_album_id"
+        val lyrics = "No lyrics for this track"
         val uri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id)
 
         val directory = ContextWrapper(application).getDir("albumArt", Context.MODE_PRIVATE)
@@ -522,21 +530,5 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         } catch (_: NumberFormatException) { refreshMusicLibrary() }
-    }
-
-    private fun hasStoragePermission(): Boolean {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (checkSelfPermission(android.Manifest.permission.READ_MEDIA_AUDIO) ==
-                PackageManager.PERMISSION_GRANTED) {
-                refreshMusicLibrary()
-                true
-            } else false
-        } else {
-            if (checkSelfPermission(android.Manifest.permission.READ_MEDIA_AUDIO) ==
-                PackageManager.PERMISSION_GRANTED) {
-                refreshMusicLibrary()
-                true
-            } else false
-        }
     }
 }

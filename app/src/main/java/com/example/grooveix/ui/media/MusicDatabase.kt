@@ -8,7 +8,7 @@ import androidx.room.RoomDatabase
 @Database(entities = [Track::class], version = 1, exportSchema = false)
 abstract class MusicDatabase : RoomDatabase() {
 
-    abstract fun musicRoom(): MusicRoom
+    abstract fun musicRoom(): MusicDao
 
     companion object {
         @Volatile

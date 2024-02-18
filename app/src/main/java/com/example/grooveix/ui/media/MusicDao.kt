@@ -9,7 +9,7 @@ import androidx.room.Query
 import androidx.room.Update
 
 @Dao
-interface MusicRoom {
+interface MusicDao {
 
     @Delete
     suspend fun delete(track: Track)
@@ -31,4 +31,10 @@ interface MusicRoom {
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun update(track: Track)
+
+//    @Query("SELECT * FROM grooveix_library WHERE track_lyrics = :lyrics")
+//    suspend fun getLyricsById(lyrics: String): String?
+
+//    @Insert(onConflict = OnConflictStrategy.IGNORE)
+//    suspend fun insertLyrics(lyrics: String)
 }

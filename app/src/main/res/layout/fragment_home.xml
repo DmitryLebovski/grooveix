@@ -1,44 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:orientation="vertical"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:layout_scrollFlags="scroll|enterAlways"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.appcompat.widget.Toolbar
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_scrollFlags="scroll|enterAlways"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/grooveix"
+                android:layout_marginEnd="24dp"
+                android:layout_gravity="bottom"
+                android:fontFamily="@font/redrocketacad"
+                android:textSize="34sp"
+                android:gravity = "center"
+                android:id="@+id/toolbar_title" />
+        </androidx.appcompat.widget.Toolbar>
+
+
+    </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="56dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="@+id/nav_controls_fragment"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
-<!--        <com.codersguidebook.recyclerviewfastscroller.RecyclerViewScrollbar-->
-<!--            android:id="@+id/scrollbar"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="match_parent"-->
-<!--            app:layout_constraintEnd_toEndOf="@id/recyclerView" />-->
+    <!--        <com.codersguidebook.recyclerviewfastscroller.RecyclerViewScrollbar-->
+    <!--            android:id="@+id/scrollbar"-->
+    <!--            android:layout_width="wrap_content"-->
+    <!--            android:layout_height="match_parent"-->
+    <!--            app:layout_constraintEnd_toEndOf="@id/recyclerView" />-->
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="12dp"
-        android:layout_marginBottom="72dp"
+        android:layout_marginBottom="64dp"
+        android:layout_gravity="end|bottom"
         android:text="@string/shuffle"
         app:icon="@drawable/ic_shuffle"
         app:iconSize="20dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/nav_controls_fragment"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/nav_controls_fragment"
         android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="bottom"
+        android:visibility="visible"
+        android:background="@android:color/transparent"
         app:navGraph="@navigation/controls_navigation" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

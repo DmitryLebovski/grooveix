@@ -4,12 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AbsListView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.RecyclerView
-import com.codersguidebook.recyclerviewfastscroller.RecyclerViewScrollbar
 import com.example.grooveix.databinding.FragmentHomeBinding
 import com.example.grooveix.ui.activity.MainActivity
 import com.example.grooveix.ui.adapter.TrackAdapter
@@ -53,12 +51,16 @@ class TrackFragment : Fragment() {
         binding.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-                if (dy > 0 && binding.fab.visibility == View.VISIBLE) binding.fab.hide()
-                else if (dy < 0 && binding.fab.visibility != View.VISIBLE) binding.fab.show()
+                if (dy > 0 && binding.fab.visibility == View.VISIBLE) {
+                    binding.fab.hide()
+                } else if (dy < 0 && binding.fab.visibility != View.VISIBLE) {
+                    binding.fab.show()
+
+                }
             }
         })
-
     }
+
 
     private fun updateRecyclerView(songs: List<Track>) {
         if (isUpdating) {

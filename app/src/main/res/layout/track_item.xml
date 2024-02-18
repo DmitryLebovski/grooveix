@@ -10,7 +10,8 @@
     android:layout_marginBottom="1dp"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:weightSum="6">
+    android:weightSum="6"
+    android:background="?android:attr/selectableItemBackground">
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardView"
