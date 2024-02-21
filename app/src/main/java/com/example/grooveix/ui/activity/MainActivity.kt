@@ -345,13 +345,10 @@ class MainActivity : AppCompatActivity() {
             PlaybackState.STATE_PAUSED -> mediaController.transportControls.play()
             PlaybackState.STATE_PLAYING -> mediaController.transportControls.pause()
             else -> {
-                // Load and play the user's music library if the play queue is empty
                 if (playQueue.isEmpty()) {
                     playNewPlayQueue(musicViewModel.loadTracks.value ?: return)
                 }
                 else {
-                    // It's possible a queue has been built without ever pressing play.
-                    // In which case, commence playback
                     mediaController.transportControls.prepare()
                     mediaController.transportControls.play()
                 }

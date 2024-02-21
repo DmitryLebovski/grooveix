@@ -137,7 +137,7 @@ class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListe
                     setOnErrorListener(this@MusicPlayerService)
                     prepare()
                 }
-                setCurrentData()
+                setCurrentMetadata()
                 setMediaPlaybackState(STATE_NONE)
             } catch (_: IllegalStateException) {
                 onError(mediaPlayer, MediaPlayer.MEDIA_ERROR_UNKNOWN, MEDIA_ERROR_IO)
@@ -480,25 +480,6 @@ class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListe
     private fun setPlayQueue() {
         mediaSessionCompat.setQueue(playQueue)
         setMediaPlaybackState(mediaSessionCompat.controller.playbackState.state)
-    }
-
-
-    private fun setCurrentData() {
-        val currentQueueItem = getCurrentQueueItem() ?: return
-        val currentQueueItemDescription = currentQueueItem.description
-        val metadataBuilder = MediaMetadataCompat.Builder().apply {
-            putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, currentQueueItemDescription.mediaId)
-            putString(MediaMetadataCompat.METADATA_KEY_TITLE, currentQueueItemDescription.title.toString())
-            putString(MediaMetadataCompat.METADATA_KEY_ARTIST, currentQueueItemDescription.subtitle.toString())
-
-            val additional = currentQueueItemDescription.extras
-            putString(MediaMetadataCompat.METADATA_KEY_ALBUM,
-                additional?.getString("album") ?: getString(R.string.unknown_album))
-            putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, getArtworkByAlbumId(
-                additional?.getString("album_id"))
-            )
-        }
-        mediaSessionCompat.setMetadata(metadataBuilder.build())
     }
 
     private fun getArtworkByAlbumId(albumId: String?): Bitmap {

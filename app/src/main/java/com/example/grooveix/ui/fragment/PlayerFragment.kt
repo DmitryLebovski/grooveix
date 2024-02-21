@@ -30,6 +30,7 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 class PlayerFragment : Fragment() {
+
     private val playQueueViewModel: QueueViewModel by activityViewModels()
     private var _binding: FragmentPlayerBinding? = null
     private val binding get() = _binding!!
@@ -121,23 +122,19 @@ class PlayerFragment : Fragment() {
             return@setOnLongClickListener false
         }
 
-        val accent = MaterialColors.getColor(mainActivity, com.google.android.material.R.attr.colorAccent, Color.CYAN)
-        val onSurface = MaterialColors.getColor(mainActivity, com.google.android.material.R.attr.colorOnSurface, Color.LTGRAY)
-        val onSurface60 = MaterialColors.compositeARGBWithAlpha(onSurface, 153)
-
         if (mainActivity.getShuffleMode() == PlaybackStateCompat.SHUFFLE_MODE_ALL) {
-            binding.currentButtonShuffle.setBackgroundColor(accent)
+            binding.currentButtonShuffle.setBackgroundResource(R.drawable.ic_shuffle_on)
         }
 
         binding.currentButtonShuffle.setOnClickListener{
-            if (mainActivity.toggleShuffleMode()) binding.currentButtonShuffle.setBackgroundColor(accent)
-            else binding.currentButtonShuffle.setBackgroundColor(onSurface60)
+            if (mainActivity.toggleShuffleMode()) binding.currentButtonShuffle.setBackgroundResource(R.drawable.ic_shuffle_on)
+            else binding.currentButtonShuffle.setBackgroundResource(R.drawable.ic_shuffle)
         }
 
         when (mainActivity.getRepeatMode()) {
-            PlaybackStateCompat.REPEAT_MODE_ALL -> binding.currentButtonRepeat.setBackgroundColor(accent)
+            PlaybackStateCompat.REPEAT_MODE_ALL -> binding.currentButtonRepeat.setBackgroundResource(R.drawable.ic_repeat_all)
             PlaybackStateCompat.REPEAT_MODE_ONE -> {
-                binding.currentButtonRepeat.setBackgroundColor(accent)
+                binding.currentButtonRepeat.setBackgroundResource(R.drawable.ic_repeat_all)
                 binding.currentButtonRepeat.setBackgroundResource(R.drawable.ic_repeat_one)
             }
         }
@@ -146,10 +143,9 @@ class PlayerFragment : Fragment() {
             when (mainActivity.toggleRepeatMode()) {
                 PlaybackStateCompat.REPEAT_MODE_NONE -> {
                     binding.currentButtonRepeat.setBackgroundResource(R.drawable.ic_repeat)
-                    binding.currentButtonRepeat.setBackgroundColor(onSurface60)
                 }
                 PlaybackStateCompat.REPEAT_MODE_ALL -> {
-                    binding.currentButtonRepeat.setBackgroundColor(accent)
+                    binding.currentButtonRepeat.setBackgroundResource(R.drawable.ic_repeat_all)
                 }
                 PlaybackStateCompat.REPEAT_MODE_ONE -> {
                     binding.currentButtonRepeat.setBackgroundResource(R.drawable.ic_repeat_one)
@@ -183,7 +179,6 @@ class PlayerFragment : Fragment() {
         Dispatchers.Main) {
         binding.title.text = metadata?.getString(MediaMetadataCompat.METADATA_KEY_TITLE)
         binding.artist.text = metadata?.getString(MediaMetadataCompat.METADATA_KEY_ARTIST)
-        binding.album.text = metadata?.getString(MediaMetadataCompat.METADATA_KEY_ALBUM)
 
         if (metadata != null) {
             val albumId = metadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI)
