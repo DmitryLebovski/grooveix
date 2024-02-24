@@ -15,7 +15,6 @@ import android.widget.SeekBar
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.grooveix.R
@@ -57,10 +56,6 @@ class PlayerFragment : Fragment() {
     @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        // The currently playing fragment will overlay the active fragment from the
-        // mobile_navigation navigation graph. We need to intercept touch events
-        // that would otherwise reach the underlying fragment
         binding.root.setOnTouchListener { _, _ ->
             return@setOnTouchListener true
         }
@@ -122,6 +117,10 @@ class PlayerFragment : Fragment() {
             return@setOnLongClickListener false
         }
 
+        val accent = MaterialColors.getColor(mainActivity, com.google.android.material.R.attr.colorAccent, Color.CYAN)
+        val onSurface = MaterialColors.getColor(mainActivity, com.google.android.material.R.attr.colorOnSurface, Color.LTGRAY)
+        val onSurface60 = MaterialColors.compositeARGBWithAlpha(onSurface, 153)
+
         if (mainActivity.getShuffleMode() == PlaybackStateCompat.SHUFFLE_MODE_ALL) {
             binding.currentButtonShuffle.setBackgroundResource(R.drawable.ic_shuffle_on)
         }
@@ -134,7 +133,6 @@ class PlayerFragment : Fragment() {
         when (mainActivity.getRepeatMode()) {
             PlaybackStateCompat.REPEAT_MODE_ALL -> binding.currentButtonRepeat.setBackgroundResource(R.drawable.ic_repeat_all)
             PlaybackStateCompat.REPEAT_MODE_ONE -> {
-                binding.currentButtonRepeat.setBackgroundResource(R.drawable.ic_repeat_all)
                 binding.currentButtonRepeat.setBackgroundResource(R.drawable.ic_repeat_one)
             }
         }
@@ -157,22 +155,31 @@ class PlayerFragment : Fragment() {
             findNavController().popBackStack()
         }
 
+//        binding.artwork.setOnClickListener {
+//            showPopup()
+//        }
+
         binding.currentSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onStopTrackingTouch(seekBar: SeekBar) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar) {
+                val progress = seekBar.progress
+                mainActivity.seekTo(progress)
+            }
             override fun onStartTrackingTouch(seekBar: SeekBar) {}
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                if (fromUser) mainActivity.seekTo(progress)
+                binding.currentPosition.text = SimpleDateFormat("mm:ss", Locale.UK).format(progress)
             }
         })
     }
 
     override fun onResume() {
         super.onResume()
+        mainActivity.hideStatusBars(true)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        mainActivity.hideStatusBars(false)
     }
 
     private fun updateCurrentlyDisplayedMetadata(metadata: MediaMetadataCompat?) = lifecycleScope.launch(
@@ -189,3 +196,26 @@ class PlayerFragment : Fragment() {
         }
     }
 }
+//    private fun showPopup() {
+//        PopupMenu(this.context, binding.currentClose).apply {
+//            inflate(R.menu.currently_playing_menu)
+//
+//            setForceShowIcon(true)
+//
+//            setOnMenuItemClickListener { menuItem ->
+//                when (menuItem.itemId) {
+//                    R.id.search -> {
+//                        findNavController().popBackStack()
+//                        mainActivity.findNavController(R.id.nav_host_fragment).navigate(R.id.nav_search)
+//                    }
+//                    R.id.queue -> {
+//                        findNavController().popBackStack()
+//                        mainActivity.findNavController(R.id.nav_host_fragment).navigate(R.id.nav_queue)
+//                    }
+//                }
+//                true
+//            }
+//            show()
+//        }
+//    }
+

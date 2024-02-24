@@ -10,7 +10,7 @@
         android:layout_height="54dp"
         android:orientation="vertical"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-        app:layout_scrollFlags="scroll|enterAlways"
+        app:layout_scrollFlags="scroll|enterAlways|snap|exitUntilCollapsed"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
@@ -61,22 +61,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="12dp"
-        android:layout_marginBottom="64dp"
+        android:layout_marginBottom="68dp"
         android:layout_gravity="end|bottom"
         android:text="@string/shuffle"
         app:icon="@drawable/ic_shuffle"
         app:iconSize="20dp"
         app:layout_constraintBottom_toBottomOf="@id/nav_controls_fragment"
         app:layout_constraintEnd_toEndOf="parent" />
-
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/nav_controls_fragment"
-        android:name="androidx.navigation.fragment.NavHostFragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="bottom"
-        android:visibility="visible"
-        android:background="@android:color/transparent"
-        app:navGraph="@navigation/controls_navigation" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -17,6 +17,7 @@ import com.example.grooveix.ui.media.Track
 
 class TrackFragment : Fragment() {
 
+
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
     private var isUpdating = false
@@ -40,6 +41,7 @@ class TrackFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.recyclerView.itemAnimator = DefaultItemAnimator()
+
         adapter = TrackAdapter(mainActivity)
         binding.recyclerView.adapter = adapter
         adapter.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
@@ -60,7 +62,6 @@ class TrackFragment : Fragment() {
             }
         })
     }
-
 
     private fun updateRecyclerView(songs: List<Track>) {
         if (isUpdating) {

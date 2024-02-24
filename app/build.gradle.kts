@@ -59,8 +59,8 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycleVersion")
     implementation("androidx.lifecycle:lifecycle-common-java8:$lifecycleVersion")
 
-    implementation("androidx.navigation:navigation-fragment-ktx:2.7.6")
-    implementation("androidx.navigation:navigation-ui-ktx:2.7.6")
+    implementation("androidx.navigation:navigation-fragment-ktx:2.7.7")
+    implementation("androidx.navigation:navigation-ui-ktx:2.7.7")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
     implementation("com.github.bumptech.glide:glide:4.14.2")
@@ -70,12 +70,23 @@ dependencies {
     implementation("androidx.cardview:cardview:1.0.0")
     implementation("pl.droidsonroids.gif:android-gif-drawable:1.2.28")
     implementation("androidx.fragment:fragment-ktx:1.6.2")
-    implementation("androidx.media:media:1.7.0")
     implementation("androidx.legacy:legacy-support-v4:1.0.0")
     implementation("androidx.room:room-runtime:$roomVersion")
     implementation("androidx.room:room-ktx:$roomVersion")
     implementation("com.github.bumptech.glide:glide:4.14.2")
     implementation("com.codersguidebook:recyclerview-fastscroller-with-value-label:1.0")
+
+
+    implementation("me.zhanghai.android.fastscroll:library:1.3.0")
+
+    implementation("androidx.media:media:1.7.0")
+    implementation("androidx.media3:media3-exoplayer:1.2.1")
+    implementation("androidx.media3:media3-exoplayer-dash:1.2.1")
+    implementation("androidx.media3:media3-ui:1.2.1")
+    implementation("com.squareup.okhttp3:okhttp:4.10.0")
+    implementation("androidx.media3:media3-exoplayer:1.2.1")
+    implementation("androidx.media3:media3-session:1.2.1")
+
 
     ksp("androidx.room:room-compiler:$roomVersion")
     annotationProcessor("androidx.room:room-compiler:$roomVersion")

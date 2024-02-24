@@ -6,17 +6,17 @@ import android.content.ComponentName
 import android.content.ContentUris
 import android.content.Context
 import android.content.ContextWrapper
-import android.content.pm.PackageManager
 import android.database.Cursor
 import android.graphics.Bitmap
 import android.media.AudioManager
 import android.media.session.PlaybackState
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
+
+
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
@@ -24,14 +24,29 @@ import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.MediaSessionCompat.QueueItem
 import android.support.v4.media.session.PlaybackStateCompat
 import android.support.v4.media.session.PlaybackStateCompat.*
+import android.util.Log
+
+
+import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaMetadata
+import androidx.media3.common.PlaybackException
+import androidx.media3.common.Player
+import androidx.media3.session.MediaController
+import androidx.media3.session.SessionToken
+
 import android.util.Size
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.SearchView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
+import androidx.core.view.isGone
+import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
@@ -41,15 +56,12 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.signature.ObjectKey
 import com.example.grooveix.R
 import com.example.grooveix.databinding.ActivityMainBinding
-import com.example.grooveix.ui.fragment.MiniPlayerFragment
-import com.example.grooveix.ui.fragment.TrackFragment
 import com.example.grooveix.ui.media.MediaContentObserver
 import com.example.grooveix.ui.media.MusicPlayerService
 import com.example.grooveix.ui.media.MusicViewModel
 import com.example.grooveix.ui.media.QueueViewModel
 import com.example.grooveix.ui.media.Track
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
@@ -66,13 +78,9 @@ class MainActivity : AppCompatActivity() {
     private var currentQueueItemId = -1L
     private var mediaStoreContentObserver: MediaContentObserver? = null
     private var playQueue = listOf<QueueItem>()
-    private val playQueueViewModel: QueueViewModel by viewModels()
+private val playQueueViewModel: QueueViewModel by viewModels()
     private lateinit var mediaBrowser: MediaBrowserCompat
     private lateinit var musicViewModel: MusicViewModel
-    private lateinit var bottomSheetBehavior: BottomSheetBehavior<FrameLayout>
-
-    private val playerState: Int
-        get() = bottomSheetBehavior.state
 
     private val connectionCallbacks = object : MediaBrowserCompat.ConnectionCallback() {
         override fun onConnected() {
@@ -101,6 +109,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             playQueueViewModel.playbackState.value = state?.state ?: STATE_NONE
+            Log.d("PIZDEC", state?.extras.toString())
             when (state?.state) {
                 STATE_PLAYING, STATE_PAUSED -> {
                     currentPlaybackPosition = state.position.toInt()
@@ -167,16 +176,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         refreshMusicLibrary()
-
-
-//        if (!hasStoragePermission()) {
-//            Intent(this@MainActivity, PermissionActivity::class.java).also {
-//                startActivity(it)
-//                this@MainActivity.finish()
-//            }
-//        }
     }
-
 
 
     override fun onResume() {
@@ -265,6 +265,11 @@ class MainActivity : AppCompatActivity() {
         mediaController.transportControls.skipToQueueItem(queueItemId)
         mediaController.transportControls.play()
     }
+
+    fun isCurrentlyPlaying(track: Track): Boolean {
+        return track.trackId == currentQueueItemId
+    }
+
 
     private fun setShuffleMode(shuffleMode: Int) {
         val bundle = Bundle().apply {
@@ -373,20 +378,20 @@ class MainActivity : AppCompatActivity() {
         return mediaControllerCompat.repeatMode
     }
     fun toggleShuffleMode(): Boolean {
-        val newShuffleMode = if (getShuffleMode() == PlaybackStateCompat.SHUFFLE_MODE_NONE) {
-            PlaybackStateCompat.SHUFFLE_MODE_ALL
-        } else PlaybackStateCompat.SHUFFLE_MODE_NONE
+        val newShuffleMode = if (getShuffleMode() == SHUFFLE_MODE_NONE) {
+            SHUFFLE_MODE_ALL
+        } else SHUFFLE_MODE_NONE
 
         setShuffleMode(newShuffleMode)
 
-        return newShuffleMode == PlaybackStateCompat.SHUFFLE_MODE_ALL
+        return newShuffleMode == SHUFFLE_MODE_ALL
     }
 
     fun toggleRepeatMode(): Int {
         val newRepeatMode = when (getRepeatMode()) {
-            PlaybackStateCompat.REPEAT_MODE_NONE -> PlaybackStateCompat.REPEAT_MODE_ALL
-            PlaybackStateCompat.REPEAT_MODE_ALL -> PlaybackStateCompat.REPEAT_MODE_ONE
-            else -> PlaybackStateCompat.REPEAT_MODE_NONE
+            REPEAT_MODE_NONE -> REPEAT_MODE_ALL
+            REPEAT_MODE_ALL -> REPEAT_MODE_ONE
+            else -> REPEAT_MODE_NONE
         }
 
         val bundle = Bundle().apply {
@@ -395,6 +400,26 @@ class MainActivity : AppCompatActivity() {
         mediaController.sendCommand("SET_REPEAT_MODE", bundle, null)
 
         return newRepeatMode
+    }
+
+    fun hideStatusBars(hide: Boolean) {
+        val windowInsetsController = WindowCompat.getInsetsController(window, window.decorView)
+        if (hide) {
+            supportActionBar?.setDisplayShowTitleEnabled(false)
+            windowInsetsController.systemBarsBehavior =
+                WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            windowInsetsController.hide(WindowInsetsCompat.Type.statusBars())
+
+            // Hide the toolbar to prevent the SearchView keyboard inadvertently popping up
+            binding.navView.isGone = true
+        } else {
+            supportActionBar?.setDisplayShowTitleEnabled(true)
+            windowInsetsController.systemBarsBehavior =
+                WindowInsetsControllerCompat.BEHAVIOR_DEFAULT
+            windowInsetsController.show(WindowInsetsCompat.Type.statusBars())
+
+            binding.navView.isVisible = true
+        }
     }
 
     fun seekTo(position: Int) = mediaController.transportControls.seekTo(position.toLong())

@@ -31,7 +31,7 @@
         android:id="@+id/currentClose"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="8dp"
         android:background="@drawable/baseline_arrow_back_ios_new_24"
         android:rotation="-90"
         android:translationZ="200dp"
@@ -42,9 +42,11 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnPlay">
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnLyrics"
@@ -126,7 +128,7 @@
 <!--        app:layout_constraintStart_toStartOf="parent"-->
 <!--        app:layout_constraintTop_toBottomOf="@+id/artist" />-->
 
-    <SeekBar
+    <androidx.appcompat.widget.AppCompatSeekBar
         android:id="@+id/currentSeekBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -166,7 +168,7 @@
         android:background="@drawable/ic_previous_small"
         app:layout_constraintBottom_toBottomOf="@id/btnPlay"
         app:layout_constraintEnd_toStartOf="@id/btnPlay"
-        app:layout_constraintTop_toTopOf="@id/btnPlay" />
+        app:layout_constraintTop_toTopOf="@id/btnPlay"/>
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnPlay"
@@ -176,7 +178,7 @@
         android:background="@drawable/baseline_play_arrow_24"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/currentSeekBar" />
+        app:layout_constraintTop_toBottomOf="@+id/currentSeekBar"/>
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnForward"
@@ -186,7 +188,7 @@
         android:background="@drawable/ic_next_small"
         app:layout_constraintBottom_toBottomOf="@id/btnPlay"
         app:layout_constraintStart_toEndOf="@id/btnPlay"
-        app:layout_constraintTop_toTopOf="@id/btnPlay" />
+        app:layout_constraintTop_toTopOf="@+id/btnPlay" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnQueue"

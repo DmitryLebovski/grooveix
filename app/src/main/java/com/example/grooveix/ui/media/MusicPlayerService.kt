@@ -70,7 +70,7 @@ class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListe
     private var playbackPositionRunnable = object : Runnable {
         override fun run() {
             try {
-                if (mediaPlayer?.isPlaying == true) setMediaPlaybackState(PlaybackStateCompat.STATE_PLAYING)
+                if (mediaPlayer?.isPlaying == true) setMediaPlaybackState(STATE_PLAYING)
             } finally {
                 handler.postDelayed(this, 1000L)
             }
@@ -192,7 +192,7 @@ class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListe
                                 }
                             }
                             //TODO update Notification Player
-                            setMediaPlaybackState(STATE_PLAYING)
+                            setMediaPlaybackState(STATE_PLAYING, getBundleWithSongDuration())
                         } catch (_: NullPointerException) {
                             onError(mediaPlayer, MediaPlayer.MEDIA_ERROR_UNKNOWN, 0)
                         }

@@ -1,5 +1,7 @@
 package com.example.grooveix.ui.adapter
 
+import android.graphics.Color
+import android.support.v4.media.session.MediaSessionCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,8 +12,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.codersguidebook.recyclerviewfastscroller.RecyclerViewScrollbar
 import com.example.grooveix.R
 import com.example.grooveix.ui.activity.MainActivity
-import com.example.grooveix.ui.fragment.TrackFragment
 import com.example.grooveix.ui.media.Track
+import com.google.android.material.color.MaterialColors
 
 class TrackAdapter(private val activity: MainActivity):
     RecyclerView.Adapter<TrackAdapter.SongsViewHolder>(), RecyclerViewScrollbar.ValueLabelListener {
