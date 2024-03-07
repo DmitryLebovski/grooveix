@@ -3,30 +3,21 @@ package com.example.grooveix.ui.fragment
 import android.os.Bundle
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.grooveix.R
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.grooveix.databinding.FragmentMiniPlayerBinding
 import com.example.grooveix.ui.activity.MainActivity
 import com.example.grooveix.ui.media.QueueViewModel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import java.util.Queue
-
 class MiniPlayerFragment : Fragment() {
 
     private var _binding: FragmentMiniPlayerBinding? = null
     private val binding get() = _binding!!
-    private var fastForwarding = false
-    private var fastRewinding = false
     private val playQueueViewModel: QueueViewModel by activityViewModels()
     private lateinit var mainActivity: MainActivity
 
@@ -49,12 +40,6 @@ class MiniPlayerFragment : Fragment() {
 
         binding.root.setOnClickListener {
             playQueueViewModel.currentlyPlayingSongMetadata.value?.let {
-//                val extras = FragmentNavigatorExtras(
-//                    binding.artwork to binding.artwork.transitionName,
-//                    binding.title to binding.title.transitionName,
-//                    binding.artist to binding.artist.transitionName,
-//                    binding.btnPlay to binding.btnPlay.transitionName
-//                )
                 findNavController().navigate(R.id.nav_currently_playing, null, null)
             }
         }

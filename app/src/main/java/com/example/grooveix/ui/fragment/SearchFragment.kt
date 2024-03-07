@@ -90,7 +90,7 @@ class SearchFragment : Fragment() {
     }
 
     private fun search(query: String) = lifecycleScope.launch(Dispatchers.IO) {
-        val songs = musicDatabase!!.musicRoom().getSongListLikeSearch(query).take(10)
+        val songs = musicDatabase!!.musicDao().getSongListLikeSearch(query).take(10)
 
         lifecycleScope.launch(Dispatchers.Main) {
             binding.noResults.isVisible = songs.isEmpty()

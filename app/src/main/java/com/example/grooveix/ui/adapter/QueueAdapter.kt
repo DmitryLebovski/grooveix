@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -15,17 +16,16 @@ import com.example.grooveix.ui.activity.MainActivity
 import com.example.grooveix.ui.fragment.QueueFragment
 import com.google.android.material.color.MaterialColors
 
-class QueueAdapter(private val activity: MainActivity, private val fragment: QueueFragment): RecyclerView.Adapter<QueueAdapter.QueueViewHolder>() {
+class QueueAdapter(private val activity: MainActivity, private val fragment: QueueFragment): RecyclerView.Adapter<QueueAdapter.PlayQueueViewHolder>() {
     var currentlyPlayingQueueId = -1L
     var playQueue = mutableListOf<QueueItem>()
 
-    inner class QueueViewHolder(itemView: View) :
+    inner class PlayQueueViewHolder(itemView: View) :
         RecyclerView.ViewHolder(itemView) {
 
         internal var mTitle = itemView.findViewById<View>(R.id.title) as TextView
         internal var mArtist = itemView.findViewById<View>(R.id.artist) as TextView
         internal var mHandle = itemView.findViewById<ImageView>(R.id.handle)
-        //internal var mMenu = itemView.findViewById<ImageButton>(R.id.menu)
 
         init {
             itemView.isClickable = true
@@ -35,12 +35,12 @@ class QueueAdapter(private val activity: MainActivity, private val fragment: Que
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): QueueViewHolder {
-        return QueueViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.queue_item, parent, false))
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlayQueueViewHolder {
+        return PlayQueueViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.queue_item, parent, false))
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    override fun onBindViewHolder(holder: QueueViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: PlayQueueViewHolder, position: Int) {
         val currentQueueItemDescription = playQueue[position].description
 
         holder.mTitle.text = currentQueueItemDescription.title
@@ -62,9 +62,8 @@ class QueueAdapter(private val activity: MainActivity, private val fragment: Que
             return@setOnTouchListener true
         }
 
-//        holder.mViewQueue.setOnLongClickListener {
+//        holder.mMenu.setOnClickListener {
 //            fragment.showPopup(it, playQueue[position].queueId)
-//            return@setOnLongClickListener false
 //        }
     }
 

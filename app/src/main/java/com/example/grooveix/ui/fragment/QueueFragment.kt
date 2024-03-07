@@ -17,9 +17,9 @@ import com.example.grooveix.databinding.FragmentQueueBinding
 import com.example.grooveix.ui.activity.MainActivity
 import com.example.grooveix.ui.adapter.QueueAdapter
 import com.example.grooveix.ui.media.QueueViewModel
-import java.util.Queue
 
 class QueueFragment : Fragment() {
+
     private var _binding: FragmentQueueBinding? = null
     private val binding get() = _binding!!
     private val playQueueViewModel: QueueViewModel by activityViewModels()
@@ -115,7 +115,7 @@ class QueueFragment : Fragment() {
 //                adapter.playQueue.clear()
 //                adapter.playQueue.addAll(playQueue)
 //                adapter.notifyDataSetChanged()
-////                adapter.processNewPlayQueue(playQueue)
+//                adapter.processNewPlayQueue(playQueue)
 //            }
 //        }
 

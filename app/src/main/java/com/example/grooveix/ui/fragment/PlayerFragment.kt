@@ -5,14 +5,16 @@ import android.graphics.Color
 import android.os.Bundle
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
+import android.support.v4.media.session.PlaybackStateCompat.REPEAT_MODE_ALL
+import android.support.v4.media.session.PlaybackStateCompat.REPEAT_MODE_NONE
+import android.support.v4.media.session.PlaybackStateCompat.REPEAT_MODE_ONE
+import android.support.v4.media.session.PlaybackStateCompat.SHUFFLE_MODE_ALL
 import android.transition.TransitionInflater
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.PopupMenu
 import android.widget.SeekBar
-import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -21,7 +23,6 @@ import com.example.grooveix.R
 import com.example.grooveix.databinding.FragmentPlayerBinding
 import com.example.grooveix.ui.activity.MainActivity
 import com.example.grooveix.ui.media.QueueViewModel
-import com.google.android.material.color.MaterialColors
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -30,18 +31,12 @@ import java.util.Locale
 
 class PlayerFragment : Fragment() {
 
-    private val playQueueViewModel: QueueViewModel by activityViewModels()
+    private val queueViewModel: QueueViewModel by activityViewModels()
     private var _binding: FragmentPlayerBinding? = null
     private val binding get() = _binding!!
     private var fastForwarding = false
     private var fastRewinding = false
     private lateinit var mainActivity: MainActivity
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        sharedElementEnterTransition = TransitionInflater.from(context).inflateTransition(android.R.transition.move)
-        sharedElementReturnTransition = TransitionInflater.from(context).inflateTransition(android.R.transition.move)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -60,23 +55,23 @@ class PlayerFragment : Fragment() {
             return@setOnTouchListener true
         }
 
-        playQueueViewModel.currentlyPlayingSongMetadata.observe(viewLifecycleOwner) {
+        queueViewModel.currentlyPlayingSongMetadata.observe(viewLifecycleOwner) {
             updateCurrentlyDisplayedMetadata(it)
         }
 
-        playQueueViewModel.playbackState.observe(viewLifecycleOwner) { state ->
+        queueViewModel.playbackState.observe(viewLifecycleOwner) { state ->
             if (state == PlaybackStateCompat.STATE_PLAYING) binding.btnPlay.setBackgroundResource(R.drawable.baseline_pause_24)
             else binding.btnPlay.setBackgroundResource(R.drawable.baseline_play_arrow_24)
         }
 
-        playQueueViewModel.playbackDuration.observe(viewLifecycleOwner) { duration ->
+        queueViewModel.playbackDuration.observe(viewLifecycleOwner) { duration ->
             duration?.let {
                 binding.currentSeekBar.max = it
                 binding.currentMax.text = SimpleDateFormat("mm:ss", Locale.UK).format(it)
             }
         }
 
-        playQueueViewModel.playbackPosition.observe(viewLifecycleOwner) { position ->
+        queueViewModel.playbackPosition.observe(viewLifecycleOwner) { position ->
             position?.let {
                 binding.currentSeekBar.progress = position
                 binding.currentPosition.text = SimpleDateFormat("mm:ss", Locale.UK).format(it)
@@ -117,11 +112,7 @@ class PlayerFragment : Fragment() {
             return@setOnLongClickListener false
         }
 
-        val accent = MaterialColors.getColor(mainActivity, com.google.android.material.R.attr.colorAccent, Color.CYAN)
-        val onSurface = MaterialColors.getColor(mainActivity, com.google.android.material.R.attr.colorOnSurface, Color.LTGRAY)
-        val onSurface60 = MaterialColors.compositeARGBWithAlpha(onSurface, 153)
-
-        if (mainActivity.getShuffleMode() == PlaybackStateCompat.SHUFFLE_MODE_ALL) {
+        if (mainActivity.getShuffleMode() == SHUFFLE_MODE_ALL) {
             binding.currentButtonShuffle.setBackgroundResource(R.drawable.ic_shuffle_on)
         }
 
@@ -131,21 +122,21 @@ class PlayerFragment : Fragment() {
         }
 
         when (mainActivity.getRepeatMode()) {
-            PlaybackStateCompat.REPEAT_MODE_ALL -> binding.currentButtonRepeat.setBackgroundResource(R.drawable.ic_repeat_all)
-            PlaybackStateCompat.REPEAT_MODE_ONE -> {
+            REPEAT_MODE_ALL -> binding.currentButtonRepeat.setBackgroundResource(R.drawable.ic_repeat_all)
+            REPEAT_MODE_ONE -> {
                 binding.currentButtonRepeat.setBackgroundResource(R.drawable.ic_repeat_one)
             }
         }
 
         binding.currentButtonRepeat.setOnClickListener {
             when (mainActivity.toggleRepeatMode()) {
-                PlaybackStateCompat.REPEAT_MODE_NONE -> {
+                REPEAT_MODE_NONE -> {
                     binding.currentButtonRepeat.setBackgroundResource(R.drawable.ic_repeat)
                 }
-                PlaybackStateCompat.REPEAT_MODE_ALL -> {
+                REPEAT_MODE_ALL -> {
                     binding.currentButtonRepeat.setBackgroundResource(R.drawable.ic_repeat_all)
                 }
-                PlaybackStateCompat.REPEAT_MODE_ONE -> {
+                REPEAT_MODE_ONE -> {
                     binding.currentButtonRepeat.setBackgroundResource(R.drawable.ic_repeat_one)
                 }
             }
@@ -173,13 +164,13 @@ class PlayerFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        mainActivity.hideStatusBars(true)
+        mainActivity.hideBar(true)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-        mainActivity.hideStatusBars(false)
+        mainActivity.hideBar(false)
     }
 
     private fun updateCurrentlyDisplayedMetadata(metadata: MediaMetadataCompat?) = lifecycleScope.launch(
@@ -195,7 +186,7 @@ class PlayerFragment : Fragment() {
                 .clear(binding.artwork)
         }
     }
-}
+
 //    private fun showPopup() {
 //        PopupMenu(this.context, binding.currentClose).apply {
 //            inflate(R.menu.currently_playing_menu)
@@ -218,4 +209,4 @@ class PlayerFragment : Fragment() {
 //            show()
 //        }
 //    }
-
+}

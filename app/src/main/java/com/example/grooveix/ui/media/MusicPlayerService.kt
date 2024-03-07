@@ -34,6 +34,7 @@ import android.support.v4.media.session.PlaybackStateCompat.STATE_PLAYING
 import android.text.TextUtils
 import android.view.KeyEvent
 import android.widget.Toast
+import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
@@ -55,7 +56,6 @@ class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListe
     private lateinit var audioFocusRequest: AudioFocusRequest
     private lateinit var mediaSessionCompat: MediaSessionCompat
 
-    // for audio focus change
     private val afChangeListener = AudioManager.OnAudioFocusChangeListener { focusChange ->
         when (focusChange) {
             AudioManager.AUDIOFOCUS_LOSS, AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> {
@@ -492,23 +492,9 @@ class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListe
                 }
             } catch (_: Exception) { }
         }
-        // if an error or album ID null - return app logo as a Album Art
+
         return ContextCompat.getDrawable(applicationContext, R.drawable.grooveix)!!.toBitmap()
     }
-
-    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        intent.action?.let {
-            when (it) {
-                "play" -> mediaSessionCallback.onPlay()
-                "pause" -> mediaSessionCallback.onPause()
-                "next" -> mediaSessionCallback.onSkipToNext()
-                "previous" -> mediaSessionCallback.onSkipToPrevious()
-            }
-        }
-        return super.onStartCommand(intent, flags, startId)
-    }
-
-
 
     private fun setMediaPlaybackState(state: Int, bundle: Bundle? = null) {
         val playbackPosition = mediaPlayer?.currentPosition?.toLong() ?: 0L
@@ -520,7 +506,6 @@ class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListe
         mediaSessionCompat.setPlaybackState(playbackStateBuilder.build())
     }
 
-    //pausing playback when device is disconnected
     private val noisyReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             if (mediaPlayer != null && mediaPlayer!!.isPlaying) mediaSessionCallback.onPause()
@@ -575,4 +560,15 @@ class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListe
         return true
     }
 
+    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
+        intent.action?.let {
+            when (it) {
+                "play" -> mediaSessionCallback.onPlay()
+                "pause" -> mediaSessionCallback.onPause()
+                "next" -> mediaSessionCallback.onSkipToNext()
+                "previous" -> mediaSessionCallback.onSkipToPrevious()
+            }
+        }
+        return super.onStartCommand(intent, flags, startId)
+    }
 }

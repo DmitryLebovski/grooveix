@@ -1,7 +1,5 @@
 package com.example.grooveix.ui.activity
 
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.content.ComponentName
 import android.content.ContentUris
 import android.content.Context
@@ -38,13 +36,9 @@ import android.util.Size
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
-import android.widget.SearchView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
@@ -163,9 +157,6 @@ private val playQueueViewModel: QueueViewModel by viewModels()
         )
 
         mediaBrowser.connect()
-
-        createChannelForMediaPlayerNotification()
-
         musicViewModel = ViewModelProvider(this)[MusicViewModel::class.java]
 
         val handler = Handler(Looper.getMainLooper())
@@ -197,20 +188,6 @@ private val playQueueViewModel: QueueViewModel by viewModels()
             this.contentResolver.unregisterContentObserver(it)
         }
     }
-
-    private fun createChannelForMediaPlayerNotification() {
-        val channel = NotificationChannel(
-            "music", "Notifications",
-            NotificationManager.IMPORTANCE_DEFAULT
-        ).apply {
-            description = "All app notifications"
-            setSound(null, null)
-            setShowBadge(false)
-        }
-        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.createNotificationChannel(channel)
-    }
-
 
     fun playNewPlayQueue(songs: List<Track>, startIndex: Int = 0, shuffle: Boolean = false)
             = lifecycleScope.launch(Dispatchers.Default) {
@@ -402,24 +379,9 @@ private val playQueueViewModel: QueueViewModel by viewModels()
         return newRepeatMode
     }
 
-    fun hideStatusBars(hide: Boolean) {
-        val windowInsetsController = WindowCompat.getInsetsController(window, window.decorView)
-        if (hide) {
-            supportActionBar?.setDisplayShowTitleEnabled(false)
-            windowInsetsController.systemBarsBehavior =
-                WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-            windowInsetsController.hide(WindowInsetsCompat.Type.statusBars())
-
-            // Hide the toolbar to prevent the SearchView keyboard inadvertently popping up
-            binding.navView.isGone = true
-        } else {
-            supportActionBar?.setDisplayShowTitleEnabled(true)
-            windowInsetsController.systemBarsBehavior =
-                WindowInsetsControllerCompat.BEHAVIOR_DEFAULT
-            windowInsetsController.show(WindowInsetsCompat.Type.statusBars())
-
-            binding.navView.isVisible = true
-        }
+    fun hideBar(hide: Boolean) {
+        if (hide) binding.navView.isGone = true
+        else binding.navView.isVisible = true
     }
 
     fun seekTo(position: Int) = mediaController.transportControls.seekTo(position.toLong())

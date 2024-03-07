@@ -12,7 +12,7 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
     val loadTracks: LiveData<List<Track>>
 
     init {
-        val musicRoom = MusicDatabase.getDatabase(application).musicRoom()
+        val musicRoom = MusicDatabase.getDatabase(application).musicDao()
         repository = MusicRepository(musicRoom)
         loadTracks = repository.loadTracks
     }

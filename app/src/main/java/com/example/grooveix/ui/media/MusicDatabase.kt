@@ -8,7 +8,7 @@ import androidx.room.RoomDatabase
 @Database(entities = [Track::class], version = 1, exportSchema = false)
 abstract class MusicDatabase : RoomDatabase() {
 
-    abstract fun musicRoom(): MusicDao
+    abstract fun musicDao(): MusicDao
 
     companion object {
         @Volatile
@@ -16,7 +16,7 @@ abstract class MusicDatabase : RoomDatabase() {
 
         fun getDatabase(context: Context): MusicDatabase {
             database ?: kotlin.run {
-                database = Room.databaseBuilder(context, MusicDatabase::class.java, "grooveix_library")
+                database = Room.databaseBuilder(context, MusicDatabase::class.java, "music_database")
                     .build()
             }
 
