@@ -1,7 +1,6 @@
 package com.example.grooveix.ui.fragment
 
 import android.annotation.SuppressLint
-import android.graphics.Color
 import android.os.Bundle
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
@@ -9,11 +8,11 @@ import android.support.v4.media.session.PlaybackStateCompat.REPEAT_MODE_ALL
 import android.support.v4.media.session.PlaybackStateCompat.REPEAT_MODE_NONE
 import android.support.v4.media.session.PlaybackStateCompat.REPEAT_MODE_ONE
 import android.support.v4.media.session.PlaybackStateCompat.SHUFFLE_MODE_ALL
-import android.transition.TransitionInflater
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -37,6 +36,7 @@ class PlayerFragment : Fragment() {
     private var fastForwarding = false
     private var fastRewinding = false
     private lateinit var mainActivity: MainActivity
+    private lateinit var onBackPressedCallback: OnBackPressedCallback
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -146,9 +146,9 @@ class PlayerFragment : Fragment() {
             findNavController().popBackStack()
         }
 
-//        binding.artwork.setOnClickListener {
-//            showPopup()
-//        }
+        binding.btnQueue.setOnClickListener {
+            findNavController().navigate(R.id.nav_queue, null, null)
+        }
 
         binding.currentSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onStopTrackingTouch(seekBar: SeekBar) {
@@ -160,6 +160,14 @@ class PlayerFragment : Fragment() {
                 binding.currentPosition.text = SimpleDateFormat("mm:ss", Locale.UK).format(progress)
             }
         })
+
+        onBackPressedCallback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                findNavController().popBackStack()
+            }
+        }
+
+        mainActivity.onBackPressedDispatcher.addCallback(viewLifecycleOwner, onBackPressedCallback)
     }
 
     override fun onResume() {

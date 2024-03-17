@@ -14,7 +14,6 @@ import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
 
-
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
@@ -23,15 +22,6 @@ import android.support.v4.media.session.MediaSessionCompat.QueueItem
 import android.support.v4.media.session.PlaybackStateCompat
 import android.support.v4.media.session.PlaybackStateCompat.*
 import android.util.Log
-
-
-import androidx.media3.common.MediaItem
-import androidx.media3.common.MediaMetadata
-import androidx.media3.common.PlaybackException
-import androidx.media3.common.Player
-import androidx.media3.session.MediaController
-import androidx.media3.session.SessionToken
-
 import android.util.Size
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -382,6 +372,11 @@ private val playQueueViewModel: QueueViewModel by viewModels()
     fun hideBar(hide: Boolean) {
         if (hide) binding.navView.isGone = true
         else binding.navView.isVisible = true
+    }
+
+    fun hideMiniPlayer(hide: Boolean) {
+        if (hide) binding.navControlsFragment.isGone = true
+        else binding.navControlsFragment.isVisible = true
     }
 
     fun seekTo(position: Int) = mediaController.transportControls.seekTo(position.toLong())

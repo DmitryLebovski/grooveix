@@ -18,7 +18,7 @@ import com.google.android.material.color.MaterialColors
 
 class QueueAdapter(private val activity: MainActivity, private val fragment: QueueFragment): RecyclerView.Adapter<QueueAdapter.PlayQueueViewHolder>() {
     var currentlyPlayingQueueId = -1L
-    var playQueue = mutableListOf<QueueItem>()
+    val playQueue = mutableListOf<QueueItem>()
 
     inner class PlayQueueViewHolder(itemView: View) :
         RecyclerView.ViewHolder(itemView) {
@@ -61,13 +61,48 @@ class QueueAdapter(private val activity: MainActivity, private val fragment: Que
             if (event.actionMasked == MotionEvent.ACTION_DOWN) fragment.startDragging(holder)
             return@setOnTouchListener true
         }
-
-//        holder.mMenu.setOnClickListener {
-//            fragment.showPopup(it, playQueue[position].queueId)
-//        }
     }
 
     override fun getItemCount() = playQueue.size
+
+    fun processNewPlayQueue(newPlayQueue: List<QueueItem>) {
+        if (newPlayQueue.map { it.queueId } == playQueue.map { it.queueId }) {
+            return
+        }
+
+        for ((index, queueItem) in newPlayQueue.withIndex()) {
+            when {
+                index >= playQueue.size -> {
+                    playQueue.add(queueItem)
+                    notifyItemInserted(index)
+                }
+                playQueue.find { it.queueId == queueItem.queueId } == null -> {
+                    playQueue.add(index, queueItem)
+                    notifyItemInserted(index)
+                }
+                newPlayQueue.find { it.queueId == playQueue[index].queueId } == null -> {
+                    var numberOfItemsRemoved = 0
+                    do {
+                        playQueue.removeAt(index)
+                        ++numberOfItemsRemoved
+                    } while (index < playQueue.size &&
+                        newPlayQueue.find { it.queueId == playQueue[index].queueId } == null)
+
+                    when {
+                        numberOfItemsRemoved == 1 -> notifyItemRemoved(index)
+                        numberOfItemsRemoved > 1 -> notifyItemRangeRemoved(index,
+                            numberOfItemsRemoved)
+                    }
+                }
+            }
+        }
+
+        if (playQueue.size > newPlayQueue.size) {
+            val numberItemsToRemove = playQueue.size - newPlayQueue.size
+            repeat(numberItemsToRemove) { playQueue.removeLast() }
+            notifyItemRangeRemoved(newPlayQueue.size, numberItemsToRemove)
+        }
+    }
 
     fun changeCurrentlyPlayingQueueItemId(newQueueId: Long) {
         val oldCurrentlyPlayingIndex = playQueue.indexOfFirst {

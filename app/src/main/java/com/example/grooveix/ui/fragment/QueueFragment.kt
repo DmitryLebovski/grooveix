@@ -7,7 +7,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -25,6 +27,7 @@ class QueueFragment : Fragment() {
     private val playQueueViewModel: QueueViewModel by activityViewModels()
     private lateinit var mainActivity: MainActivity
     private lateinit var adapter: QueueAdapter
+    private lateinit var onBackPressedCallback: OnBackPressedCallback
 
     private val itemTouchHelper by lazy {
         val simpleItemTouchCallback = object : ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP or ItemTouchHelper.DOWN, 0) {
@@ -81,49 +84,32 @@ class QueueFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.root.itemAnimator = DefaultItemAnimator()
+        binding.queueView.itemAnimator = DefaultItemAnimator()
 
         adapter = QueueAdapter(mainActivity, this)
-        binding.root.adapter = adapter
+        binding.queueView.adapter = adapter
 
-        playQueueViewModel.playQueue.observe(viewLifecycleOwner) { queue ->
-            queue?.let {
-                if (adapter.playQueue.size > it.size) {
-                    val diff = adapter.playQueue - it.toSet()
-                    for (item in diff) {
-                        val index = adapter.playQueue.indexOfFirst { queueItem ->
-                            queueItem.queueId == item.queueId
-                        }
-                        if (index != -1) {
-                            adapter.playQueue.removeAt(index)
-                            adapter.notifyItemRemoved(index)
-                        }
-                    }
-                } else {
-                    adapter.playQueue = it.toMutableList()
-                    //todo fix: call notifyDataChange AFTER item moved
-                    adapter.notifyDataSetChanged()
-                }
+        playQueueViewModel.playQueue.observe(viewLifecycleOwner) { playQueue ->
+            if (adapter.playQueue.isEmpty()) {
+                adapter.playQueue.addAll(playQueue)
+                adapter.notifyItemRangeInserted(0, playQueue.size)
+            } else {
+                adapter.processNewPlayQueue(playQueue)
             }
         }
-
-//        playQueueViewModel.playQueue.observe(viewLifecycleOwner) { playQueue ->
-//            if (adapter.playQueue.isEmpty()) {
-//                adapter.playQueue.addAll(playQueue)
-//                adapter.notifyItemRangeInserted(0, playQueue.size)
-//            } else {
-//                adapter.playQueue.clear()
-//                adapter.playQueue.addAll(playQueue)
-//                adapter.notifyDataSetChanged()
-//                adapter.processNewPlayQueue(playQueue)
-//            }
-//        }
 
         playQueueViewModel.currentQueueItemId.observe(viewLifecycleOwner) { position ->
             position?.let { adapter.changeCurrentlyPlayingQueueItemId(it) }
         }
 
-        itemTouchHelper.attachToRecyclerView(binding.root)
+        itemTouchHelper.attachToRecyclerView(binding.queueView)
+        onBackPressedCallback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                findNavController().popBackStack()
+            }
+        }
+
+        mainActivity.onBackPressedDispatcher.addCallback(viewLifecycleOwner, onBackPressedCallback)
     }
 
     override fun onResume() {
@@ -134,23 +120,15 @@ class QueueFragment : Fragment() {
         }
 
         if (currentlyPlayingQueueItemIndex != -1) {
-            (binding.root.layoutManager as LinearLayoutManager)
+            (binding.queueView.layoutManager as LinearLayoutManager)
                 .scrollToPositionWithOffset(currentlyPlayingQueueItemIndex, 0)
         }
     }
 
     fun startDragging(viewHolder: RecyclerView.ViewHolder) = itemTouchHelper.startDrag(viewHolder)
 
-
     fun showPopup(view: View, queueId: Long) {
-        PopupMenu(requireContext(), view).apply {
-            inflate(R.menu.queue_item_menu)
-            setOnMenuItemClickListener {
-                if (it.itemId == R.id.remove_item) mainActivity.removeQueueItemById(queueId)
-                true
-            }
-            show()
-        }
+        //TODO:add bottomsheet
     }
 
     override fun onDestroyView() {

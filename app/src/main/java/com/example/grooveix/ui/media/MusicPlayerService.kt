@@ -46,6 +46,11 @@ import java.lang.IllegalArgumentException
 import java.lang.IllegalStateException
 import java.lang.NullPointerException
 
+const val ACTION_PREVIOUS = "action previous"
+const val ACTION_PLAY = "action play"
+const val ACTION_NEXT = "action next"
+const val ACTION_PAUSE = "action pause"
+
 class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListener {
 
     private val channelId = "grooveix music"
@@ -93,7 +98,7 @@ class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListe
         playbackPositionRunnable.run()
     }
 
-    private val mediaSessionCallback: MediaSessionCompat.Callback = object : MediaSessionCompat.Callback() {
+    val mediaSessionCallback: MediaSessionCompat.Callback = object : MediaSessionCompat.Callback() {
         override fun onPrepare() {
             super.onPrepare()
 
@@ -563,10 +568,10 @@ class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListe
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         intent.action?.let {
             when (it) {
-                "play" -> mediaSessionCallback.onPlay()
-                "pause" -> mediaSessionCallback.onPause()
-                "next" -> mediaSessionCallback.onSkipToNext()
-                "previous" -> mediaSessionCallback.onSkipToPrevious()
+                ACTION_PLAY -> mediaSessionCallback.onPlay()
+                ACTION_PAUSE -> mediaSessionCallback.onPause()
+                ACTION_NEXT -> mediaSessionCallback.onSkipToNext()
+                ACTION_PREVIOUS -> mediaSessionCallback.onSkipToPrevious()
             }
         }
         return super.onStartCommand(intent, flags, startId)
