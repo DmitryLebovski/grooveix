@@ -11,7 +11,6 @@
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?android:colorBackground</item>
-        <item name="android:navigationBarColor">?android:colorBackground</item>
 
         <!-- Customize your theme here. -->
         <item name="android:windowActionBar">false</item>
@@ -19,6 +18,11 @@
 
         <item name="colorOnSurfaceVariant">@color/botttom_light_1</item>
         <item name="android:windowTranslucentStatus">false</item>
+
+    </style>
+
+    <style name="Theme.RemoveSplashScreenTheme" parent="@style/Theme.Grooveix">
+        <item name="android:windowIsTranslucent">false</item>
     </style>
 
 </resources>

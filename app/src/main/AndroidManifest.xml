@@ -7,9 +7,8 @@
         android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -23,14 +22,15 @@
         <activity
             android:name=".ui.activity.PermissionActivity"
             android:exported="false"
+            android:screenOrientation="fullSensor"
             android:label="@string/title_activity_permission"
             android:theme="@style/Theme.Grooveix" />
         <activity
             android:name=".ui.activity.SplashActivity"
+            android:screenOrientation="portrait"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -38,10 +38,11 @@
             android:name=".ui.activity.MainActivity"
             android:exported="true"
             android:windowSoftInputMode="adjustPan"
-            android:screenOrientation="fullSensor" />
+            android:screenOrientation="portrait" />
 
         <service
             android:name=".ui.media.MusicPlayerService"
+            android:foregroundServiceType="mediaPlayback"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.media.browse.MediaBrowserService" />

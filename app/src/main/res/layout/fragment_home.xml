@@ -10,7 +10,7 @@
         android:layout_height="54dp"
         android:orientation="vertical"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-        app:layout_scrollFlags="scroll|enterAlways|snap|exitUntilCollapsed"
+        app:layout_scrollFlags="scroll|enterAlways|snap"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
@@ -19,7 +19,7 @@
         <androidx.appcompat.widget.Toolbar
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_scrollFlags="scroll|enterAlways"
+            app:layout_scrollFlags="scroll|enterAlways|snap"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"

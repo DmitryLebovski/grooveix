@@ -38,7 +38,7 @@ class SplashActivity : AppCompatActivity() {
         }
     }
 
-    private fun hasStoragePermission(): Boolean {
+    fun hasStoragePermission(): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             (checkSelfPermission(android.Manifest.permission.READ_MEDIA_AUDIO) == PackageManager.PERMISSION_GRANTED)
         } else {

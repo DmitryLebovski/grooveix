@@ -1,5 +1,8 @@
 package com.example.grooveix.ui.media
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.ContentUris
 import android.content.Context
@@ -7,16 +10,15 @@ import android.content.ContextWrapper
 import android.content.Intent
 import android.content.IntentFilter
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.media.AudioAttributes
 import android.media.AudioFocusRequest
 import android.media.AudioManager
 import android.media.AudioManager.AUDIOFOCUS_REQUEST_GRANTED
+import android.media.AudioManager.OnAudioFocusChangeListener
 import android.media.MediaPlayer
 import android.media.MediaPlayer.MEDIA_ERROR_IO
-import android.media.session.PlaybackState.STATE_NONE
-import android.media.session.PlaybackState.STATE_PAUSED
-import android.media.session.PlaybackState.STATE_SKIPPING_TO_NEXT
-import android.media.session.PlaybackState.STATE_STOPPED
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -34,26 +36,29 @@ import android.support.v4.media.session.PlaybackStateCompat.STATE_PLAYING
 import android.text.TextUtils
 import android.view.KeyEvent
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
-import androidx.media.AudioManagerCompat.AUDIOFOCUS_GAIN
 import androidx.media.MediaBrowserServiceCompat
 import com.example.grooveix.R
 import java.io.File
-import java.lang.IllegalArgumentException
-import java.lang.IllegalStateException
-import java.lang.NullPointerException
+import java.io.FileInputStream
 
-const val ACTION_PREVIOUS = "action previous"
-const val ACTION_PLAY = "action play"
-const val ACTION_NEXT = "action next"
-const val ACTION_PAUSE = "action pause"
 
 class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListener {
+    companion object {
+        private const val MEDIA_SESSION_ACTIONS = (PlaybackStateCompat.ACTION_PLAY
+                or PlaybackStateCompat.ACTION_PAUSE
+                or PlaybackStateCompat.ACTION_PLAY_PAUSE
+                or PlaybackStateCompat.ACTION_SKIP_TO_NEXT
+                or PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS
+                or PlaybackStateCompat.ACTION_STOP
+                or PlaybackStateCompat.ACTION_SEEK_TO)
+    }
 
-    private val channelId = "grooveix music"
+    private val channelId = "grooveix_music"
     private var currentlyPlayingQueueItemId = -1L
     private val handler = Handler(Looper.getMainLooper())
     private var mediaPlayer: MediaPlayer? = null
@@ -61,12 +66,11 @@ class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListe
     private lateinit var audioFocusRequest: AudioFocusRequest
     private lateinit var mediaSessionCompat: MediaSessionCompat
 
-    private val afChangeListener = AudioManager.OnAudioFocusChangeListener { focusChange ->
+    private val afChangeListener = OnAudioFocusChangeListener { focusChange ->
         when (focusChange) {
             AudioManager.AUDIOFOCUS_LOSS, AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> {
                 mediaSessionCompat.controller.transportControls.pause()
             }
-
             AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> mediaPlayer?.setVolume(0.3f, 0.3f)
             AudioManager.AUDIOFOCUS_GAIN -> mediaPlayer?.setVolume(1.0f, 1.0f)
         }
@@ -82,23 +86,26 @@ class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListe
         }
     }
 
-    override fun onCreate() {
-        super.onCreate()
+    private val mediaSessionCallback: MediaSessionCompat.Callback = object : MediaSessionCompat.Callback() {
 
-        mediaSessionCompat = MediaSessionCompat(baseContext, channelId).apply {
-            setFlags(MediaSessionCompat.FLAG_HANDLES_QUEUE_COMMANDS)
-            setCallback(mediaSessionCallback)
-            setSessionToken(sessionToken)
-            val builder = PlaybackStateCompat.Builder().setActions(PlaybackStateCompat.ACTION_PLAY)
-            setPlaybackState(builder.build())
+        @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+        override fun onMediaButtonEvent(mediaButtonEvent: Intent?): Boolean {
+            val keyEvent: KeyEvent? = mediaButtonEvent?.getParcelableExtra(Intent.EXTRA_KEY_EVENT, KeyEvent::class.java)
+            keyEvent?.let { event ->
+                when (event.keyCode) {
+                    KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE -> {
+                        if (mediaPlayer?.isPlaying == true) onPause()
+                        else onPlay()
+                    }
+                    KeyEvent.KEYCODE_MEDIA_PLAY -> onPlay()
+                    KeyEvent.KEYCODE_MEDIA_PAUSE -> onPause()
+                    KeyEvent.KEYCODE_MEDIA_SKIP_BACKWARD -> onSkipToPrevious()
+                    KeyEvent.KEYCODE_MEDIA_SKIP_FORWARD -> onSkipToNext()
+                }
+            }
+            return super.onMediaButtonEvent(mediaButtonEvent)
         }
 
-        val filter = IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY)
-        registerReceiver(noisyReceiver, filter)
-        playbackPositionRunnable.run()
-    }
-
-    val mediaSessionCallback: MediaSessionCompat.Callback = object : MediaSessionCompat.Callback() {
         override fun onPrepare() {
             super.onPrepare()
 
@@ -121,14 +128,13 @@ class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListe
                         MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                         it.toLong())
                 }
-
-                if (currentQueueItem == null) {
-                    onError(mediaPlayer, MediaPlayer.MEDIA_ERROR_UNKNOWN,
+                if (currentQueueItemUri == null) {
+                    onError(mediaPlayer,
+                        MediaPlayer.MEDIA_ERROR_UNKNOWN,
                         MediaPlayer.MEDIA_ERROR_MALFORMED
                     )
                     return
                 }
-
                 mediaPlayer = MediaPlayer().apply {
                     setAudioAttributes(
                         AudioAttributes.Builder()
@@ -136,18 +142,21 @@ class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListe
                             .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
                             .build()
                     )
-
-                    //currentQueueItemUri cant be null here
-                    setDataSource(application, currentQueueItemUri!!)
+                    setDataSource(application, currentQueueItemUri)
                     setOnErrorListener(this@MusicPlayerService)
                     prepare()
                 }
+
                 setCurrentMetadata()
-                setMediaPlaybackState(STATE_NONE)
+                setMediaPlaybackState(PlaybackStateCompat.STATE_NONE)
+                refreshNotification()
             } catch (_: IllegalStateException) {
                 onError(mediaPlayer, MediaPlayer.MEDIA_ERROR_UNKNOWN, MEDIA_ERROR_IO)
             } catch (_: IllegalArgumentException) {
-                onError(mediaPlayer, MediaPlayer.MEDIA_ERROR_UNKNOWN, MEDIA_ERROR_IO)
+                onError(mediaPlayer,
+                    MediaPlayer.MEDIA_ERROR_UNKNOWN,
+                    MediaPlayer.MEDIA_ERROR_MALFORMED
+                )
             }
         }
 
@@ -156,10 +165,9 @@ class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListe
 
             try {
                 if (mediaPlayer != null && !mediaPlayer!!.isPlaying) {
-                    val audioManager = applicationContext.getSystemService(Context.AUDIO_SERVICE)
-                            as AudioManager
+                    val audioManager = applicationContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
-                    audioFocusRequest = AudioFocusRequest.Builder(AUDIOFOCUS_GAIN).run {
+                    audioFocusRequest = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN).run {
                         setAudioAttributes(AudioAttributes.Builder().run {
                             setOnAudioFocusChangeListener(afChangeListener)
                             setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
@@ -175,29 +183,29 @@ class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListe
                         try {
                             mediaPlayer?.apply {
                                 start()
+
                                 setOnCompletionListener {
-                                    val inRepeat = mediaSessionCompat.controller.repeatMode
+                                    val repeatMode = mediaSessionCompat.controller.repeatMode
                                     when {
-                                        inRepeat == REPEAT_MODE_ONE -> {}
-                                        inRepeat == REPEAT_MODE_ALL ||
+                                        repeatMode == REPEAT_MODE_ONE -> {}
+                                        repeatMode == REPEAT_MODE_ALL ||
                                                 playQueue.isNotEmpty() &&
-                                                playQueue[playQueue.size - 1].queueId != currentlyPlayingQueueItemId -> {
+                                                playQueue[playQueue.size - 1].queueId
+                                                != currentlyPlayingQueueItemId -> {
                                             onSkipToNext()
                                             return@setOnCompletionListener
                                         }
-
                                         else -> {
                                             onStop()
                                             return@setOnCompletionListener
                                         }
                                     }
-
                                     onPrepare()
                                     onPlay()
                                 }
                             }
-                            //TODO update Notification Player
                             setMediaPlaybackState(STATE_PLAYING, getBundleWithSongDuration())
+                            refreshNotification()
                         } catch (_: NullPointerException) {
                             onError(mediaPlayer, MediaPlayer.MEDIA_ERROR_UNKNOWN, 0)
                         }
@@ -211,18 +219,18 @@ class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListe
         override fun onPause() {
             super.onPause()
             mediaPlayer?.pause()
-            setMediaPlaybackState(STATE_PAUSED, getBundleWithSongDuration())
-            //TODO: update Notification Player
+            setMediaPlaybackState(PlaybackStateCompat.STATE_PAUSED, getBundleWithSongDuration())
+            refreshNotification()
         }
 
         override fun onSkipToQueueItem(id: Long) {
             super.onSkipToQueueItem(id)
 
-            if (playQueue.find { it.queueId == id } != null) {
-                val playState = mediaSessionCompat.controller.playbackState.state
+            if (playQueue.find { it.queueId == id} != null) {
+                val playbackState = mediaSessionCompat.controller.playbackState.state
                 currentlyPlayingQueueItemId = id
                 onPrepare()
-                if (playState == STATE_PLAYING || playState == STATE_SKIPPING_TO_NEXT) {
+                if (playbackState == STATE_PLAYING || playbackState == PlaybackStateCompat.STATE_SKIPPING_TO_NEXT) {
                     onPlay()
                 }
             }
@@ -233,7 +241,8 @@ class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListe
 
             val repeatMode = mediaSessionCompat.controller.repeatMode
             currentlyPlayingQueueItemId = when {
-                playQueue[playQueue.size - 1].queueId != currentlyPlayingQueueItemId -> {
+                playQueue.isNotEmpty() &&
+                        playQueue[playQueue.size - 1].queueId != currentlyPlayingQueueItemId -> {
                     val indexOfCurrentQueueItem = playQueue.indexOfFirst {
                         it.queueId == currentlyPlayingQueueItemId
                     }
@@ -242,6 +251,7 @@ class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListe
                 repeatMode == REPEAT_MODE_ALL -> playQueue[0].queueId
                 else -> return
             }
+
             onSkipToQueueItem(currentlyPlayingQueueItemId)
         }
 
@@ -251,12 +261,13 @@ class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListe
             if (playQueue.isNotEmpty()) {
                 if (mediaPlayer != null && mediaPlayer!!.currentPosition > 5000 ||
                     currentlyPlayingQueueItemId == playQueue[0].queueId) onSeekTo(0L)
-            } else {
-                val indexOfCurrentQueueItem = playQueue.indexOfFirst {
-                    it.queueId == currentlyPlayingQueueItemId
+                else {
+                    val indexOfCurrentQueueItem = playQueue.indexOfFirst {
+                        it.queueId == currentlyPlayingQueueItemId
+                    }
+                    currentlyPlayingQueueItemId = playQueue[indexOfCurrentQueueItem - 1].queueId
+                    onSkipToQueueItem(currentlyPlayingQueueItemId)
                 }
-                currentlyPlayingQueueItemId = playQueue[indexOfCurrentQueueItem - 1].queueId
-                onSkipToQueueItem(currentlyPlayingQueueItemId)
             }
         }
 
@@ -271,11 +282,12 @@ class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListe
                 mediaPlayer?.release()
                 mediaPlayer = null
                 stopForeground(STOP_FOREGROUND_REMOVE)
-
-                val audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
-                audioManager.abandonAudioFocusRequest(audioFocusRequest)
+                try {
+                    val audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
+                    audioManager.abandonAudioFocusRequest(audioFocusRequest)
+                } catch (_: UninitializedPropertyAccessException){ }
             }
-            setMediaPlaybackState(STATE_STOPPED)
+            setMediaPlaybackState(PlaybackStateCompat.STATE_STOPPED)
             stopSelf()
         }
 
@@ -285,15 +297,15 @@ class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListe
             mediaPlayer?.apply {
                 if (pos > this.duration.toLong()) return@apply
 
-                val ifWasPlayed = this.isPlaying
-                if (ifWasPlayed) this.pause()
+                val wasPlaying = this.isPlaying
+                if (wasPlaying) this.pause()
 
                 this.seekTo(pos.toInt())
 
-                if (ifWasPlayed) {
+                if (wasPlaying) {
                     this.start()
                     setMediaPlaybackState(STATE_PLAYING, getBundleWithSongDuration())
-                } else setMediaPlaybackState(STATE_PAUSED, getBundleWithSongDuration())
+                } else setMediaPlaybackState(PlaybackStateCompat.STATE_PAUSED, getBundleWithSongDuration())
             }
         }
 
@@ -325,6 +337,7 @@ class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListe
 
             mediaSessionCompat.setQueue(playQueue)
         }
+
         override fun onFastForward() {
             super.onFastForward()
 
@@ -345,7 +358,6 @@ class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListe
             super.onCommand(command, extras, cb)
 
             when (command) {
-
                 "MOVE_QUEUE_ITEM" -> {
                     extras?.let {
                         val queueItemId = it.getLong("queueItemId", -1L)
@@ -398,11 +410,6 @@ class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListe
                         } else {
                             playQueue.sortBy { it.queueId }
                         }
-//
-//                        val adapter = PlayQueueAdapter(activity = MainActivity(), fragment = PlayQueueFragment())
-//                        adapter.playQueue.clear()
-//                        adapter.playQueue.addAll(playQueue)
-//                        adapter.notifyDataSetChanged()
 
                         setPlayQueue()
                     }
@@ -437,78 +444,13 @@ class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListe
 
                         if (queueItemId == currentlyPlayingQueueItemId) {
                             setCurrentMetadata()
-                            //TODO
-                            //refreshNotification()
+                            refreshNotification()
                         }
                         setPlayQueue()
                     }
                 }
             }
         }
-
-        //TODO: FIX DEPRECATION
-        override fun onMediaButtonEvent(mediaButtonEvent: Intent?): Boolean {
-            val key: KeyEvent? = mediaButtonEvent?.getParcelableExtra(Intent.EXTRA_KEY_EVENT)
-            if (key != null && mediaPlayer != null) {
-                when(key.keyCode) {
-                    KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE -> {
-                        if (mediaPlayer!!.isPlaying) onPause()
-                        else onPlay()
-                    }
-                    KeyEvent.KEYCODE_MEDIA_PLAY -> onPlay()
-                    KeyEvent.KEYCODE_MEDIA_PAUSE -> onPause()
-                    KeyEvent.KEYCODE_MEDIA_NEXT -> onSkipToNext()
-                    KeyEvent.KEYCODE_MEDIA_PREVIOUS-> onSkipToPrevious()
-                }
-            }
-            return super.onMediaButtonEvent(mediaButtonEvent)
-        }
-    }
-
-    private fun setCurrentMetadata() {
-        val currentQueueItem = getCurrentQueueItem() ?: return
-        val currentQueueItemDescription = currentQueueItem.description
-        val metadataBuilder= MediaMetadataCompat.Builder().apply {
-            putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, currentQueueItemDescription.mediaId)
-            putString(MediaMetadataCompat.METADATA_KEY_TITLE, currentQueueItemDescription.title.toString())
-            putString(MediaMetadataCompat.METADATA_KEY_ARTIST, currentQueueItemDescription.subtitle.toString())
-            val extras = currentQueueItemDescription.extras
-            val albumName = extras?.getString("album") ?: getString(R.string.unknown_album)
-            putString(MediaMetadataCompat.METADATA_KEY_ALBUM, albumName)
-            val albumId = extras?.getString("album_id")
-            putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, getArtworkByAlbumId(albumId))
-            putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, albumId)
-        }
-        mediaSessionCompat.setMetadata(metadataBuilder.build())
-    }
-
-    private fun setPlayQueue() {
-        mediaSessionCompat.setQueue(playQueue)
-        setMediaPlaybackState(mediaSessionCompat.controller.playbackState.state)
-    }
-
-    private fun getArtworkByAlbumId(albumId: String?): Bitmap {
-        albumId?.let {
-            try {
-                val directory = ContextWrapper(applicationContext).getDir("albumArt", Context.MODE_PRIVATE)
-                val imageFile = File(directory, "$albumId.jpg")
-                if (imageFile.exists()) {
-                    return ContextCompat.getDrawable(applicationContext, R.drawable.grooveix)!!.toBitmap()
-                }
-            } catch (_: Exception) { }
-        }
-
-        return ContextCompat.getDrawable(applicationContext, R.drawable.grooveix)!!.toBitmap()
-    }
-
-    private fun setMediaPlaybackState(state: Int, bundle: Bundle? = null) {
-        val playbackPosition = mediaPlayer?.currentPosition?.toLong() ?: 0L
-        val playbackSpeed = mediaPlayer?.playbackParams?.speed ?: 0f
-        val playbackStateBuilder = PlaybackStateCompat.Builder()
-            .setState(state, playbackPosition, playbackSpeed)
-            .setActiveQueueItemId(currentlyPlayingQueueItemId)
-        bundle?.let { playbackStateBuilder.setExtras(it) }
-        mediaSessionCompat.setPlaybackState(playbackStateBuilder.build())
     }
 
     private val noisyReceiver = object : BroadcastReceiver() {
@@ -517,44 +459,22 @@ class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListe
         }
     }
 
-    private fun getBundleWithSongDuration(): Bundle {
-        val playbackDuration = mediaPlayer?.duration ?: 0
-        return Bundle().apply {
-            putInt("duration", playbackDuration)
+    override fun onCreate() {
+        super.onCreate()
+
+        createChannelForMediaPlayerNotification()
+
+        mediaSessionCompat = MediaSessionCompat(baseContext, channelId).apply {
+            setFlags(MediaSessionCompat.FLAG_HANDLES_QUEUE_COMMANDS)
+            setCallback(mediaSessionCallback)
+            setSessionToken(sessionToken)
+            val builder = PlaybackStateCompat.Builder().setActions(MEDIA_SESSION_ACTIONS)
+            setPlaybackState(builder.build())
         }
-    }
 
-    private fun getCurrentQueueItem(): MediaSessionCompat.QueueItem? {
-        return playQueue.find {
-            it.queueId == currentlyPlayingQueueItemId
-        }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        mediaSessionCompat.controller.transportControls.stop()
-        handler.removeCallbacks(playbackPositionRunnable)
-        unregisterReceiver(noisyReceiver)
-        mediaSessionCompat.release()
-        NotificationManagerCompat.from(this).cancel(1)
-    }
-
-
-    override fun onGetRoot(
-        clientPackageName: String,
-        clientUid: Int,
-        rootHints: Bundle?
-    ): BrowserRoot? {
-        return if (TextUtils.equals(clientPackageName, packageName)) {
-            BrowserRoot(getString(R.string.app_name), null)
-        } else null
-    }
-
-    override fun onLoadChildren(
-        parentId: String,
-        result: Result<MutableList<MediaBrowserCompat.MediaItem>>
-    ) {
-        result.sendResult(null)
+        val filter = IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY)
+        registerReceiver(noisyReceiver, filter)
+        playbackPositionRunnable.run()
     }
 
     override fun onError(mp: MediaPlayer?, what: Int, extra: Int): Boolean {
@@ -568,12 +488,126 @@ class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListe
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         intent.action?.let {
             when (it) {
-                ACTION_PLAY -> mediaSessionCallback.onPlay()
-                ACTION_PAUSE -> mediaSessionCallback.onPause()
-                ACTION_NEXT -> mediaSessionCallback.onSkipToNext()
-                ACTION_PREVIOUS -> mediaSessionCallback.onSkipToPrevious()
+                "play" -> mediaSessionCallback.onPlay()
+                "pause" -> mediaSessionCallback.onPause()
+                "next" -> mediaSessionCallback.onSkipToNext()
+                "previous" -> mediaSessionCallback.onSkipToPrevious()
             }
         }
         return super.onStartCommand(intent, flags, startId)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mediaSessionCompat.controller.transportControls.stop()
+        handler.removeCallbacks(playbackPositionRunnable)
+        unregisterReceiver(noisyReceiver)
+        mediaSessionCompat.release()
+        NotificationManagerCompat.from(this).cancel(1)
+    }
+
+    private fun getCurrentQueueItem(): MediaSessionCompat.QueueItem? {
+        return playQueue.find {
+            it.queueId == currentlyPlayingQueueItemId
+        }
+    }
+
+    private fun setMediaPlaybackState(state: Int, bundle: Bundle? = null) {
+        val playbackPosition = mediaPlayer?.currentPosition?.toLong() ?: 0L
+        val playbackSpeed = mediaPlayer?.playbackParams?.speed ?: 0f
+        val playbackStateBuilder = PlaybackStateCompat.Builder()
+            .setState(state, playbackPosition, playbackSpeed)
+            .setActiveQueueItemId(currentlyPlayingQueueItemId)
+        bundle?.let { playbackStateBuilder.setExtras(it) }
+        mediaSessionCompat.setPlaybackState(playbackStateBuilder.build())
+    }
+
+    private fun getBundleWithSongDuration(): Bundle {
+        val playbackDuration = mediaPlayer?.duration ?: 0
+        return Bundle().apply {
+            putInt("duration", playbackDuration)
+        }
+    }
+
+    private fun setCurrentMetadata() {
+        val currentQueueItem = getCurrentQueueItem() ?: return
+        val currentQueueItemDescription = currentQueueItem.description
+        val metadataBuilder= MediaMetadataCompat.Builder().apply {
+            putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, currentQueueItemDescription.mediaId)
+            putString(MediaMetadataCompat.METADATA_KEY_TITLE, currentQueueItemDescription.title.toString())
+            putString(MediaMetadataCompat.METADATA_KEY_ARTIST, currentQueueItemDescription.subtitle.toString())
+            val extras = currentQueueItemDescription.extras
+            val albumName = extras?.getString("album") ?: "Unknown album"
+            putString(MediaMetadataCompat.METADATA_KEY_ALBUM, albumName)
+            val albumId = extras?.getString("album_id")
+            putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, getArtworkByAlbumId(albumId))
+            putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, albumId)
+        }
+        mediaSessionCompat.setMetadata(metadataBuilder.build())
+    }
+
+    private fun getArtworkByAlbumId(albumId: String?): Bitmap {
+        albumId?.let {
+            try {
+                val directory = ContextWrapper(applicationContext).getDir("albumArt", Context.MODE_PRIVATE)
+                val imageFile = File(directory, "$albumId.jpg")
+                if (imageFile.exists()) {
+                    return BitmapFactory.decodeStream(FileInputStream(imageFile))
+                }
+            } catch (_: Exception) { }
+        }
+        return ContextCompat.getDrawable(applicationContext, R.drawable.grooveix)!!.toBitmap()
+    }
+
+    private fun refreshNotification() {
+        val isPlaying = mediaPlayer?.isPlaying ?: false
+        val intent = packageManager
+            .getLaunchIntentForPackage(packageName)
+            ?.setPackage(null)
+            ?.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED)
+        val activityIntent = PendingIntent.getActivity(applicationContext, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+
+        val builder = NotificationCompat.Builder(applicationContext, channelId).apply {
+            val mediaMetadata = mediaSessionCompat.controller.metadata
+            setSmallIcon(R.drawable.grooveix)
+            setContentIntent(activityIntent)
+            setOngoing(isPlaying)
+            setContentTitle(mediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE))
+            setContentText(mediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST))
+            setLargeIcon(mediaMetadata.getBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART))
+            setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            priority = NotificationCompat.PRIORITY_DEFAULT
+
+            setStyle(androidx.media.app.NotificationCompat.MediaStyle()
+                .setShowActionsInCompactView(0, 1, 2)
+                .setMediaSession(mediaSessionCompat.sessionToken)
+            )
+        }
+
+        startForeground(1, builder.build())
+    }
+
+    private fun createChannelForMediaPlayerNotification() {
+        val channel = NotificationChannel(
+            "grooveix_music", "Notifications",
+            NotificationManager.IMPORTANCE_DEFAULT
+        )
+        val manager = getSystemService(NotificationManager::class.java)
+        manager?.createNotificationChannel(channel)
+    }
+
+    private fun setPlayQueue() {
+        mediaSessionCompat.setQueue(playQueue)
+        setMediaPlaybackState(mediaSessionCompat.controller.playbackState.state)
+    }
+
+    override fun onGetRoot(clientPackageName: String, clientUid: Int, rootHints: Bundle?): BrowserRoot? {
+        return if (TextUtils.equals(clientPackageName, packageName)) {
+            BrowserRoot(getString(R.string.app_name), null)
+        } else null
+    }
+
+    override fun onLoadChildren(parentId: String, result: Result<List<MediaBrowserCompat.MediaItem>>) {
+        result.sendResult(null)
     }
 }

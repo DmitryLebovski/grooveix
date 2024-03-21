@@ -4,11 +4,14 @@ import android.content.ComponentName
 import android.content.ContentUris
 import android.content.Context
 import android.content.ContextWrapper
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.database.Cursor
 import android.graphics.Bitmap
 import android.media.AudioManager
 import android.media.session.PlaybackState
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -47,6 +50,7 @@ import com.example.grooveix.ui.media.QueueViewModel
 import com.example.grooveix.ui.media.Track
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileNotFoundException
@@ -62,7 +66,7 @@ class MainActivity : AppCompatActivity() {
     private var currentQueueItemId = -1L
     private var mediaStoreContentObserver: MediaContentObserver? = null
     private var playQueue = listOf<QueueItem>()
-private val playQueueViewModel: QueueViewModel by viewModels()
+    private val playQueueViewModel: QueueViewModel by viewModels()
     private lateinit var mediaBrowser: MediaBrowserCompat
     private lateinit var musicViewModel: MusicViewModel
 
@@ -93,7 +97,6 @@ private val playQueueViewModel: QueueViewModel by viewModels()
             }
 
             playQueueViewModel.playbackState.value = state?.state ?: STATE_NONE
-            Log.d("PIZDEC", state?.extras.toString())
             when (state?.state) {
                 STATE_PLAYING, STATE_PAUSED -> {
                     currentPlaybackPosition = state.position.toInt()
@@ -155,14 +158,32 @@ private val playQueueViewModel: QueueViewModel by viewModels()
                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                 true, it)
         }
-
         refreshMusicLibrary()
     }
-
 
     override fun onResume() {
         super.onResume()
         volumeControlStream = AudioManager.STREAM_MUSIC
+
+        if(!hasStoragePermission()) {
+            lifecycleScope.launch(Dispatchers.Main) {
+                delay(500L)
+                Intent(this@MainActivity, PermissionActivity::class.java).also {
+                    startActivity(it)
+                    this@MainActivity.finish()
+                }
+            }
+        }
+
+        refreshMusicLibrary()
+    }
+
+    fun hasStoragePermission(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            (checkSelfPermission(android.Manifest.permission.READ_MEDIA_AUDIO) == PackageManager.PERMISSION_GRANTED)
+        } else {
+            (checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
+        }
     }
 
     override fun onDestroy() {
@@ -232,11 +253,6 @@ private val playQueueViewModel: QueueViewModel by viewModels()
         mediaController.transportControls.skipToQueueItem(queueItemId)
         mediaController.transportControls.play()
     }
-
-    fun isCurrentlyPlaying(track: Track): Boolean {
-        return track.trackId == currentQueueItemId
-    }
-
 
     private fun setShuffleMode(shuffleMode: Int) {
         val bundle = Bundle().apply {
@@ -374,11 +390,6 @@ private val playQueueViewModel: QueueViewModel by viewModels()
         else binding.navView.isVisible = true
     }
 
-    fun hideMiniPlayer(hide: Boolean) {
-        if (hide) binding.navControlsFragment.isGone = true
-        else binding.navControlsFragment.isVisible = true
-    }
-
     fun seekTo(position: Int) = mediaController.transportControls.seekTo(position.toLong())
 
     private fun getMediaStoreCursor(selection: String = MediaStore.Audio.Media.IS_MUSIC,
@@ -453,7 +464,6 @@ private val playQueueViewModel: QueueViewModel by viewModels()
                 else -> 1001
             }
         } catch (_: NumberFormatException) {
-            // If the Track value is unusual (e.g. you can get stuff like "12/23") then use 1001
             1001
         }
 
@@ -461,7 +471,6 @@ private val playQueueViewModel: QueueViewModel by viewModels()
         val artist = cursor.getString(artistColumn) ?: "Unknown artist"
         val album = cursor.getString(albumColumn) ?: "Unknown album"
         val albumId = cursor.getString(albumIDColumn) ?: "unknown_album_id"
-        val lyrics = "No lyrics for this track"
         val uri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id)
 
         val directory = ContextWrapper(application).getDir("albumArt", Context.MODE_PRIVATE)

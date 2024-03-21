@@ -150,7 +150,7 @@ class PlayerFragment : Fragment() {
             findNavController().navigate(R.id.nav_queue, null, null)
         }
 
-        binding.currentSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+        binding.currentSeekBar.setOnSeekBarChangeListener( object : SeekBar.OnSeekBarChangeListener {
             override fun onStopTrackingTouch(seekBar: SeekBar) {
                 val progress = seekBar.progress
                 mainActivity.seekTo(progress)

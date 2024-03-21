@@ -24,4 +24,5 @@
     <string name="shuffle">Перемешать</string>
     <string name="search_hint">Поиск песни</string>
     <string name="added_to_queue">Трек %1$s добавлен в очередь</string>
+    <string name="now_playing">Сейчас играет:</string>
 </resources>

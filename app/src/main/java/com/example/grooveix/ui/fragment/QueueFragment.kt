@@ -1,7 +1,9 @@
 package com.example.grooveix.ui.fragment
 
 import android.os.Bundle
+import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
+import android.support.v4.media.session.PlaybackStateCompat
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -9,25 +11,31 @@ import android.view.ViewGroup
 import android.widget.PopupMenu
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.grooveix.R
 import com.example.grooveix.databinding.FragmentQueueBinding
 import com.example.grooveix.ui.activity.MainActivity
 import com.example.grooveix.ui.adapter.QueueAdapter
 import com.example.grooveix.ui.media.QueueViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class QueueFragment : Fragment() {
 
     private var _binding: FragmentQueueBinding? = null
     private val binding get() = _binding!!
-    private val playQueueViewModel: QueueViewModel by activityViewModels()
+    private val queueViewModel: QueueViewModel by activityViewModels()
     private lateinit var mainActivity: MainActivity
     private lateinit var adapter: QueueAdapter
     private lateinit var onBackPressedCallback: OnBackPressedCallback
+    private var fastForwarding = false
+    private var fastRewinding = false
 
     private val itemTouchHelper by lazy {
         val simpleItemTouchCallback = object : ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP or ItemTouchHelper.DOWN, 0) {
@@ -77,7 +85,6 @@ class QueueFragment : Fragment() {
     ): View {
         _binding = FragmentQueueBinding.inflate(inflater, container, false)
         mainActivity = activity as MainActivity
-
         return binding.root
     }
 
@@ -89,7 +96,16 @@ class QueueFragment : Fragment() {
         adapter = QueueAdapter(mainActivity, this)
         binding.queueView.adapter = adapter
 
-        playQueueViewModel.playQueue.observe(viewLifecycleOwner) { playQueue ->
+        queueViewModel.playbackState.observe(viewLifecycleOwner) { state ->
+            if (state == PlaybackStateCompat.STATE_PLAYING) binding.btnPlay.setBackgroundResource(R.drawable.baseline_pause_24)
+            else binding.btnPlay.setBackgroundResource(R.drawable.baseline_play_arrow_24)
+        }
+
+        queueViewModel.currentlyPlayingSongMetadata.observe(viewLifecycleOwner) {
+            updateCurrentlyDisplayedMetadata(it)
+        }
+
+        queueViewModel.playQueue.observe(viewLifecycleOwner) { playQueue ->
             if (adapter.playQueue.isEmpty()) {
                 adapter.playQueue.addAll(playQueue)
                 adapter.notifyItemRangeInserted(0, playQueue.size)
@@ -98,7 +114,7 @@ class QueueFragment : Fragment() {
             }
         }
 
-        playQueueViewModel.currentQueueItemId.observe(viewLifecycleOwner) { position ->
+        queueViewModel.currentQueueItemId.observe(viewLifecycleOwner) { position ->
             position?.let { adapter.changeCurrentlyPlayingQueueItemId(it) }
         }
 
@@ -109,7 +125,98 @@ class QueueFragment : Fragment() {
             }
         }
 
+        binding.btnPlay.setOnClickListener { mainActivity.playPauseControl() }
+
+        binding.btnBackward.setOnClickListener{
+            if (fastRewinding) fastRewinding = false
+            else mainActivity.skipBack()
+        }
+
+        binding.btnBackward.setOnLongClickListener {
+            fastRewinding = true
+            lifecycleScope.launch {
+                do {
+                    mainActivity.fastRewind()
+                    delay(500)
+                } while (fastRewinding)
+            }
+            return@setOnLongClickListener false
+        }
+
+        binding.btnForward.setOnClickListener{
+            if (fastForwarding) fastForwarding = false
+            else mainActivity.skipForward()
+        }
+
+        binding.btnForward.setOnLongClickListener {
+            fastForwarding = true
+            lifecycleScope.launch {
+                do {
+                    mainActivity.fastForward()
+                    delay(500)
+                } while (fastForwarding)
+            }
+            return@setOnLongClickListener false
+        }
+
+        if (mainActivity.getShuffleMode() == PlaybackStateCompat.SHUFFLE_MODE_ALL) {
+            binding.btnShuffle.setBackgroundResource(R.drawable.ic_shuffle_on)
+        }
+
+        binding.btnShuffle.setOnClickListener{
+            if (mainActivity.toggleShuffleMode()) binding.btnShuffle.setBackgroundResource(R.drawable.ic_shuffle_on)
+            else binding.btnShuffle.setBackgroundResource(R.drawable.ic_shuffle)
+
+        }
+
+        when (mainActivity.getRepeatMode()) {
+            PlaybackStateCompat.REPEAT_MODE_ALL -> binding.btnRepeat.setBackgroundResource(R.drawable.ic_repeat_all)
+            PlaybackStateCompat.REPEAT_MODE_ONE -> {
+                binding.btnRepeat.setBackgroundResource(R.drawable.ic_repeat_one)
+            }
+        }
+
+        binding.btnRepeat.setOnClickListener {
+            when (mainActivity.toggleRepeatMode()) {
+                PlaybackStateCompat.REPEAT_MODE_NONE -> {
+                    binding.btnRepeat.setBackgroundResource(R.drawable.ic_repeat)
+                }
+                PlaybackStateCompat.REPEAT_MODE_ALL -> {
+                    binding.btnRepeat.setBackgroundResource(R.drawable.ic_repeat_all)
+                }
+                PlaybackStateCompat.REPEAT_MODE_ONE -> {
+                    binding.btnRepeat.setBackgroundResource(R.drawable.ic_repeat_one)
+                }
+            }
+        }
+
+        binding.btnClose.setOnClickListener {
+            findNavController().popBackStack()
+        }
+
+        queueViewModel.playbackPosition.observe(viewLifecycleOwner) {
+            binding.songProgressBar.progress = it
+        }
+
+        queueViewModel.playbackDuration.observe(viewLifecycleOwner) {
+            binding.songProgressBar.max = it
+        }
+
+
         mainActivity.onBackPressedDispatcher.addCallback(viewLifecycleOwner, onBackPressedCallback)
+    }
+
+    private fun updateCurrentlyDisplayedMetadata(metadata: MediaMetadataCompat?) {
+        binding.title.text = metadata?.getString(MediaMetadataCompat.METADATA_KEY_TITLE)
+        binding.artist.text = metadata?.getString(MediaMetadataCompat.METADATA_KEY_ARTIST)
+
+        if (metadata != null) {
+            val albumId = metadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI)
+            mainActivity.loadArtwork(albumId, binding.artwork)
+        } else {
+            Glide.with(mainActivity)
+                .clear(binding.artwork)
+        }
     }
 
     override fun onResume() {
@@ -123,6 +230,7 @@ class QueueFragment : Fragment() {
             (binding.queueView.layoutManager as LinearLayoutManager)
                 .scrollToPositionWithOffset(currentlyPlayingQueueItemIndex, 0)
         }
+        mainActivity.hideBar(true)
     }
 
     fun startDragging(viewHolder: RecyclerView.ViewHolder) = itemTouchHelper.startDrag(viewHolder)
