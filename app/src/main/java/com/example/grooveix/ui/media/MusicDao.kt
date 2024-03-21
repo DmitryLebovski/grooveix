@@ -21,7 +21,7 @@ interface MusicDao {
     fun getSongListOrderByArtist(): LiveData<List<Track>>
 
     @Query("SELECT * FROM grooveix_library WHERE track_title LIKE :search OR track_artist LIKE :search OR track_album LIKE :search")
-    suspend fun getSongListLikeSearch(search: String): List<Track>
+    suspend fun getTracksLikeSearch(search: String): List<Track>
 
     @Query("SELECT * FROM grooveix_library WHERE trackId = :trackId")
     suspend fun getTrackById(trackId: Long): Track?
@@ -31,10 +31,4 @@ interface MusicDao {
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun update(track: Track)
-
-//    @Query("SELECT * FROM grooveix_library WHERE track_lyrics = :lyrics")
-//    suspend fun getLyricsById(lyrics: String): String?
-
-//    @Insert(onConflict = OnConflictStrategy.IGNORE)
-//    suspend fun insertLyrics(lyrics: String)
 }

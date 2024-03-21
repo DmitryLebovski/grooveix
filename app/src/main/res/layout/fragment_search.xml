@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:paddingVertical="8dp">
 
-    <EditText
+    <android.widget.SearchView
         android:id="@+id/searchView"
         android:layout_width="match_parent"
         android:layout_height="40dp"
@@ -14,29 +14,29 @@
         android:background="@drawable/round_background"
         android:drawablePadding="16dp"
         android:hint="@string/search_hint"
+        android:iconifiedByDefault="false"
         android:drawableStart="@drawable/outline_search_24"
         app:layout_constraintTop_toTopOf="parent">
 
-    </EditText>
+    </android.widget.SearchView>
 
     <TextView
         android:id="@+id/noResults"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center"
         android:text="@string/search_failed"
         android:textSize="14sp"
-        android:layout_marginTop="14dp"
-        android:visibility="invisible"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/searchView" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_marginTop="14dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginBottom="36dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/searchView" />
 </androidx.constraintlayout.widget.ConstraintLayout>
