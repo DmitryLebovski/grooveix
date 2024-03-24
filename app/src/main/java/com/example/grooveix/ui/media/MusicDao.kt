@@ -23,6 +23,11 @@ interface MusicDao {
     @Query("SELECT * FROM grooveix_library WHERE track_title LIKE :search OR track_artist LIKE :search OR track_album LIKE :search")
     suspend fun getTracksLikeSearch(search: String): List<Track>
 
+//    @Query("SELECT * from favorites_library ORDER BY track_title")
+//    fun getFavoritesListOrderByTitle(): LiveData<List<Track>>
+//    @Query("SELECT * from favorites_library ORDER BY track_title")
+//    fun getFavoritesListOrderByArtist(): LiveData<List<Track>>
+
     @Query("SELECT * FROM grooveix_library WHERE trackId = :trackId")
     suspend fun getTrackById(trackId: Long): Track?
 

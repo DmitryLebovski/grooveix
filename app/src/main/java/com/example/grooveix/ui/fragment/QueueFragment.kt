@@ -96,6 +96,8 @@ class QueueFragment : Fragment() {
         adapter = QueueAdapter(mainActivity, this)
         binding.queueView.adapter = adapter
 
+        binding.title.isSelected = true
+
         queueViewModel.playbackState.observe(viewLifecycleOwner) { state ->
             if (state == PlaybackStateCompat.STATE_PLAYING) binding.btnPlay.setBackgroundResource(R.drawable.baseline_pause_24)
             else binding.btnPlay.setBackgroundResource(R.drawable.baseline_play_arrow_24)

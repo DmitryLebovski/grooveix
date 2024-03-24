@@ -16,3 +16,14 @@ data class Track(
     @ColumnInfo(name = "track_album") var album: String,
     @ColumnInfo(name = "track_album_id") val albumId: String,
     ) : Parcelable
+
+//@Parcelize
+//@Entity(tableName = "favorites_library")
+//data class FavoriteTrack(
+//    @PrimaryKey val trackId: Long,
+//    @ColumnInfo(name = "track_track") var track: Int,
+//    @ColumnInfo(name = "track_title") var title: String,
+//    @ColumnInfo(name = "track_artist") var artist: String,
+//    @ColumnInfo(name = "track_album") var album: String,
+//    @ColumnInfo(name = "track_album_id") val albumId: String,
+//) : Parcelable

@@ -14,6 +14,7 @@ import com.bumptech.glide.Glide
 import com.example.grooveix.databinding.FragmentMiniPlayerBinding
 import com.example.grooveix.ui.activity.MainActivity
 import com.example.grooveix.ui.media.QueueViewModel
+
 class MiniPlayerFragment : Fragment() {
 
     private var _binding: FragmentMiniPlayerBinding? = null
@@ -37,6 +38,8 @@ class MiniPlayerFragment : Fragment() {
         playQueueViewModel.currentlyPlayingSongMetadata.observe(viewLifecycleOwner) {
             updateCurrentlyDisplayedMetadata(it)
         }
+
+        binding.title.isSelected = true
 
         binding.root.setOnClickListener {
             playQueueViewModel.currentlyPlayingSongMetadata.value?.let {

@@ -80,14 +80,13 @@ class SearchFragment : Fragment() {
     private fun setupMenu() {
         val onQueryListener = object : SearchView.OnQueryTextListener {
             override fun onQueryTextChange(newText: String): Boolean {
-                search("%$newText%")
+                if (newText.isNotEmpty()) search("%$newText%")
                 return true
             }
             override fun onQueryTextSubmit(query: String): Boolean = true
         }
 
-        binding.searchView?.apply {
-            isIconifiedByDefault = false
+        binding.searchView.apply {
             queryHint = getString(R.string.search_hint)
             setOnQueryTextListener(onQueryListener)
         }
@@ -98,7 +97,11 @@ class SearchFragment : Fragment() {
 
         withContext(Dispatchers.Main) {
             binding.noResults.isGone = true
-            if (songs.isEmpty()) binding.noResults.isVisible = true
+            binding.searchButton.isGone = true
+            if (songs.isEmpty()) {
+                binding.searchButton.isVisible = true
+                binding.noResults.isVisible = true
+            }
             adapter.processNewSongs(songs)
         }
     }

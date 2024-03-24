@@ -57,7 +57,10 @@ android:background="?attr/colorSurface">
                 android:fontFamily="@font/montserrat_regular"
                 android:singleLine="true"
                 android:text="yes, and?"
-                android:textColor="?attr/colorOnSurface"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:ellipsize="marquee"
+                android:focusable="true"
+                android:focusableInTouchMode="true"                android:textColor="?attr/colorOnSurface"
                 android:textSize="12sp"
                 android:textStyle="bold" />
 
@@ -151,8 +154,8 @@ android:background="?attr/colorSurface">
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnPlay"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
             android:layout_centerVertical="true"
             android:layout_marginHorizontal="18dp"
             android:layout_toStartOf="@+id/btnForward"

@@ -1,18 +1,29 @@
 package com.example.grooveix.ui.fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.PopupMenu
+import android.widget.Toast
+import androidx.annotation.MenuRes
+import androidx.core.view.isGone
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.RecyclerView
+import com.example.grooveix.R
 import com.example.grooveix.databinding.FragmentHomeBinding
 import com.example.grooveix.ui.activity.MainActivity
 import com.example.grooveix.ui.adapter.TrackAdapter
+import com.example.grooveix.ui.media.MusicDatabase
 import com.example.grooveix.ui.media.MusicViewModel
 import com.example.grooveix.ui.media.Track
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 
 class TrackFragment : Fragment() {
@@ -24,6 +35,7 @@ class TrackFragment : Fragment() {
     private var unhandledRequestReceived = false
     private lateinit var adapter: TrackAdapter
     private lateinit var musicViewModel: MusicViewModel
+    private var musicDatabase: MusicDatabase? = null
     private lateinit var mainActivity: MainActivity
 
     override fun onCreateView(
@@ -34,6 +46,7 @@ class TrackFragment : Fragment() {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         mainActivity = activity as MainActivity
         musicViewModel = ViewModelProvider(mainActivity)[MusicViewModel::class.java]
+        musicDatabase = MusicDatabase.getDatabase(requireContext())
         return binding.root
     }
 
@@ -61,6 +74,31 @@ class TrackFragment : Fragment() {
                 }
             }
         })
+
+        binding.sortBtn.setOnClickListener {
+            showMenu(it, R.menu.sort_menu)
+        }
+    }
+
+    private fun showMenu(v: View, @MenuRes menuRes: Int) {
+        val popup = PopupMenu(requireContext(), v)
+        popup.menuInflater.inflate(menuRes, popup.menu)
+
+        popup.setOnMenuItemClickListener { menuItem: MenuItem ->
+            return@setOnMenuItemClickListener when (menuItem.itemId) {
+                R.id.option_1 -> {
+                    true
+                }
+
+                R.id.option_2 -> {
+
+                    true
+                }
+                else -> false
+            }
+        }
+
+        popup.show()
     }
 
     private fun updateRecyclerView(songs: List<Track>) {

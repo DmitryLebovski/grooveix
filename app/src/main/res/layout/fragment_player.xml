@@ -48,11 +48,11 @@
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnLyrics"
-            android:layout_width="36dp"
+            android:layout_width="wrap_content"
             android:layout_height="36dp"
             android:layout_marginEnd="16dp"
             android:layout_weight="1"
-            android:background="@drawable/baseline_audiotrack_24"
+            android:text="@string/lyrics_avaliable"
             app:layout_constraintEnd_toStartOf="@+id/currentButtonRepeat"
             app:layout_constraintTop_toTopOf="@+id/currentButtonRepeat" />
 
@@ -89,6 +89,10 @@
         android:fontFamily="@font/montserrat_bold"
         android:singleLine="true"
         android:text="yes, and?"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:ellipsize="marquee"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
         android:textColor="?attr/colorOnSurface"
         android:textSize="20sp"
         app:layout_constraintEnd_toStartOf="@+id/btnFavorite"

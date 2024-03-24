@@ -55,6 +55,8 @@ class PlayerFragment : Fragment() {
             return@setOnTouchListener true
         }
 
+        binding.title.isSelected = true
+
         queueViewModel.currentlyPlayingSongMetadata.observe(viewLifecycleOwner) {
             updateCurrentlyDisplayedMetadata(it)
         }

@@ -10,11 +10,13 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository: MusicRepository
     val loadTracks: LiveData<List<Track>>
+    val loadTracksArtist: LiveData<List<Track>>
 
     init {
         val musicRoom = MusicDatabase.getDatabase(application).musicDao()
         repository = MusicRepository(musicRoom)
         loadTracks = repository.loadTracks
+        loadTracksArtist = repository.loadTracksArtist
     }
 
     fun deleteTrack(track: Track) = viewModelScope.launch(Dispatchers.IO) {
