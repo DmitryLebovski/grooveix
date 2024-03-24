@@ -124,6 +124,8 @@ class QueueFragment : Fragment() {
         onBackPressedCallback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 findNavController().popBackStack()
+                mainActivity.expandPanel()
+                mainActivity.hideBar(false)
             }
         }
 
@@ -194,6 +196,8 @@ class QueueFragment : Fragment() {
 
         binding.btnClose.setOnClickListener {
             findNavController().popBackStack()
+            mainActivity.expandPanel()
+            mainActivity.hideBar(false)
         }
 
         queueViewModel.playbackPosition.observe(viewLifecycleOwner) {

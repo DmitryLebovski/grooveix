@@ -9,7 +9,6 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
 import android.content.IntentFilter
-import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.AudioAttributes
@@ -44,13 +43,20 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.media.MediaBrowserServiceCompat
 import com.example.grooveix.R
-import com.example.grooveix.ui.activity.MainActivity
-import com.example.grooveix.ui.media.Constants.PREF_NAME
 import java.io.File
 import java.io.FileInputStream
 
 
 class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListener {
+    companion object {
+        private const val MEDIA_SESSION_ACTIONS = (PlaybackStateCompat.ACTION_PLAY
+                or PlaybackStateCompat.ACTION_PAUSE
+                or PlaybackStateCompat.ACTION_PLAY_PAUSE
+                or PlaybackStateCompat.ACTION_SKIP_TO_NEXT
+                or PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS
+                or PlaybackStateCompat.ACTION_STOP
+                or PlaybackStateCompat.ACTION_SEEK_TO)
+    }
 
     private val channelId = "grooveix_music"
     private var currentlyPlayingQueueItemId = -1L
@@ -59,16 +65,11 @@ class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListe
     private val playQueue: MutableList<MediaSessionCompat.QueueItem> = mutableListOf()
     private lateinit var audioFocusRequest: AudioFocusRequest
     private lateinit var mediaSessionCompat: MediaSessionCompat
-    private lateinit var sharedPreferences: SharedPreferences
 
     private val afChangeListener = OnAudioFocusChangeListener { focusChange ->
         when (focusChange) {
             AudioManager.AUDIOFOCUS_LOSS, AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> {
                 mediaSessionCompat.controller.transportControls.pause()
-                SharedPreferenceUtil.saveCurrentPosition(
-                    sharedPreferences,
-                    getCurrentPosition()
-                )
             }
             AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> mediaPlayer?.setVolume(0.3f, 0.3f)
             AudioManager.AUDIOFOCUS_GAIN -> mediaPlayer?.setVolume(1.0f, 1.0f)
@@ -231,7 +232,6 @@ class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListe
                 onPrepare()
                 if (playbackState == STATE_PLAYING || playbackState == PlaybackStateCompat.STATE_SKIPPING_TO_NEXT) {
                     onPlay()
-                    refreshNotification()
                 }
             }
         }
@@ -463,15 +463,12 @@ class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListe
         super.onCreate()
 
         createChannelForMediaPlayerNotification()
-        sharedPreferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
 
-        mediaSessionCompat = MediaSessionCompat(this, channelId).apply {
+        mediaSessionCompat = MediaSessionCompat(baseContext, channelId).apply {
             setFlags(MediaSessionCompat.FLAG_HANDLES_QUEUE_COMMANDS)
             setCallback(mediaSessionCallback)
             setSessionToken(sessionToken)
-            val builder = PlaybackStateCompat.Builder().setActions(PlaybackStateCompat.ACTION_PLAY or
-                    PlaybackStateCompat.ACTION_PAUSE or PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS or
-                    PlaybackStateCompat.ACTION_SKIP_TO_NEXT or PlaybackStateCompat.ACTION_SEEK_TO)
+            val builder = PlaybackStateCompat.Builder().setActions(MEDIA_SESSION_ACTIONS)
             setPlaybackState(builder.build())
         }
 
@@ -517,7 +514,7 @@ class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListe
 
     private fun setMediaPlaybackState(state: Int, bundle: Bundle? = null) {
         val playbackPosition = mediaPlayer?.currentPosition?.toLong() ?: 0L
-        val playbackSpeed = 1f
+        val playbackSpeed = mediaPlayer?.playbackParams?.speed ?: 0f
         val playbackStateBuilder = PlaybackStateCompat.Builder()
             .setState(state, playbackPosition, playbackSpeed)
             .setActiveQueueItemId(currentlyPlayingQueueItemId)
@@ -564,12 +561,6 @@ class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListe
 
     private fun refreshNotification() {
         val isPlaying = mediaPlayer?.isPlaying ?: false
-        val playPauseIntent = if (isPlaying) {
-            Intent(applicationContext, MusicPlayerService::class.java).setAction("pause")
-        } else Intent(applicationContext, MusicPlayerService::class.java).setAction("play")
-        val nextIntent = Intent(applicationContext, MusicPlayerService::class.java).setAction("next")
-        val prevIntent = Intent(applicationContext, MusicPlayerService::class.java).setAction("previous")
-
         val intent = packageManager
             .getLaunchIntentForPackage(packageName)
             ?.setPackage(null)
@@ -578,49 +569,19 @@ class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListe
 
         val builder = NotificationCompat.Builder(applicationContext, channelId).apply {
             val mediaMetadata = mediaSessionCompat.controller.metadata
-
-            // Previous button
-            addAction(
-                NotificationCompat.Action(R.drawable.ic_previous_small, "previous",
-                    PendingIntent.getService(applicationContext, 0, prevIntent, PendingIntent.FLAG_IMMUTABLE)
-                )
-            )
-
-            // Play/pause button
-            val playOrPause = if (isPlaying) R.drawable.baseline_pause_24
-            else R.drawable.baseline_play_arrow_24
-            addAction(
-                NotificationCompat.Action(playOrPause, "play-pause",
-                    PendingIntent.getService(applicationContext, 0, playPauseIntent, PendingIntent.FLAG_IMMUTABLE)
-                )
-            )
-
-            // Next button
-            addAction(
-                NotificationCompat.Action(R.drawable.ic_next_small, getString(R.string.play_next),
-                    PendingIntent.getService(applicationContext, 0, nextIntent, PendingIntent.FLAG_IMMUTABLE)
-                )
-            )
+            setSmallIcon(R.drawable.grooveix)
+            setContentIntent(activityIntent)
+            setOngoing(isPlaying)
+            setContentTitle(mediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE))
+            setContentText(mediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST))
+            setLargeIcon(mediaMetadata.getBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART))
+            setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            priority = NotificationCompat.PRIORITY_DEFAULT
 
             setStyle(androidx.media.app.NotificationCompat.MediaStyle()
                 .setShowActionsInCompactView(0, 1, 2)
                 .setMediaSession(mediaSessionCompat.sessionToken)
             )
-
-            val smallIcon = if (isPlaying) R.drawable.baseline_play_arrow_24
-            else R.drawable.baseline_pause_24
-            setSmallIcon(smallIcon)
-
-            setContentIntent(activityIntent)
-
-            // Add the metadata for the currently playing track
-            setContentTitle(mediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE))
-            setContentText(mediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST))
-            setLargeIcon(mediaMetadata.getBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART))
-
-            // Make the transport controls visible on the lockscreen
-            setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-            priority = NotificationCompat.PRIORITY_DEFAULT
         }
 
         startForeground(1, builder.build())
@@ -629,7 +590,7 @@ class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListe
     private fun createChannelForMediaPlayerNotification() {
         val channel = NotificationChannel(
             "grooveix_music", "Notifications",
-            NotificationManager.IMPORTANCE_DEFAULT
+            NotificationManager.IMPORTANCE_LOW
         )
         val manager = getSystemService(NotificationManager::class.java)
         manager?.createNotificationChannel(channel)
@@ -648,12 +609,5 @@ class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListe
 
     override fun onLoadChildren(parentId: String, result: Result<List<MediaBrowserCompat.MediaItem>>) {
         result.sendResult(null)
-    }
-
-    fun getCurrentPosition(): Int {
-        mediaPlayer?.let {
-            return it.currentPosition
-        }
-        return 0
     }
 }

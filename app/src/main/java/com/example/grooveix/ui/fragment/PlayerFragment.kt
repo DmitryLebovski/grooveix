@@ -14,9 +14,13 @@ import android.view.ViewGroup
 import android.widget.SeekBar
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.ui.setupWithNavController
 import com.bumptech.glide.Glide
 import com.example.grooveix.R
 import com.example.grooveix.databinding.FragmentPlayerBinding
@@ -27,6 +31,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
+import java.util.Queue
 
 class PlayerFragment : Fragment() {
 
@@ -36,8 +41,6 @@ class PlayerFragment : Fragment() {
     private var fastForwarding = false
     private var fastRewinding = false
     private lateinit var mainActivity: MainActivity
-    private lateinit var onBackPressedCallback: OnBackPressedCallback
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -144,12 +147,14 @@ class PlayerFragment : Fragment() {
             }
         }
 
-        binding.currentClose.setOnClickListener {
-            findNavController().popBackStack()
+        binding.btnQueue.setOnClickListener {
+            findNavController().navigate(R.id.nav_queue)
+            mainActivity.collapsePanel()
+            mainActivity.hideBar(true)
         }
 
-        binding.btnQueue.setOnClickListener {
-            findNavController().navigate(R.id.nav_queue, null, null)
+        binding.btnClose.setOnClickListener {
+            mainActivity.collapsePanel()
         }
 
         binding.currentSeekBar.setOnSeekBarChangeListener( object : SeekBar.OnSeekBarChangeListener {
@@ -162,14 +167,6 @@ class PlayerFragment : Fragment() {
                 binding.currentPosition.text = SimpleDateFormat("mm:ss", Locale.UK).format(progress)
             }
         })
-
-        onBackPressedCallback = object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                findNavController().popBackStack()
-            }
-        }
-
-        mainActivity.onBackPressedDispatcher.addCallback(viewLifecycleOwner, onBackPressedCallback)
     }
 
     override fun onDestroyView() {
@@ -190,27 +187,4 @@ class PlayerFragment : Fragment() {
                 .clear(binding.artwork)
         }
     }
-
-//    private fun showPopup() {
-//        PopupMenu(this.context, binding.currentClose).apply {
-//            inflate(R.menu.currently_playing_menu)
-//
-//            setForceShowIcon(true)
-//
-//            setOnMenuItemClickListener { menuItem ->
-//                when (menuItem.itemId) {
-//                    R.id.search -> {
-//                        findNavController().popBackStack()
-//                        mainActivity.findNavController(R.id.nav_host_fragment).navigate(R.id.nav_search)
-//                    }
-//                    R.id.queue -> {
-//                        findNavController().popBackStack()
-//                        mainActivity.findNavController(R.id.nav_host_fragment).navigate(R.id.nav_queue)
-//                    }
-//                }
-//                true
-//            }
-//            show()
-//        }
-//    }
 }

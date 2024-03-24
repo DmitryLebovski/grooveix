@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/colorSurface"
-    android:paddingBottom="24dp">
+    android:id="@+id/player_view">
 
 
     <androidx.cardview.widget.CardView
@@ -27,7 +27,7 @@
 
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/currentClose"
+        android:id="@+id/btnClose"
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:layout_marginTop="8dp"
@@ -113,22 +113,6 @@
         app:layout_constraintEnd_toStartOf="@+id/btnFavorite"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/title" />
-
-<!--    <TextView-->
-<!--        android:id="@+id/album"-->
-<!--        android:layout_width="0dp"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_marginStart="32dp"-->
-<!--        android:layout_marginTop="4dp"-->
-<!--        android:layout_marginEnd="32dp"-->
-<!--        android:fontFamily="@font/montserrat_regular"-->
-<!--        android:singleLine="true"-->
-<!--        android:text="Eternal Sunshine"-->
-<!--        android:textColor="@color/material_on_surface_emphasis_medium"-->
-<!--        android:textSize="18sp"-->
-<!--        app:layout_constraintEnd_toStartOf="@+id/btnFavorite"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toBottomOf="@+id/artist" />-->
 
     <androidx.appcompat.widget.AppCompatSeekBar
         android:id="@+id/currentSeekBar"

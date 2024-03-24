@@ -7,19 +7,12 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.codersguidebook.recyclerviewfastscroller.RecyclerViewScrollbar
 import com.example.grooveix.R
 import com.example.grooveix.ui.activity.MainActivity
 import com.example.grooveix.ui.media.Track
 class TrackAdapter(private val activity: MainActivity):
-    RecyclerView.Adapter<TrackAdapter.SongsViewHolder>(), RecyclerViewScrollbar.ValueLabelListener {
+    RecyclerView.Adapter<TrackAdapter.SongsViewHolder>() {
     val songs = mutableListOf<Track>()
-
-    override fun getValueLabelText(position: Int): String {
-        return if (songs[position].title.isNotEmpty()) {
-            songs[position].title[0].uppercase()
-        } else ""
-    }
 
     inner class SongsViewHolder(itemView: View) :
         RecyclerView.ViewHolder(itemView) {

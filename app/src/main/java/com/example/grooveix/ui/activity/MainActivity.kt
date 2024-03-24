@@ -24,21 +24,22 @@ import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.MediaSessionCompat.QueueItem
 import android.support.v4.media.session.PlaybackStateCompat
 import android.support.v4.media.session.PlaybackStateCompat.*
-import android.util.Log
 import android.util.Size
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.PopupMenu
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
@@ -72,6 +73,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mediaBrowser: MediaBrowserCompat
     private lateinit var musicViewModel: MusicViewModel
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<FrameLayout>
+    private lateinit var onBackPressedCallback: OnBackPressedCallback
 
     private val panelState: Int
         get() = bottomSheetBehavior.state
@@ -82,8 +84,7 @@ class MainActivity : AppCompatActivity() {
                 BottomSheetBehavior.STATE_COLLAPSED -> {
                     binding.dimBackground.visibility = View.GONE
                 }
-                else -> {
-                }
+                else -> {}
             }
         }
 
@@ -111,26 +112,25 @@ class MainActivity : AppCompatActivity() {
         binding.navView.setupWithNavController(navController)
     }
 
-    private fun collapsePanel() {
+    fun collapsePanel() {
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         setMiniPlayerAlpha(0f)
     }
 
-    override fun onBackPressed() {
-        if (!handleBackPress()) super.onBackPressed()
-    }
-
-    open fun handleBackPress(): Boolean {
-        if (panelState == BottomSheetBehavior.STATE_EXPANDED) {
-            collapsePanel()
-            return true
-        }
-        return false
-    }
-
-    private fun expandPanel() {
+    fun expandPanel() {
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
         setMiniPlayerAlpha(1f)
+    }
+
+    fun hideBar(hide: Boolean) {
+        if (hide) {
+            binding.navView.isGone = true
+            binding.slidingPanel.isGone = true
+        }
+        else {
+            binding.navView.isVisible = true
+            binding.slidingPanel.isVisible = true
+        }
     }
 
     private val connectionCallbacks = object : MediaBrowserCompat.ConnectionCallback() {
@@ -227,6 +227,18 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onBackPressed() {
+        if (!handleBackPress()) super.onBackPressed()
+    }
+
+    open fun handleBackPress(): Boolean {
+        if (panelState == BottomSheetBehavior.STATE_EXPANDED) {
+            collapsePanel()
+            return true
+        }
+        return false
+    }
+
     override fun onResume() {
         super.onResume()
         volumeControlStream = AudioManager.STREAM_MUSIC
@@ -244,7 +256,7 @@ class MainActivity : AppCompatActivity() {
         refreshMusicLibrary()
     }
 
-    fun hasStoragePermission(): Boolean {
+    private fun hasStoragePermission(): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             (checkSelfPermission(android.Manifest.permission.READ_MEDIA_AUDIO) == PackageManager.PERMISSION_GRANTED)
         } else {
@@ -346,7 +358,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun showSongPopup(view: View, track: Track) {
-        //TODO BOTTOM MENU
+        PopupMenu(this, view).apply {
+            inflate(R.menu.song_options)
+            setOnMenuItemClickListener { menuItem ->
+                when (menuItem.itemId) {
+                    R.id.play_next -> playNext(track)
+                }
+                true
+            }
+            show()
+        }
     }
 
     private fun saveImage(albumId: String, image: Bitmap) {

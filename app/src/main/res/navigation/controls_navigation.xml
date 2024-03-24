@@ -2,20 +2,19 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    app:startDestination="@+id/nav_controls">
-
-    <fragment
-        android:id="@+id/nav_controls"
-        android:name="com.example.grooveix.ui.fragment.MiniPlayerFragment"
-        tools:layout="@layout/fragment_mini_player"/>
+    android:id="@+id/controls_navigation"
+    app:startDestination="@+id/nav_currently_playing">
 
     <fragment
         android:id="@+id/nav_currently_playing"
         android:name="com.example.grooveix.ui.fragment.PlayerFragment"
-        tools:layout="@layout/fragment_player"/>
+        tools:layout="@layout/fragment_player">
+    </fragment>
 
     <fragment
         android:id="@+id/nav_queue"
         android:name="com.example.grooveix.ui.fragment.QueueFragment"
         tools:layout="@layout/fragment_queue" />
+
+
 </navigation>

@@ -81,9 +81,9 @@
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnMenu"
         android:background="@drawable/baseline_more_vert_24"
-        android:layout_marginEnd="8dp"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+        android:layout_marginEnd="16dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         style="@style/Widget.AppCompat.ActionButton.Overflow"/>
 
 </LinearLayout>
