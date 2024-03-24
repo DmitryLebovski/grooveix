@@ -172,15 +172,9 @@ class PlayerFragment : Fragment() {
         mainActivity.onBackPressedDispatcher.addCallback(viewLifecycleOwner, onBackPressedCallback)
     }
 
-    override fun onResume() {
-        super.onResume()
-        mainActivity.hideBar(true)
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-        mainActivity.hideBar(false)
     }
 
     private fun updateCurrentlyDisplayedMetadata(metadata: MediaMetadataCompat?) = lifecycleScope.launch(

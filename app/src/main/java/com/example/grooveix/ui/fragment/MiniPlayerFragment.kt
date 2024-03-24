@@ -41,12 +41,6 @@ class MiniPlayerFragment : Fragment() {
 
         binding.title.isSelected = true
 
-        binding.root.setOnClickListener {
-            playQueueViewModel.currentlyPlayingSongMetadata.value?.let {
-                findNavController().navigate(R.id.nav_currently_playing, null, null)
-            }
-        }
-
         playQueueViewModel.playbackState.observe(viewLifecycleOwner) { state ->
             if (state == PlaybackStateCompat.STATE_PLAYING) binding.btnPlay.setBackgroundResource(R.drawable.baseline_pause_24)
             else binding.btnPlay.setBackgroundResource(R.drawable.baseline_play_arrow_24)

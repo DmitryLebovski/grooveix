@@ -232,7 +232,6 @@ class QueueFragment : Fragment() {
             (binding.queueView.layoutManager as LinearLayoutManager)
                 .scrollToPositionWithOffset(currentlyPlayingQueueItemIndex, 0)
         }
-        mainActivity.hideBar(true)
     }
 
     fun startDragging(viewHolder: RecyclerView.ViewHolder) = itemTouchHelper.startDrag(viewHolder)

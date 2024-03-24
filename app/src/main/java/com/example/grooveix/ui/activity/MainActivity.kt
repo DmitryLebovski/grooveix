@@ -28,6 +28,7 @@ import android.util.Log
 import android.util.Size
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -37,6 +38,7 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
@@ -48,7 +50,7 @@ import com.example.grooveix.ui.media.MusicPlayerService
 import com.example.grooveix.ui.media.MusicViewModel
 import com.example.grooveix.ui.media.QueueViewModel
 import com.example.grooveix.ui.media.Track
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -69,6 +71,67 @@ class MainActivity : AppCompatActivity() {
     private val playQueueViewModel: QueueViewModel by viewModels()
     private lateinit var mediaBrowser: MediaBrowserCompat
     private lateinit var musicViewModel: MusicViewModel
+    private lateinit var bottomSheetBehavior: BottomSheetBehavior<FrameLayout>
+
+    private val panelState: Int
+        get() = bottomSheetBehavior.state
+
+    private val bottomSheetCallback = object : BottomSheetBehavior.BottomSheetCallback() {
+        override fun onStateChanged(bottomSheet: View, newState: Int) {
+            when (newState) {
+                BottomSheetBehavior.STATE_COLLAPSED -> {
+                    binding.dimBackground.visibility = View.GONE
+                }
+                else -> {
+                }
+            }
+        }
+
+        override fun onSlide(bottomSheet: View, slideOffset: Float) {
+            setMiniPlayerAlpha(slideOffset)
+            setBottomNavigationViewTransition(slideOffset)
+            binding.dimBackground.visibility = View.VISIBLE
+            binding.dimBackground.alpha = slideOffset
+        }
+    }
+
+    private fun setMiniPlayerAlpha(slideOffset: Float) {
+        val alpha = 1 - slideOffset
+        binding.miniPlayerFragment.alpha = alpha
+        binding.miniPlayerFragment.visibility = if (alpha == 0f) View.GONE else View.VISIBLE
+    }
+
+    private fun setBottomNavigationViewTransition(slideOffset: Float) {
+        binding.navView.translationY = slideOffset * 500
+    }
+
+    private fun setUpBottomNavigationNavController() {
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main) as NavHostFragment
+        val navController = navHostFragment.navController
+        binding.navView.setupWithNavController(navController)
+    }
+
+    private fun collapsePanel() {
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        setMiniPlayerAlpha(0f)
+    }
+
+    override fun onBackPressed() {
+        if (!handleBackPress()) super.onBackPressed()
+    }
+
+    open fun handleBackPress(): Boolean {
+        if (panelState == BottomSheetBehavior.STATE_EXPANDED) {
+            collapsePanel()
+            return true
+        }
+        return false
+    }
+
+    private fun expandPanel() {
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+        setMiniPlayerAlpha(1f)
+    }
 
     private val connectionCallbacks = object : MediaBrowserCompat.ConnectionCallback() {
         override fun onConnected() {
@@ -136,12 +199,6 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val navView: BottomNavigationView = binding.navView
-
-        val navController = findNavController(R.id.nav_host_fragment_activity_main)
-
-        navView.setupWithNavController(navController)
-
         mediaBrowser = MediaBrowserCompat(
             this,
             ComponentName(this, MusicPlayerService::class.java),
@@ -159,6 +216,15 @@ class MainActivity : AppCompatActivity() {
                 true, it)
         }
         refreshMusicLibrary()
+
+        setUpBottomNavigationNavController()
+
+        bottomSheetBehavior = BottomSheetBehavior.from(binding.slidingPanel)
+        bottomSheetBehavior.addBottomSheetCallback(bottomSheetCallback)
+
+        binding.miniPlayerFragment.setOnClickListener {
+            expandPanel()
+        }
     }
 
     override fun onResume() {
@@ -354,11 +420,12 @@ class MainActivity : AppCompatActivity() {
 
     fun getShuffleMode(): Int {
         val mediaControllerCompat = MediaControllerCompat.getMediaController(this@MainActivity)
-        return mediaControllerCompat.shuffleMode
+        return mediaControllerCompat?.shuffleMode ?: SHUFFLE_MODE_NONE
     }
+
     fun getRepeatMode(): Int {
         val mediaControllerCompat = MediaControllerCompat.getMediaController(this@MainActivity)
-        return mediaControllerCompat.repeatMode
+        return mediaControllerCompat?.repeatMode ?: REPEAT_MODE_NONE
     }
     fun toggleShuffleMode(): Boolean {
         val newShuffleMode = if (getShuffleMode() == SHUFFLE_MODE_NONE) {
@@ -383,11 +450,6 @@ class MainActivity : AppCompatActivity() {
         mediaController.sendCommand("SET_REPEAT_MODE", bundle, null)
 
         return newRepeatMode
-    }
-
-    fun hideBar(hide: Boolean) {
-        if (hide) binding.navView.isGone = true
-        else binding.navView.isVisible = true
     }
 
     fun seekTo(position: Int) = mediaController.transportControls.seekTo(position.toLong())
