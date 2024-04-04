@@ -1,10 +1,9 @@
 package com.example.grooveix.ui.fragment
 
 import android.annotation.SuppressLint
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
-import android.graphics.Matrix
+import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.support.v4.media.MediaMetadataCompat
@@ -206,15 +205,13 @@ class PlayerFragment : Fragment() {
             gradientDrawable.cornerRadii = cornerRadii
 
             binding.playerView.background = gradientDrawable
+
+//            val bitmap = BitmapFactory.decodeFile(mainActivity.getArtwork(albumId)?.path)
+//            binding.dimBackground.background = BitmapDrawable(resources, bitmap)
+
         } else {
             Glide.with(mainActivity)
                 .clear(binding.artwork)
         }
-    }
-
-    fun rotateBitmap(bitmap: Bitmap, degrees: Float): Bitmap {
-        val matrix = Matrix()
-        matrix.postRotate(degrees)
-        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
     }
 }

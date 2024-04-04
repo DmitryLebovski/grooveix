@@ -6,6 +6,13 @@
     android:background="?attr/colorSurface"
     android:id="@+id/player_view">
 
+    <View
+        android:id="@+id/dimBackground"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone"/>
 
     <androidx.cardview.widget.CardView
         android:id="@+id/artworkIm"

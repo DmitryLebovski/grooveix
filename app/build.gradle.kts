@@ -64,6 +64,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
     implementation("com.github.bumptech.glide:glide:4.14.2")
+    implementation("jp.wasabeef:glide-transformations:4.3.0")
     implementation("com.google.code.gson:gson:2.10")
     implementation("androidx.core:core-splashscreen:1.0.1")
     implementation("androidx.cardview:cardview:1.0.0")
