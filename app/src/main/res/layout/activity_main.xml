@@ -29,7 +29,7 @@
         android:layout_height="match_parent"
         android:background="?attr/colorSurface"
         app:behavior_hideable="false"
-        app:behavior_peekHeight="130dp"
+        app:behavior_peekHeight="136dp"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
         <androidx.fragment.app.FragmentContainerView
@@ -43,6 +43,7 @@
             android:name="com.example.grooveix.ui.fragment.MiniPlayerFragment"
             android:layout_width="match_parent"
             android:layout_height="56dp"
+            android:layout_marginTop="4dp"
             tools:layout="@layout/fragment_mini_player" />
     </FrameLayout>
 

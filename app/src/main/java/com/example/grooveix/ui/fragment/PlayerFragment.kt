@@ -1,6 +1,11 @@
 package com.example.grooveix.ui.fragment
 
 import android.annotation.SuppressLint
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Color
+import android.graphics.Matrix
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
@@ -12,15 +17,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
-import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.ui.setupWithNavController
+import androidx.palette.graphics.Palette
 import com.bumptech.glide.Glide
 import com.example.grooveix.R
 import com.example.grooveix.databinding.FragmentPlayerBinding
@@ -31,7 +32,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
-import java.util.Queue
 
 class PlayerFragment : Fragment() {
 
@@ -182,9 +182,39 @@ class PlayerFragment : Fragment() {
         if (metadata != null) {
             val albumId = metadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI)
             mainActivity.loadArtwork(albumId, binding.artwork)
+            var dominantColor = requireContext().getColor(R.color.botttom_light_3)
+            val bitmap = BitmapFactory.decodeFile(mainActivity.getArtwork(albumId)?.path)
+
+            if (bitmap != null) {
+                val palette = Palette.from(bitmap).generate()
+                dominantColor = palette.getDominantColor(requireContext().getColor(R.color.botttom_light_3))
+            }
+
+
+            val gradientDrawable = GradientDrawable(
+                GradientDrawable.Orientation.TOP_BOTTOM,
+                intArrayOf(dominantColor, Color.TRANSPARENT, Color.TRANSPARENT)
+            )
+
+            val cornerRadii = floatArrayOf(
+                30f, 30f,
+                30f, 30f,
+                0f, 0f,
+                0f, 0f
+            )
+
+            gradientDrawable.cornerRadii = cornerRadii
+
+            binding.playerView.background = gradientDrawable
         } else {
             Glide.with(mainActivity)
                 .clear(binding.artwork)
         }
+    }
+
+    fun rotateBitmap(bitmap: Bitmap, degrees: Float): Bitmap {
+        val matrix = Matrix()
+        matrix.postRotate(degrees)
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
     }
 }

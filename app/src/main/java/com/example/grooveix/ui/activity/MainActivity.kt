@@ -1,5 +1,6 @@
 package com.example.grooveix.ui.activity
 
+import android.animation.ObjectAnimator
 import android.content.ComponentName
 import android.content.ContentUris
 import android.content.Context
@@ -31,7 +32,6 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.PopupMenu
 import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isGone
@@ -39,7 +39,6 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
@@ -73,7 +72,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mediaBrowser: MediaBrowserCompat
     private lateinit var musicViewModel: MusicViewModel
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<FrameLayout>
-    private lateinit var onBackPressedCallback: OnBackPressedCallback
 
     private val panelState: Int
         get() = bottomSheetBehavior.state
@@ -124,12 +122,27 @@ class MainActivity : AppCompatActivity() {
 
     fun hideBar(hide: Boolean) {
         if (hide) {
-            binding.navView.isGone = true
-            binding.slidingPanel.isGone = true
+            hideBottomSheet(binding.navView)
+            hideBottomSheet( binding.slidingPanel)
         }
         else {
-            binding.navView.isVisible = true
-            binding.slidingPanel.isVisible = true
+            showBottomSheet( binding.slidingPanel)
+        }
+    }
+
+    private fun hideBottomSheet(view: View) {
+        val height = view.height
+        ObjectAnimator.ofFloat(view, View.TRANSLATION_Y, 0f, height.toFloat()).apply {
+            duration = 700
+            start()
+        }
+    }
+
+    private fun showBottomSheet(view: View) {
+        val height = view.height
+        ObjectAnimator.ofFloat(view, View.TRANSLATION_Y, height.toFloat(), 0f).apply {
+            duration = 300
+            start()
         }
     }
 
@@ -168,6 +181,7 @@ class MainActivity : AppCompatActivity() {
                         playQueueViewModel.playbackDuration.value = currentPlaybackDuration
                     }
                     playQueueViewModel.playbackPosition.value = currentPlaybackPosition
+                    binding.slidingPanel.isVisible = true
                 }
                 STATE_STOPPED -> {
                     currentPlaybackDuration = 0
@@ -175,6 +189,7 @@ class MainActivity : AppCompatActivity() {
                     currentPlaybackPosition = 0
                     playQueueViewModel.playbackPosition.value = 0
                     playQueueViewModel.currentlyPlayingSongMetadata.value = null
+                    binding.slidingPanel.isGone = true
                 }
                 STATE_ERROR -> refreshMusicLibrary()
                 else -> return
@@ -355,6 +370,15 @@ class MainActivity : AppCompatActivity() {
             .signature(ObjectKey(file?.path + file?.lastModified()))
             .override(600, 600)
             .into(view)
+    }
+
+    fun getArtwork(albumId: String?): File? {
+        var file: File? = null
+        if (albumId != null) {
+            val directory = ContextWrapper(application).getDir("albumArt", Context.MODE_PRIVATE)
+            file = File(directory, "$albumId.jpg")
+        }
+        return file
     }
 
     fun showSongPopup(view: View, track: Track) {

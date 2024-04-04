@@ -75,6 +75,7 @@ dependencies {
     implementation("com.github.bumptech.glide:glide:4.14.2")
     implementation("com.tbuonomo:dotsindicator:5.0")
     implementation("io.github.l4digital:fastscroll:2.1.0")
+    implementation("androidx.palette:palette-ktx:1.0.0")
 
     implementation("androidx.media:media:1.7.0")
     implementation("androidx.media3:media3-exoplayer:1.2.1")
