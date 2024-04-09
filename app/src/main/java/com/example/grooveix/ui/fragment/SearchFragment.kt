@@ -98,6 +98,7 @@ class SearchFragment : Fragment() {
         withContext(Dispatchers.Main) {
             binding.noResults.isGone = true
             binding.searchButton.isGone = true
+            binding.startSearch.isGone = true
             if (songs.isEmpty()) {
                 binding.searchButton.isVisible = true
                 binding.noResults.isVisible = true

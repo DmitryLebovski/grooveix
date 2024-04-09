@@ -1,10 +1,8 @@
 package com.example.grooveix.ui.fragment
-
+import android.animation.ArgbEvaluator
+import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.graphics.BitmapFactory
-import android.graphics.Color
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
@@ -31,6 +29,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
+
 
 class PlayerFragment : Fragment() {
 
@@ -182,29 +181,31 @@ class PlayerFragment : Fragment() {
             val albumId = metadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI)
             mainActivity.loadArtwork(albumId, binding.artwork)
             var dominantColor = requireContext().getColor(R.color.botttom_light_3)
+            var copyColor = requireContext().getColor(R.color.botttom_light_3)
+
             val bitmap = BitmapFactory.decodeFile(mainActivity.getArtwork(albumId)?.path)
 
             if (bitmap != null) {
                 val palette = Palette.from(bitmap).generate()
                 dominantColor = palette.getDominantColor(requireContext().getColor(R.color.botttom_light_3))
+                if (copyColor != dominantColor) copyColor = dominantColor
             }
 
-
-            val gradientDrawable = GradientDrawable(
-                GradientDrawable.Orientation.TOP_BOTTOM,
-                intArrayOf(dominantColor, Color.TRANSPARENT, Color.TRANSPARENT)
-            )
-
-            val cornerRadii = floatArrayOf(
-                30f, 30f,
-                30f, 30f,
-                0f, 0f,
-                0f, 0f
-            )
-
-            gradientDrawable.cornerRadii = cornerRadii
-
-            binding.playerView.background = gradientDrawable
+//            val gradientDrawable = GradientDrawable(
+//                GradientDrawable.Orientation.TOP_BOTTOM,
+//                intArrayOf(dominantColor, Color.TRANSPARENT, Color.TRANSPARENT)
+//            )
+//
+//            val cornerRadii = floatArrayOf(
+//                30f, 30f,
+//                30f, 30f,
+//                0f, 0f,
+//                0f, 0f
+//            )
+//
+//            gradientDrawable.cornerRadii = cornerRadii
+//
+//            binding.playerView.background = gradientDrawable
 
 //            val bitmap = BitmapFactory.decodeFile(mainActivity.getArtwork(albumId)?.path)
 //            binding.dimBackground.background = BitmapDrawable(resources, bitmap)

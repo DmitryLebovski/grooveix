@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/onBoardFragment"
-    tools:context=".ui.activity.PermissionActivity">
+    tools:context=".ui.activity.PermissionActivity"
+    android:fitsSystemWindows="true">
 
 
     <TextView

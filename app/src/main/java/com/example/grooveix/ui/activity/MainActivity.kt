@@ -9,6 +9,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.Cursor
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.media.AudioManager
 import android.media.session.PlaybackState
 import android.net.Uri
@@ -17,16 +18,25 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
-
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.MediaSessionCompat.QueueItem
 import android.support.v4.media.session.PlaybackStateCompat
-import android.support.v4.media.session.PlaybackStateCompat.*
+import android.support.v4.media.session.PlaybackStateCompat.REPEAT_MODE_ALL
+import android.support.v4.media.session.PlaybackStateCompat.REPEAT_MODE_NONE
+import android.support.v4.media.session.PlaybackStateCompat.REPEAT_MODE_ONE
+import android.support.v4.media.session.PlaybackStateCompat.SHUFFLE_MODE_ALL
+import android.support.v4.media.session.PlaybackStateCompat.SHUFFLE_MODE_NONE
+import android.support.v4.media.session.PlaybackStateCompat.STATE_ERROR
+import android.support.v4.media.session.PlaybackStateCompat.STATE_NONE
+import android.support.v4.media.session.PlaybackStateCompat.STATE_PAUSED
+import android.support.v4.media.session.PlaybackStateCompat.STATE_PLAYING
+import android.support.v4.media.session.PlaybackStateCompat.STATE_STOPPED
 import android.util.Size
 import android.view.View
+import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
 import android.widget.ImageView

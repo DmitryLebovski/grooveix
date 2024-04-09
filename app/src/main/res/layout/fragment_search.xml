@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingVertical="8dp">
@@ -34,17 +33,31 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/searchView" />
 
+    <TextView
+        android:id="@+id/startSearch"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="36dp"
+        android:text="@string/start_search"
+        android:textSize="14sp"
+        android:gravity="center"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/searchView" />
+
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/search_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/search_extra"
-        android:layout_marginTop="16dp"
-        android:visibility="gone"
+        android:layout_marginTop="96dp"
+        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/noResults" />
+        app:layout_constraintTop_toBottomOf="@+id/searchView" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
