@@ -9,7 +9,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.Cursor
 import android.graphics.Bitmap
-import android.graphics.Color
 import android.media.AudioManager
 import android.media.session.PlaybackState
 import android.net.Uri
@@ -36,14 +35,15 @@ import android.support.v4.media.session.PlaybackStateCompat.STATE_PLAYING
 import android.support.v4.media.session.PlaybackStateCompat.STATE_STOPPED
 import android.util.Size
 import android.view.View
-import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
+import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.ImageView
-import android.widget.PopupMenu
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.cardview.widget.CardView
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
@@ -61,6 +61,7 @@ import com.example.grooveix.ui.media.MusicViewModel
 import com.example.grooveix.ui.media.QueueViewModel
 import com.example.grooveix.ui.media.Track
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -82,6 +83,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mediaBrowser: MediaBrowserCompat
     private lateinit var musicViewModel: MusicViewModel
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<FrameLayout>
+    private lateinit var bottomSheetDialog: BottomSheetDialog
 
     private val panelState: Int
         get() = bottomSheetBehavior.state
@@ -250,6 +252,8 @@ class MainActivity : AppCompatActivity() {
         binding.miniPlayerFragment.setOnClickListener {
             expandPanel()
         }
+
+        bottomSheetDialog = BottomSheetDialog(this)
     }
 
     override fun onBackPressed() {
@@ -392,14 +396,28 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun showSongPopup(view: View, track: Track) {
-        PopupMenu(this, view).apply {
-            inflate(R.menu.song_options)
-            setOnMenuItemClickListener { menuItem ->
-                when (menuItem.itemId) {
-                    R.id.play_next -> playNext(track)
-                }
-                true
+
+        bottomSheetDialog.apply {
+            setContentView(R.layout.fragment_info_track)
+
+            val mArtwork = findViewById<ImageView>(R.id.artworkIN)
+            val mTitle = findViewById<TextView>(R.id.titleIN)
+            val mArtist = findViewById<TextView>(R.id.artistIN)
+
+            val bLike = findViewById<CardView>(R.id.addToFav)
+            val bQueue = findViewById<CardView>(R.id.addToQueue)
+            val bPlst = findViewById<CardView>(R.id.addToPlist)
+
+            mArtwork?.let { loadArtwork(track.albumId, it) }
+
+            mTitle?.text = track.title
+            mArtist?.text = track.artist
+
+            bQueue?.setOnClickListener {
+                playNext(track)
+                dismiss()
             }
+
             show()
         }
     }

@@ -18,8 +18,9 @@
     <string name="title_activity_permission">PermissionActivity</string>
     <string name="unknown_album">Неизвестно</string>
     <string name="play_next">Играть следующим</string>
-    <string name="add_to_favorite">Добавить в избранное</string>
+    <string name="add_to_favorite">Нравится</string>
     <string name="add_to_playlist">Добавить в плейлист</string>
+    <string name="add_to_queue">Добавить в очередь</string>
     <string name="play_queue">Очередь\n</string>
     <string name="shuffle">Перемешать</string>
     <string name="search_hint">Поиск песни</string>

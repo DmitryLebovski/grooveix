@@ -8,7 +8,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.PopupMenu
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -239,10 +238,6 @@ class QueueFragment : Fragment() {
     }
 
     fun startDragging(viewHolder: RecyclerView.ViewHolder) = itemTouchHelper.startDrag(viewHolder)
-
-    fun showPopup(view: View, queueId: Long) {
-        //TODO:add bottomsheet
-    }
 
     override fun onDestroyView() {
         super.onDestroyView()
