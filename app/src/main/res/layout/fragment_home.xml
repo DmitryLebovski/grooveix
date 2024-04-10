@@ -47,10 +47,17 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
+    <com.l4digital.fastscroll.FastScrollRecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        app:bubbleColor="#00bb00"
+        app:bubbleTextColor="#ffffff"
+        app:handleColor="#999999"
+        app:showBubble="true"
+        app:bubbleSize="small"
+        app:bubbleTextSize="24sp"
+        app:showTrack="true"
         android:layout_marginBottom="70dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"

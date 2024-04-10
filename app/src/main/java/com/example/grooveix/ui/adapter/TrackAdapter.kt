@@ -10,8 +10,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.grooveix.R
 import com.example.grooveix.ui.activity.MainActivity
 import com.example.grooveix.ui.media.Track
+import com.l4digital.fastscroll.FastScroller
+
 class TrackAdapter(private val activity: MainActivity):
-    RecyclerView.Adapter<TrackAdapter.SongsViewHolder>() {
+    RecyclerView.Adapter<TrackAdapter.SongsViewHolder>(), FastScroller.SectionIndexer {
     val songs = mutableListOf<Track>()
 
     inner class SongsViewHolder(itemView: View) :
@@ -105,4 +107,6 @@ class TrackAdapter(private val activity: MainActivity):
             notifyItemRangeRemoved(newSongs.size, numberItemsToRemove)
         }
     }
+
+    override fun getSectionText(position: Int) = songs[position].title.firstOrNull()?.toString()
 }
