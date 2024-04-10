@@ -26,6 +26,7 @@ class TrackAdapter(private val activity: MainActivity):
                 itemView.isClickable = true
                 itemView.setOnClickListener {
                     activity.playNewPlayQueue(songs, layoutPosition)
+                    activity.showPlayer()
                 }
 
                 itemView.setOnLongClickListener{

@@ -29,6 +29,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="?attr/colorSurface"
+        android:visibility="gone"
         app:behavior_hideable="false"
         app:behavior_peekHeight="136dp"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">

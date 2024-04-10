@@ -35,6 +35,7 @@ import android.support.v4.media.session.PlaybackStateCompat.STATE_PLAYING
 import android.support.v4.media.session.PlaybackStateCompat.STATE_STOPPED
 import android.util.Size
 import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.FrameLayout
@@ -46,6 +47,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
+import androidx.core.view.marginBottom
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
@@ -143,6 +145,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun hideBottomSheet(view: View) {
+        setMainViewMargins(0)
         val height = view.height
         ObjectAnimator.ofFloat(view, View.TRANSLATION_Y, 0f, height.toFloat()).apply {
             duration = 700
@@ -151,6 +154,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showBottomSheet(view: View) {
+        setMainViewMargins(144)
         val height = view.height
         ObjectAnimator.ofFloat(view, View.TRANSLATION_Y, height.toFloat(), 0f).apply {
             duration = 300
@@ -393,6 +397,17 @@ class MainActivity : AppCompatActivity() {
             file = File(directory, "$albumId.jpg")
         }
         return file
+    }
+
+    fun showPlayer() {
+        binding.slidingPanel.isVisible = true
+        setMainViewMargins(144)
+    }
+
+    fun setMainViewMargins(margin: Int) {
+        val playParam = binding.navHostFragmentActivityMain.layoutParams as ViewGroup.MarginLayoutParams
+        playParam.setMargins(0,0,0,margin)
+        binding.navHostFragmentActivityMain.layoutParams = playParam
     }
 
     fun showSongPopup(view: View, track: Track) {
