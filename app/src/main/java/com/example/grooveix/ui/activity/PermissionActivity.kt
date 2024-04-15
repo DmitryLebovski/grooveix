@@ -26,6 +26,14 @@ class PermissionActivity : AppCompatActivity() {
         binding.finishOnBoarding.setOnClickListener {
             permissionSetup()
         }
+
+        binding.cancelBoarding.setOnClickListener {
+            Toast.makeText(this, this.getString(R.string.permission_error), Toast.LENGTH_LONG).show()
+            val intent: Intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+            val uri = Uri.fromParts("package", packageName, null)
+            intent.setData(uri)
+            startActivity(intent)
+        }
     }
 
     private fun permissionSetup() {

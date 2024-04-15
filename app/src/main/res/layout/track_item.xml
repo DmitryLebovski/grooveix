@@ -2,88 +2,104 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/llcontent"
+    android:layout_height="88dp"
     android:layout_width="match_parent"
-    android:layout_height="70dp"
-    android:layout_marginStart="1dp"
-    android:layout_marginEnd="1dp"
-    android:layout_marginBottom="1dp"
-    android:gravity="center_vertical"
-    android:orientation="horizontal"
-    android:weightSum="6"
-    android:background="?android:attr/selectableItemBackground">
+    android:paddingVertical="4dp">
 
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/cardView"
-        android:layout_width="40dp"
-        android:layout_height="44dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="4dp"
-        android:layout_weight=".1"
-        android:backgroundTint="@android:color/transparent"
-        android:elevation="0dp"
-        app:cardCornerRadius="6dp"
-        app:cardElevation="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ImageView
-            android:id="@+id/artwork"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:ignore="ContentDescription" />
-    </com.google.android.material.card.MaterialCardView>
-
-    <LinearLayout
-        android:layout_width="0dp"
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="5.9"
-        android:gravity="center_vertical"
-        android:orientation="vertical"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:layout_marginEnd="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/cardView"
-        app:layout_constraintTop_toTopOf="parent">
+        app:cardCornerRadius="24dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="14dp"
+        app:cardBackgroundColor="@color/button_background_default"
+        app:cardElevation="0dp">
 
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="2dp"
-            android:ellipsize="end"
-            android:singleLine="true"
-            android:text="yes, and?"
-            android:fontFamily="@font/montserrat_regular"
-            android:textSize="16sp" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/artist"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:singleLine="true"
-            android:text="Ariana Grande"
-            android:fontFamily="@font/montserrat_bold"
-            android:textSize="14sp"
-            tools:ignore="HardcodedText" />
-    </LinearLayout>
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardView"
+                android:layout_width="54dp"
+                android:layout_height="54dp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="12dp"
+                android:backgroundTint="@android:color/transparent"
+                android:elevation="0dp"
+                app:cardCornerRadius="14dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/white">
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btnFavorite"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_marginEnd="24dp"
-        android:background="@drawable/ic_favorite_track"/>
+                <ImageView
+                    android:id="@+id/artwork"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    tools:ignore="ContentDescription" />
+            </com.google.android.material.card.MaterialCardView>
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btnMenu"
-        android:background="@drawable/baseline_more_vert_24"
-        android:layout_marginEnd="16dp"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        style="@style/Widget.AppCompat.ActionButton.Overflow"/>
+            <LinearLayout
+                android:id="@+id/linearLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/cardView"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="16dp"
+                android:layout_toStartOf="@id/btnFavorite"
+                android:layout_toEndOf="@id/cardView"
+                android:orientation="vertical">
 
+                <TextView
+                    android:id="@+id/artist"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/montserrat_regular"
+                    android:singleLine="true"
+                    android:textColor="@color/text_color"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="2dp"
+                    android:ellipsize="marquee"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:fontFamily="@font/montserrat_bold"
+                    android:marqueeRepeatLimit="marquee_forever"
+                    android:singleLine="true"
+                    android:text="@string/loadingTW"
+                    android:textColor="@color/text_color"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnFavorite"
+                android:layout_width="20dp"
+                android:layout_height="18dp"
+                android:layout_alignParentBottom="true"
+                android:layout_marginEnd="-12dp"
+                android:layout_marginBottom="28dp"
+                android:layout_toStartOf="@+id/btnMenu"
+                android:background="@drawable/outline_fav_icon" />
+
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnMenu"
+                android:layout_width="28dp"
+                android:layout_height="8dp"
+                android:layout_alignBottom="@+id/linearLayout"
+                android:layout_alignParentEnd="true"
+                android:layout_marginHorizontal="24dp"
+                android:layout_marginBottom="14dp"
+                android:background="@drawable/settings_icon" />
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
 </LinearLayout>

@@ -1,29 +1,40 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
+
     <!-- Base application theme. -->
-    <style name="Theme.Grooveix" parent="Theme.Material3.Light.NoActionBar">
+    <style name="Theme.Grooveix" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_500</item>
+        <item name="colorPrimary">@color/purple_200</item>
         <item name="colorPrimaryVariant">@color/purple_700</item>
-        <item name="colorOnPrimary">@color/white</item>
+
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_700</item>
-        <item name="colorOnSecondary">@color/black</item>
-        <!-- Status bar color. -->
-        <item name="statusBarForeground">@color/black</item>
+        <item name="colorSecondaryVariant">@color/teal_200</item>
+        <item name="colorOnSecondary">@color/botttom_light_1</item>
 
-        <item name="android:windowLightStatusBar">true</item>
+        <!-- Customize your theme here. -->
+        <item name="android:windowActionBar">false</item>
         <item name="android:windowNoTitle">true</item>
-
-        <item name="colorOnSurfaceVariant">#80000000</item>
-
-        <item name="android:windowTranslucentStatus">false</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="colorOnSurfaceVariant">@color/botttom_light_1</item>
+
+        <item name="android:windowLightNavigationBar">true</item>
+
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@color/botttom_light_1</item>
     </style>
 
-    <style name="Theme.RemoveSplashScreenTheme" parent="@style/Theme.Grooveix">
-        <item name="android:windowIsTranslucent">false</item>
+    <!-- Style for removing splash screen -->
+    <style name="Theme.ChangeColor" parent="@style/Theme.Grooveix">
+        <item name="android:navigationBarColor">#4B46E3</item>
     </style>
+
+    <!-- Colors -->
+    <color name="button_background_default">#EDEFEF</color>
+    <color name="background_default">#EDEFEF</color>
+    <color name="botttom_light_1">#EDEFEF</color>
+    <color name="text_color">#323232</color>
+    <color name="icon_color">#4B46E3</color>
 
 </resources>

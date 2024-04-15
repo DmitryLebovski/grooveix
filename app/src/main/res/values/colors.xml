@@ -11,9 +11,11 @@
     <color name="botttom_dark_1">#20000000</color>
     <color name="botttom_dark_2">#30000000</color>
     <color name="botttom_dark_3">#60000000</color>
-    <color name="botttom_light_1">#20FFFFFF</color>
-    <color name="botttom_light_2">#30FFFFFF</color>
     <color name="botttom_light_3">#60FFFFFF</color>
+
+    <color name="text_light">#EDEFEF</color>
+    <color name="text_dark">#323232</color>
+    <color name="allow_button">#2E56D5</color>
 
 
 </resources>

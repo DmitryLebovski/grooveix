@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.activity.MainActivity"
-    android:fitsSystemWindows="true">
+    android:fitsSystemWindows="false"
+    android:theme="@style/Theme.Grooveix">
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/nav_host_fragment_activity_main"
@@ -28,10 +29,10 @@
         android:id="@+id/slidingPanel"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="?attr/colorSurface"
+        android:background="@android:color/transparent"
         android:visibility="gone"
         app:behavior_hideable="false"
-        app:behavior_peekHeight="136dp"
+        app:behavior_peekHeight="146dp"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
         <androidx.fragment.app.FragmentContainerView
@@ -44,8 +45,7 @@
             android:id="@+id/miniPlayerFragment"
             android:name="com.example.grooveix.ui.fragment.MiniPlayerFragment"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:layout_marginTop="4dp"
+            android:layout_height="wrap_content"
             tools:layout="@layout/fragment_mini_player" />
     </FrameLayout>
 
@@ -55,8 +55,8 @@
         android:layout_height="72dp"
         android:layout_gravity="bottom"
         app:labelVisibilityMode="selected"
-        app:elevation="0dp"
-        tools:layout_height="72dp"
+        app:itemIconTint="@color/text_color"
+        android:background="@drawable/background_mini_player"
         app:menu="@menu/bottom_nav_menu" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -2,9 +2,9 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item android:state_checked="false"
-        android:drawable="@drawable/home_outline"/>
+        android:drawable="@drawable/play_arrow_player"/>
 
     <item android:state_checked="true"
-        android:drawable="@drawable/home_icon"/>
+        android:drawable="@drawable/pause_player"/>
 
 </selector>

@@ -5,10 +5,10 @@
     <string name="title_favorite">Избранное</string>
     <string name="title_search">Поиск</string>
     <string name="search_failed">Трек не найден</string>
-    <string name="welcome1">добро пожаловать в</string>
-    <string name="continue1">продолжить</string>
-    <string name="welcome2">приложению также необходимо предоставить следущие разрешения:</string>
-    <string name="memory">хранилище</string>
+    <string name="continue1">Предоставить</string>
+    <string name="cancel">Отказать</string>
+    <string name="welcome2">Приложению также необходимо предоставить следующие разрешения:</string>
+    <string name="memory">Хранилище</string>
     <string name="remove_from_queue">Удалить из очереди</string>
     <string name="error">Произошла неизвестная ошибка. Перезайдите в приложение</string>
     <string name="memory_welcome">доступ к хранилищу для воспроизведения музыкальных файлов</string>
@@ -32,4 +32,5 @@
     <string name="option_1">Название\n</string>
     <string name="option_2">Исполнитель</string>
     <string name="start_search">Начните вводить название трека, артиста или используйте глобальный поиск</string>
+    <string name="loadingTW">Загрузка...</string>
 </resources>

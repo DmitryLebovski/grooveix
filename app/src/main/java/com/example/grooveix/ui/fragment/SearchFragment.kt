@@ -1,20 +1,24 @@
 package com.example.grooveix.ui.fragment
 
+import android.annotation.SuppressLint
+import android.app.DownloadManager
+import android.content.Context.DOWNLOAD_SERVICE
+import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.DownloadListener
+import android.webkit.URLUtil
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import android.widget.SearchView
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.core.view.MenuHost
-import androidx.core.view.MenuProvider
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -26,6 +30,10 @@ import com.example.grooveix.ui.media.MusicDatabase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.net.CookieManager
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
+
 
 class SearchFragment : Fragment() {
 
@@ -48,6 +56,7 @@ class SearchFragment : Fragment() {
         return binding.root
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -64,6 +73,78 @@ class SearchFragment : Fragment() {
         }
 
         mainActivity.onBackPressedDispatcher.addCallback(viewLifecycleOwner, onBackPressedCallback)
+
+        binding.resultWebView.getSettings().javaScriptEnabled = true;
+
+        binding.searchButton.setOnClickListener {
+            binding.searchLayout.isGone = true
+            binding.searchButton.isGone = true
+            binding.webViewLayout.isVisible = true
+
+            binding.resultWebView.settings.apply {
+                javaScriptEnabled = true
+                domStorageEnabled = true
+                allowFileAccess = true
+                javaScriptCanOpenWindowsAutomatically = true
+                blockNetworkLoads = false
+                allowContentAccess = true
+            }
+
+            binding.resultWebView.webViewClient = object : WebViewClient() {
+                override fun onPageFinished(view: WebView, url: String) {
+                    super.onPageFinished(view, url)
+                    removeAds()
+                }
+            }
+
+//            binding.resultWebView.setDownloadListener { url, _, contentDisposition, mimetype, _ ->
+//                val request = DownloadManager.Request(Uri.parse(url))
+//                request.setDescription("Download file...")
+//                request.setTitle(URLUtil.guessFileName(url, contentDisposition, mimetype))
+//                request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+//                request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, URLUtil.guessFileName(url, contentDisposition, mimetype))
+//                val dm = requireContext().getSystemService(DOWNLOAD_SERVICE) as DownloadManager
+//                dm.enqueue(request)
+//                Toast.makeText(context, "Downloading File", Toast.LENGTH_LONG).show()
+//            }
+
+            binding.resultWebView.setDownloadListener(DownloadListener { url, userAgent, contentDisposition, mimeType, contentLength -> // Handle the download here
+                val request = DownloadManager.Request(Uri.parse(url))
+                request.setMimeType(mimeType)
+                request.addRequestHeader("User-Agent", userAgent)
+                request.setDescription("Downloading file...")
+                request.setTitle(URLUtil.guessFileName(url, contentDisposition, mimeType))
+                request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+                request.setDestinationInExternalPublicDir(
+                    Environment.DIRECTORY_DOWNLOADS,
+                    URLUtil.guessFileName(url, contentDisposition, mimeType)
+                )
+                val dm = requireContext().getSystemService(DOWNLOAD_SERVICE) as DownloadManager?
+                dm!!.enqueue(request)
+                Toast.makeText(context, "Downloading File", Toast.LENGTH_LONG)
+                    .show()
+            })
+
+
+            val encodedQuery = URLEncoder.encode(binding.searchView.query.toString(), StandardCharsets.UTF_8.toString())
+            binding.resultWebView.loadUrl("https://rus.hitmotop.com/search?q=$encodedQuery")
+        }
+
+        binding.closeWeb.setOnClickListener {
+            binding.searchLayout.isVisible = true
+            binding.searchButton.isVisible = true
+            binding.webViewLayout.isGone = true
+        }
+    }
+
+    private fun removeAds() {
+        val script = "javascript:(function() { " +
+                "var ads = document.getElementsByClassName('ad'); " +
+                "for (var i = 0; i < ads.length; i++) { " +
+                "    ads[i].style.display = 'none'; " +
+                "} " +
+                "})()"
+        binding.resultWebView.loadUrl(script)
     }
 
     override fun onStop() {
@@ -97,7 +178,6 @@ class SearchFragment : Fragment() {
 
         withContext(Dispatchers.Main) {
             binding.noResults.isGone = true
-            binding.searchButton.isGone = true
             binding.startSearch.isGone = true
             if (songs.isEmpty()) {
                 binding.searchButton.isVisible = true

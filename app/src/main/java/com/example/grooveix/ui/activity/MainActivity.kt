@@ -154,7 +154,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showBottomSheet(view: View) {
-        setMainViewMargins(144)
+        setMainViewMargins(174)
         val height = view.height
         ObjectAnimator.ofFloat(view, View.TRANSLATION_Y, height.toFloat(), 0f).apply {
             duration = 300
@@ -401,7 +401,7 @@ class MainActivity : AppCompatActivity() {
 
     fun showPlayer() {
         binding.slidingPanel.isVisible = true
-        setMainViewMargins(144)
+        setMainViewMargins(174)
     }
 
     fun setMainViewMargins(margin: Int) {
@@ -562,7 +562,7 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
-    private fun refreshMusicLibrary() = lifecycleScope.launch(Dispatchers.Default) {
+    fun refreshMusicLibrary() = lifecycleScope.launch(Dispatchers.Default) {
         getMediaStoreCursor()?.use { cursor ->
             val idColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID)
             val songIds = mutableListOf<Long>()

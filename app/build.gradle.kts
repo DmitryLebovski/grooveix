@@ -77,9 +77,10 @@ dependencies {
     implementation("com.tbuonomo:dotsindicator:5.0")
     implementation("io.github.l4digital:fastscroll:2.1.0")
     implementation("androidx.palette:palette-ktx:1.0.0")
+    implementation("androidx.webkit:webkit:1.10.0")
 
     implementation("androidx.media:media:1.7.0")
-    implementation("androidx.media3:media3-exoplayer:1.2.1")
+    implementation("androidx.media3:media3-exoplayer:1.2.0")
     implementation("androidx.media3:media3-exoplayer-dash:1.2.1")
     implementation("androidx.media3:media3-ui:1.2.1")
     implementation("com.squareup.okhttp3:okhttp:4.10.0")

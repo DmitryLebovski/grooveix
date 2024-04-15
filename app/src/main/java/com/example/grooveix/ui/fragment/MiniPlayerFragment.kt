@@ -1,5 +1,6 @@
 package com.example.grooveix.ui.fragment
 
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
@@ -7,6 +8,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.ui.graphics.Color
 import com.example.grooveix.R
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -42,8 +44,8 @@ class MiniPlayerFragment : Fragment() {
         binding.title.isSelected = true
 
         playQueueViewModel.playbackState.observe(viewLifecycleOwner) { state ->
-            if (state == PlaybackStateCompat.STATE_PLAYING) binding.btnPlay.setBackgroundResource(R.drawable.baseline_pause_24)
-            else binding.btnPlay.setBackgroundResource(R.drawable.baseline_play_arrow_24)
+            if (state == PlaybackStateCompat.STATE_PLAYING) binding.btnPlay.setBackgroundResource(R.drawable.pause_player)
+            else binding.btnPlay.setBackgroundResource(R.drawable.play_arrow_player)
         }
 
         playQueueViewModel.playbackPosition.observe(viewLifecycleOwner) {
@@ -57,6 +59,8 @@ class MiniPlayerFragment : Fragment() {
         binding.btnPlay.setOnClickListener {
             mainActivity.playPauseControl()
         }
+
+        binding.songProgressBar.setProgressTintList(ColorStateList.valueOf(requireContext().getColor(R.color.white)));
     }
 
     override fun onDestroyView() {

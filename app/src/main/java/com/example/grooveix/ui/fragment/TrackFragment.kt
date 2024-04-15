@@ -58,7 +58,6 @@ class TrackFragment : Fragment() {
         adapter = TrackAdapter(mainActivity)
         binding.recyclerView.adapter = adapter
         adapter.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
-
         musicViewModel.loadTracks.observe(viewLifecycleOwner) {
             updateRecyclerView(it)
         }
@@ -110,6 +109,7 @@ class TrackFragment : Fragment() {
 
         binding.fab.setOnClickListener {
             mainActivity.playNewPlayQueue(songs, shuffle = true)
+            mainActivity.setMainViewMargins(174)
         }
 
         adapter.processNewSongs(songs)

@@ -3,6 +3,9 @@ pluginManagement {
         google()
         mavenCentral()
         gradlePluginPortal()
+        @Suppress("DEPRECATION")
+        jcenter()
+        maven { url = uri("https://jitpack.io") }
     }
 }
 dependencyResolutionManagement {
