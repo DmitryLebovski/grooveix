@@ -1,4 +1,4 @@
-<h1 align="center">Offline Music Player "Grooveix"</h1>
+<h1 align="center">Offline Music Player "grooveix"</h1>
 <h2 align="center">made by KlausReinherz</h2>
 <h3 align="left">The current project is the graduation project as part of the studying at Samsung IT Campus 2023/2024.</h3>
 
