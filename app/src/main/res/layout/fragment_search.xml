@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true">
+    android:fitsSystemWindows="true"
+    android:background="#4B46E3">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/searchLayout"
@@ -11,7 +12,7 @@
         android:layout_height="0dp"
         android:visibility="visible"
         android:layout_marginBottom="4dp"
-        app:layout_constraintBottom_toTopOf="@+id/search_button"
+        app:layout_constraintBottom_toTopOf="@+id/search_view"
         app:layout_constraintTop_toTopOf="parent">
 
         <android.widget.SearchView
@@ -38,6 +39,7 @@
             android:text="@string/search_failed"
             android:textSize="14sp"
             android:visibility="gone"
+            android:textColor="@color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
@@ -52,6 +54,7 @@
             android:text="@string/start_search"
             android:textSize="14sp"
             android:visibility="visible"
+            android:textColor="@color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
@@ -62,6 +65,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginTop="8dp"
+            android:textColor="@color/white"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/searchView" />
@@ -82,6 +86,7 @@
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            android:background="@color/white"
             app:layout_scrollFlags="scroll|enterAlways|snap">
 
             <TextView
@@ -111,15 +116,35 @@
             app:layout_constraintTop_toBottomOf="@+id/toolbar2" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/search_button"
+    <RelativeLayout
+        android:id="@+id/search_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/search_extra"
-        android:visibility="visible"
-        android:layout_marginBottom="80dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginBottom="64dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginTop="22dp"
+            android:layout_marginStart="60dp"
+            android:elevation="10dp"
+            android:fontFamily="@font/montserrat_regular"
+            android:text="@string/search_extra"
+            android:textColor="@color/white"
+            android:textSize="13sp"
+            android:textAllCaps="true"/>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/search_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="visible"
+            android:background="@drawable/ic_search_template" />
+
+    </RelativeLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

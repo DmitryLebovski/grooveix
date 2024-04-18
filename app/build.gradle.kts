@@ -78,6 +78,8 @@ dependencies {
     implementation("io.github.l4digital:fastscroll:2.1.0")
     implementation("androidx.palette:palette-ktx:1.0.0")
     implementation("androidx.webkit:webkit:1.10.0")
+    implementation("org.adblockplus:adblock-android:4.4.0")
+
 
     implementation("androidx.media:media:1.7.0")
     implementation("androidx.media3:media3-exoplayer:1.2.0")

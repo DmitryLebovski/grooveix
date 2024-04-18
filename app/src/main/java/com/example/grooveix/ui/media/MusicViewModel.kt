@@ -4,6 +4,9 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
+import com.example.grooveix.ui.media.entity.Playlist
+import com.example.grooveix.ui.media.entity.PlaylistTrackCrossRef
+import com.example.grooveix.ui.media.entity.Track
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 class MusicViewModel(application: Application) : AndroidViewModel(application) {
@@ -11,12 +14,16 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
     private val repository: MusicRepository
     val loadTracks: LiveData<List<Track>>
     val loadTracksArtist: LiveData<List<Track>>
+    var currentSortingOption = "loadTracks"
+    //val loadPlaylists: LiveData<List<Playlist>>
+
 
     init {
         val musicRoom = MusicDatabase.getDatabase(application).musicDao()
         repository = MusicRepository(musicRoom)
         loadTracks = repository.loadTracks
         loadTracksArtist = repository.loadTracksArtist
+        //loadPlaylists = repository.getAllPlaylists()
     }
 
     fun deleteTrack(track: Track) = viewModelScope.launch(Dispatchers.IO) {
@@ -32,4 +39,24 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     suspend fun getTrackById(trackId: Long) : Track? = repository.getTrackById(trackId)
+
+    fun insertPlaylist(playlist: Playlist) = viewModelScope.launch(Dispatchers.IO) {
+        repository.insertPlaylist(playlist)
+    }
+
+    fun deletePlaylist(playlist: Playlist) = viewModelScope.launch(Dispatchers.IO) {
+        repository.deletePlaylist(playlist)
+    }
+
+    fun addTrackToPlaylist(playlistId: Long, trackId: Long) = viewModelScope.launch(Dispatchers.IO) {
+        repository.addTrackToPlaylist(playlistId, trackId)
+    }
+
+    fun removeTrackFromPlaylist(playlistId: Long, trackId: Long) = viewModelScope.launch(Dispatchers.IO) {
+        repository.removeTrackFromPlaylist(playlistId, trackId)
+    }
+
+    suspend fun getTracksInPlaylist(playlistId: Long): List<PlaylistTrackCrossRef> {
+        return repository.getTracksInPlaylist(playlistId)
+    }
 }

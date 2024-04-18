@@ -61,7 +61,8 @@ android:background="?attr/colorSurface"
                 android:marqueeRepeatLimit="marquee_forever"
                 android:ellipsize="marquee"
                 android:focusable="true"
-                android:focusableInTouchMode="true"                android:textColor="?attr/colorOnSurface"
+                android:focusableInTouchMode="true"
+                android:textColor="?attr/colorOnSurface"
                 android:textSize="12sp"
                 android:textStyle="bold" />
 
@@ -101,6 +102,7 @@ android:background="?attr/colorSurface"
         android:id="@+id/control_panel"
         android:layout_width="match_parent"
         android:layout_height="70dp"
+        android:background="@color/background_default"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <ProgressBar

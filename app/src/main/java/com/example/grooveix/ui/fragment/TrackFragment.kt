@@ -7,11 +7,9 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
-import android.widget.Toast
 import androidx.annotation.MenuRes
-import androidx.core.view.isGone
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.RecyclerView
@@ -21,9 +19,7 @@ import com.example.grooveix.ui.activity.MainActivity
 import com.example.grooveix.ui.adapter.TrackAdapter
 import com.example.grooveix.ui.media.MusicDatabase
 import com.example.grooveix.ui.media.MusicViewModel
-import com.example.grooveix.ui.media.Track
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import com.example.grooveix.ui.media.entity.Track
 
 
 class TrackFragment : Fragment() {
@@ -58,6 +54,7 @@ class TrackFragment : Fragment() {
         adapter = TrackAdapter(mainActivity)
         binding.recyclerView.adapter = adapter
         adapter.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
+
         musicViewModel.loadTracks.observe(viewLifecycleOwner) {
             updateRecyclerView(it)
         }
@@ -76,8 +73,20 @@ class TrackFragment : Fragment() {
 
         binding.sortBtn.setOnClickListener {
             showMenu(it, R.menu.sort_menu)
+            //adapter.songs.clear()
+            Log.d("CHECKCHECK", musicViewModel.loadTracks.value.toString())
+            Log.d("CHECKCHECK2", musicViewModel.loadTracksArtist.value.toString())
+
         }
     }
+
+//    currentSortingOption = if (currentSortingOption == "loadTracks") {
+//        "loadTracksArtist"
+//    } else {
+//        "loadTracks"
+//    }
+//    val songs = musicDatabase!!.musicDao().getSongListOrderBy(currentSortingOption)
+//    adapter.songs.addAll(songs)
 
     private fun showMenu(v: View, @MenuRes menuRes: Int) {
         val popup = PopupMenu(requireContext(), v)
@@ -85,15 +94,24 @@ class TrackFragment : Fragment() {
 
         popup.setOnMenuItemClickListener { menuItem: MenuItem ->
             return@setOnMenuItemClickListener when (menuItem.itemId) {
-                R.id.option_1 -> {
-                    true
-                }
+                        R.id.option_1 -> {
+                            adapter.songs.clear()
+                            musicViewModel.loadTracks.observe(viewLifecycleOwner) {
+                                updateRecyclerView(it)
+                            }
+                            adapter.notifyDataSetChanged()
+                            true
+                        }
 
-                R.id.option_2 -> {
-
-                    true
-                }
-                else -> false
+                        R.id.option_2 -> {
+                            adapter.songs.clear()
+                            musicViewModel.loadTracksArtist.observe(viewLifecycleOwner) {
+                                updateRecyclerView(it)
+                            }
+                            adapter.notifyDataSetChanged()
+                            true
+                        }
+                        else -> false
             }
         }
 
@@ -118,6 +136,7 @@ class TrackFragment : Fragment() {
         if (unhandledRequestReceived) {
             unhandledRequestReceived = false
             musicViewModel.loadTracks.value?.let { updateRecyclerView(it) }
+                //musicViewModel.loadTracks.value?.let { updateRecyclerView(it) }
         }
     }
 

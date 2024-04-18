@@ -1,12 +1,15 @@
 package com.example.grooveix.ui.media
 
 import androidx.lifecycle.LiveData
+import com.example.grooveix.ui.media.entity.Playlist
+import com.example.grooveix.ui.media.entity.PlaylistTrackCrossRef
+import com.example.grooveix.ui.media.entity.Track
 
 class MusicRepository(private val musicRoom: MusicDao) {
 
     val loadTracks: LiveData<List<Track>> = musicRoom.getSongListOrderByTitle()
-
     val loadTracksArtist: LiveData<List<Track>> = musicRoom.getSongListOrderByArtist()
+
 
     suspend fun insertTrack(track: Track) {
         musicRoom.insert(track)
@@ -21,4 +24,28 @@ class MusicRepository(private val musicRoom: MusicDao) {
     }
 
     suspend fun getTrackById(trackId: Long): Track? = musicRoom.getTrackById(trackId)
+
+    suspend fun insertPlaylist(playlist: Playlist) {
+        musicRoom.insertPlaylist(playlist)
+    }
+
+    suspend fun deletePlaylist(playlist: Playlist) {
+        musicRoom.deletePlaylist(playlist)
+    }
+
+    fun getAllPlaylists(): LiveData<List<Playlist>> {
+        return musicRoom.getAllPlaylists()
+    }
+
+    suspend fun addTrackToPlaylist(playlistId: Long, trackId: Long) {
+        musicRoom.addTrackToPlaylist(PlaylistTrackCrossRef(playlistId, trackId))
+    }
+
+    suspend fun removeTrackFromPlaylist(playlistId: Long, trackId: Long) {
+        musicRoom.removeTrackFromPlaylist(playlistId, trackId)
+    }
+
+    suspend fun getTracksInPlaylist(playlistId: Long): List<PlaylistTrackCrossRef> {
+        return musicRoom.getTracksInPlaylist(playlistId)
+    }
 }

@@ -7,12 +7,18 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import com.example.grooveix.ui.media.entity.Playlist
+import com.example.grooveix.ui.media.entity.PlaylistTrackCrossRef
+import com.example.grooveix.ui.media.entity.Track
 
 @Dao
 interface MusicDao {
 
     @Delete
     suspend fun delete(track: Track)
+
+    @Query("SELECT * from grooveix_library ORDER BY :choice")
+    fun getSongListOrderBy(choice: String): LiveData<List<Track>>
 
     @Query("SELECT * from grooveix_library ORDER BY track_title")
     fun getSongListOrderByTitle(): LiveData<List<Track>>
@@ -23,10 +29,23 @@ interface MusicDao {
     @Query("SELECT * FROM grooveix_library WHERE track_title LIKE :search OR track_artist LIKE :search OR track_album LIKE :search")
     suspend fun getTracksLikeSearch(search: String): List<Track>
 
-//    @Query("SELECT * from favorites_library ORDER BY track_title")
-//    fun getFavoritesListOrderByTitle(): LiveData<List<Track>>
-//    @Query("SELECT * from favorites_library ORDER BY track_title")
-//    fun getFavoritesListOrderByArtist(): LiveData<List<Track>>
+    @Insert
+    suspend fun insertPlaylist(playlist: Playlist)
+
+    @Delete
+    suspend fun deletePlaylist(playlist: Playlist)
+
+    @Query("SELECT * FROM playlist")
+    fun getAllPlaylists(): LiveData<List<Playlist>>
+
+    @Insert
+    suspend fun addTrackToPlaylist(crossRef: PlaylistTrackCrossRef)
+
+    @Query("DELETE FROM playlist_tracks WHERE playlistId = :playlistId AND trackId = :trackId")
+    suspend fun removeTrackFromPlaylist(playlistId: Long, trackId: Long)
+
+    @Query("SELECT * FROM playlist_tracks WHERE playlistId = :playlistId")
+    suspend fun getTracksInPlaylist(playlistId: Long): List<PlaylistTrackCrossRef>
 
     @Query("SELECT * FROM grooveix_library WHERE trackId = :trackId")
     suspend fun getTrackById(trackId: Long): Track?

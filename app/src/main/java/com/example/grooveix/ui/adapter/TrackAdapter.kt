@@ -9,7 +9,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.grooveix.R
 import com.example.grooveix.ui.activity.MainActivity
-import com.example.grooveix.ui.media.Track
+import com.example.grooveix.ui.media.entity.Track
 import com.l4digital.fastscroll.FastScroller
 
 class TrackAdapter(private val activity: MainActivity):
