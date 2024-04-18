@@ -12,7 +12,7 @@
         android:layout_height="0dp"
         android:visibility="visible"
         android:layout_marginBottom="4dp"
-        app:layout_constraintBottom_toTopOf="@+id/search_view"
+        app:layout_constraintBottom_toTopOf="@+id/search_button_view"
         app:layout_constraintTop_toTopOf="parent">
 
         <android.widget.SearchView
@@ -55,6 +55,7 @@
             android:textSize="14sp"
             android:visibility="visible"
             android:textColor="@color/white"
+            android:fontFamily="@font/montserrat_regular"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
@@ -117,14 +118,14 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <RelativeLayout
-        android:id="@+id/search_view"
+        android:id="@+id/search_button_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginBottom="64dp">
+        android:layout_marginBottom="72dp">
 
         <TextView
             android:layout_width="wrap_content"

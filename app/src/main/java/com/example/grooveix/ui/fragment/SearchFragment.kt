@@ -97,18 +97,7 @@ class SearchFragment : Fragment() {
                 }
             }
 
-//            binding.resultWebView.setDownloadListener { url, _, contentDisposition, mimetype, _ ->
-//                val request = DownloadManager.Request(Uri.parse(url))
-//                request.setDescription("Download file...")
-//                request.setTitle(URLUtil.guessFileName(url, contentDisposition, mimetype))
-//                request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-//                request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, URLUtil.guessFileName(url, contentDisposition, mimetype))
-//                val dm = requireContext().getSystemService(DOWNLOAD_SERVICE) as DownloadManager
-//                dm.enqueue(request)
-//                Toast.makeText(context, "Downloading File", Toast.LENGTH_LONG).show()
-//            }
-
-            binding.resultWebView.setDownloadListener(DownloadListener { url, userAgent, contentDisposition, mimeType, contentLength -> // Handle the download here
+            binding.resultWebView.setDownloadListener(DownloadListener { url, userAgent, contentDisposition, mimeType, contentLength ->
                 val request = DownloadManager.Request(Uri.parse(url))
                 request.setMimeType(mimeType)
                 request.addRequestHeader("User-Agent", userAgent)
