@@ -152,7 +152,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showBottomSheet(view: View) {
-        setMainViewMargins(174)
+        setMainViewMargins(194)
         val height = view.height
         ObjectAnimator.ofFloat(view, View.TRANSLATION_Y, height.toFloat(), 0f).apply {
             duration = 300
@@ -399,7 +399,7 @@ class MainActivity : AppCompatActivity() {
 
     fun showPlayer() {
         binding.slidingPanel.isVisible = true
-        setMainViewMargins(174)
+        setMainViewMargins(194)
     }
 
     fun setMainViewMargins(margin: Int) {

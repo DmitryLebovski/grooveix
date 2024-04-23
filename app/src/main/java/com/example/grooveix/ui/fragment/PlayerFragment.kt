@@ -1,8 +1,9 @@
 package com.example.grooveix.ui.fragment
-import android.animation.ArgbEvaluator
-import android.animation.ValueAnimator
+
 import android.annotation.SuppressLint
 import android.graphics.BitmapFactory
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
@@ -191,24 +192,23 @@ class PlayerFragment : Fragment() {
                 if (copyColor != dominantColor) copyColor = dominantColor
             }
 
-//            val gradientDrawable = GradientDrawable(
-//                GradientDrawable.Orientation.TOP_BOTTOM,
-//                intArrayOf(dominantColor, Color.TRANSPARENT, Color.TRANSPARENT)
-//            )
-//
-//            val cornerRadii = floatArrayOf(
-//                30f, 30f,
-//                30f, 30f,
-//                0f, 0f,
-//                0f, 0f
-//            )
-//
-//            gradientDrawable.cornerRadii = cornerRadii
-//
-//            binding.playerView.background = gradientDrawable
+            val gradientDrawable = GradientDrawable(
+                GradientDrawable.Orientation.TOP_BOTTOM,
+                intArrayOf(requireContext().getColor(R.color.background_default), requireContext().getColor(R.color.background_default), dominantColor)
+            )
 
-//            val bitmap = BitmapFactory.decodeFile(mainActivity.getArtwork(albumId)?.path)
-//            binding.dimBackground.background = BitmapDrawable(resources, bitmap)
+            val cornerRadii = floatArrayOf(
+                30f, 30f,
+                30f, 30f,
+                0f, 0f,
+                0f, 0f
+            )
+
+            gradientDrawable.cornerRadii = cornerRadii
+
+            binding.playerView.background = gradientDrawable
+
+            binding.dimBackground.background = BitmapDrawable(resources, bitmap)
 
         } else {
             Glide.with(mainActivity)

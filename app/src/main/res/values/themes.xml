@@ -16,15 +16,13 @@
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowTranslucentStatus">true</item>
-        <item name="colorOnSurfaceVariant">@color/botttom_light_1</item>
-
-        <item name="android:windowLightNavigationBar">true</item>
-
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:navigationBarColor">@color/botttom_light_1</item>
-        <item name="android:editTextColor">@android:color/white</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
 
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:editTextColor">@android:color/white</item>
     </style>
 
     <!-- Style for removing splash screen -->
@@ -37,6 +35,7 @@
     <color name="background_default">#EDEFEF</color>
     <color name="botttom_light_1">#EDEFEF</color>
     <color name="text_color">#323232</color>
-    <color name="icon_color">#4B46E3</color>
+    <color name="icon_color">#ABA8FF</color>
+    <color name="icon_color_secondary">#4B46E3</color>
 
 </resources>

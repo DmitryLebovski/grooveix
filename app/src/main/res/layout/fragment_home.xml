@@ -39,13 +39,13 @@
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/sortBtn"
-                android:layout_width="34dp"
-                android:layout_height="34dp"
+                android:layout_width="32dp"
+                android:layout_height="24dp"
                 android:layout_gravity="end|bottom"
-                android:background="@drawable/ic_sort"
+                android:background="@drawable/ic_sort_new"
                 android:visibility="visible"
-                android:layout_marginBottom="20dp"
-                android:layout_marginEnd="16dp"/>
+                android:layout_marginBottom="26dp"
+                android:layout_marginEnd="20dp"/>
         </androidx.appcompat.widget.Toolbar>
 
     </com.google.android.material.appbar.AppBarLayout>
@@ -61,7 +61,7 @@
         app:bubbleSize="small"
         app:bubbleTextSize="24sp"
         app:showTrack="true"
-        android:layout_marginBottom="64dp"
+        android:layout_marginBottom="88dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="@+id/nav_controls_fragment"
@@ -72,7 +72,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="12dp"
-        android:layout_marginBottom="88dp"
+        android:layout_marginBottom="112dp"
         android:layout_gravity="end|bottom"
         android:text="@string/shuffle"
         app:icon="@drawable/ic_shuffle"

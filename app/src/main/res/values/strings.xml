@@ -33,4 +33,5 @@
     <string name="option_2">Исполнитель</string>
     <string name="start_search">Начните вводить название трека, артиста или используйте глобальный поиск</string>
     <string name="loadingTW">Загрузка...</string>
+    <string name="lyrics_placeholder">При наличии текст появится здесь...</string>
 </resources>

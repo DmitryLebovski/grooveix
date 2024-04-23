@@ -4,25 +4,23 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    android:background="#4B46E3">
+    android:background="@drawable/background_search">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/searchLayout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:visibility="visible"
-        android:layout_marginBottom="4dp"
-        app:layout_constraintBottom_toTopOf="@+id/search_button_view"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <android.widget.SearchView
             android:id="@+id/searchView"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
+            android:layout_height="50dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
-            android:background="@drawable/round_background"
             android:drawableStart="@drawable/outline_search_24"
             android:drawablePadding="16dp"
             android:hint="@string/search_hint"
@@ -31,15 +29,48 @@
 
         </android.widget.SearchView>
 
+
+        <RelativeLayout
+            android:id="@+id/search_button_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/searchView"
+            android:layout_marginTop="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="60dp"
+                android:layout_marginTop="22dp"
+                android:elevation="10dp"
+                android:fontFamily="@font/montserrat_regular"
+                android:gravity="center"
+                android:text="@string/search_extra"
+                android:textAllCaps="true"
+                android:textColor="@color/white"
+                android:textSize="13sp" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/search_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ic_search_template"
+                android:visibility="visible" />
+
+        </RelativeLayout>
+
         <TextView
             android:id="@+id/noResults"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="84dp"
             android:text="@string/search_failed"
+            android:textColor="@color/white"
             android:textSize="14sp"
             android:visibility="gone"
-            android:textColor="@color/white"
+            android:fontFamily="@font/montserrat_regular"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
@@ -49,13 +80,13 @@
             android:id="@+id/startSearch"
             android:layout_width="250dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="36dp"
+            android:layout_marginTop="92dp"
+            android:fontFamily="@font/montserrat_regular"
             android:gravity="center"
             android:text="@string/start_search"
+            android:textColor="@color/white"
             android:textSize="14sp"
             android:visibility="visible"
-            android:textColor="@color/white"
-            android:fontFamily="@font/montserrat_regular"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
@@ -65,11 +96,10 @@
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginTop="8dp"
             android:textColor="@color/white"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/searchView" />
+            app:layout_constraintTop_toBottomOf="@+id/search_button_view" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -117,35 +147,4 @@
             app:layout_constraintTop_toBottomOf="@+id/toolbar2" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <RelativeLayout
-        android:id="@+id/search_button_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginBottom="72dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:layout_marginTop="22dp"
-            android:layout_marginStart="60dp"
-            android:elevation="10dp"
-            android:fontFamily="@font/montserrat_regular"
-            android:text="@string/search_extra"
-            android:textColor="@color/white"
-            android:textSize="13sp"
-            android:textAllCaps="true"/>
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/search_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="visible"
-            android:background="@drawable/ic_search_template" />
-
-    </RelativeLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

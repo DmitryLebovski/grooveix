@@ -127,7 +127,7 @@ class TrackFragment : Fragment() {
 
         binding.fab.setOnClickListener {
             mainActivity.playNewPlayQueue(songs, shuffle = true)
-            mainActivity.setMainViewMargins(174)
+            mainActivity.setMainViewMargins(194)
         }
 
         adapter.processNewSongs(songs)

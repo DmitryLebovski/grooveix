@@ -10,6 +10,8 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.grooveix.R
 import com.example.grooveix.ui.activity.MainActivity
@@ -47,9 +49,7 @@ class QueueAdapter(private val activity: MainActivity, private val fragment: Que
         holder.mArtist.text = currentQueueItemDescription.subtitle
 
         val textColour = if (playQueue[position].queueId == currentlyPlayingQueueId) {
-            MaterialColors.getColor(
-                activity, com.google.android.material.R.attr.colorAccent, Color.CYAN
-            )
+            ContextCompat.getColor(activity, R.color.icon_color)
         } else MaterialColors.getColor(
             activity, com.google.android.material.R.attr.colorOnSurface, Color.LTGRAY
         )

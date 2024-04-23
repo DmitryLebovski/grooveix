@@ -5,6 +5,7 @@
     android:layout_height="320dp"
     android:layout_width="match_parent"
     android:orientation="vertical"
+    android:background="@drawable/background_mini_player"
     tools:context=".ui.fragment.InfoTrackFragment">
 
     <ImageView
