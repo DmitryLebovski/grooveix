@@ -6,7 +6,8 @@
     android:layout_width="match_parent"
     android:orientation="vertical"
     android:background="@drawable/background_mini_player"
-    tools:context=".ui.fragment.InfoTrackFragment">
+    tools:context=".ui.fragment.InfoTrackFragment"
+    app:behavior_hideable="true">
 
     <ImageView
         android:layout_width="48dp"

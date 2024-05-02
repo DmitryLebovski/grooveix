@@ -35,6 +35,9 @@ interface MusicDao {
     @Delete
     suspend fun deletePlaylist(playlist: Playlist)
 
+    @Update(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun updatePlaylist(playlist: Playlist)
+
     @Query("SELECT * FROM playlist")
     fun getAllPlaylists(): LiveData<List<Playlist>>
 

@@ -21,12 +21,12 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
-            android:drawableStart="@drawable/outline_search_24"
-            android:drawablePadding="16dp"
             android:hint="@string/search_hint"
+            app:layout_constraintTop_toTopOf="parent"
             android:iconifiedByDefault="false"
-            app:layout_constraintTop_toTopOf="parent">
-
+            android:textColorHint="@color/text_dark"
+            android:outlineSpotShadowColor="@color/text_dark"
+            android:background="@drawable/gradient_bottom_view_light">
         </android.widget.SearchView>
 
 
@@ -58,7 +58,6 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/ic_search_template"
                 android:visibility="visible" />
-
         </RelativeLayout>
 
         <TextView
@@ -97,6 +96,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:textColor="@color/white"
+            android:layout_marginBottom="76dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/search_button_view" />

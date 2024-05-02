@@ -32,7 +32,7 @@
         android:background="@android:color/transparent"
         android:visibility="gone"
         app:behavior_hideable="false"
-        app:behavior_peekHeight="178dp"
+        app:behavior_peekHeight="166dp"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
         <androidx.fragment.app.FragmentContainerView
@@ -46,6 +46,7 @@
             android:name="com.example.grooveix.ui.fragment.MiniPlayerFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
             tools:layout="@layout/fragment_mini_player" />
     </FrameLayout>
 

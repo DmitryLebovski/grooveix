@@ -9,6 +9,7 @@ class MusicRepository(private val musicRoom: MusicDao) {
 
     val loadTracks: LiveData<List<Track>> = musicRoom.getSongListOrderByTitle()
     val loadTracksArtist: LiveData<List<Track>> = musicRoom.getSongListOrderByArtist()
+    val loadPlaylist: LiveData<List<Playlist>> = musicRoom.getAllPlaylists()
 
 
     suspend fun insertTrack(track: Track) {
@@ -31,6 +32,10 @@ class MusicRepository(private val musicRoom: MusicDao) {
 
     suspend fun deletePlaylist(playlist: Playlist) {
         musicRoom.deletePlaylist(playlist)
+    }
+
+    suspend fun updatePlaylist(playlist: Playlist) {
+        musicRoom.updatePlaylist(playlist)
     }
 
     fun getAllPlaylists(): LiveData<List<Playlist>> {

@@ -251,6 +251,12 @@ class MainActivity : AppCompatActivity() {
         bottomSheetBehavior = BottomSheetBehavior.from(binding.slidingPanel)
         bottomSheetBehavior.addBottomSheetCallback(bottomSheetCallback)
 
+        binding.navView.post {
+            val navViewHeight = binding.navView.height
+            bottomSheetBehavior.peekHeight = navViewHeight + 198
+        }
+
+
         binding.miniPlayerFragment.setOnClickListener {
             expandPanel()
         }

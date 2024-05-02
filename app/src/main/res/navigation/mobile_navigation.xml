@@ -28,4 +28,9 @@
         android:id="@+id/nav_queue"
         android:name="com.example.grooveix.ui.fragment.QueueFragment"
         tools:layout="@layout/fragment_queue" />
+
+    <fragment
+        android:id="@+id/nav_currently_playing"
+        android:name="com.example.grooveix.ui.fragment.PlayerFragment"
+        tools:layout="@layout/fragment_player" />
 </navigation>

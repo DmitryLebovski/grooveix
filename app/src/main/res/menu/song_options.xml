@@ -8,4 +8,7 @@
 
     <item android:id="@+id/add_playlist"
         android:title="@string/add_to_playlist" />
+
+    <item android:id="@+id/delete_song"
+        android:title="@string/delete_song" />
 </menu>

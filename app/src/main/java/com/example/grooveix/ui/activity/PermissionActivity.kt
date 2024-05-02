@@ -37,11 +37,12 @@ class PermissionActivity : AppCompatActivity() {
     }
 
     private fun permissionSetup() {
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             permissionsResultCallback.launch(Manifest.permission.READ_MEDIA_AUDIO)
-        else
+        } else {
             permissionsResultCallback.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+
+        }
     }
 
     private val permissionsResultCallback = registerForActivityResult(

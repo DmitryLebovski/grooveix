@@ -13,9 +13,9 @@ import android.webkit.DownloadListener
 import android.webkit.URLUtil
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import android.widget.SearchView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import android.widget.SearchView
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -30,7 +30,6 @@ import com.example.grooveix.ui.media.MusicDatabase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.net.CookieManager
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
@@ -90,13 +89,6 @@ class SearchFragment : Fragment() {
                 allowContentAccess = true
             }
 
-            binding.resultWebView.webViewClient = object : WebViewClient() {
-                override fun onPageFinished(view: WebView, url: String) {
-                    super.onPageFinished(view, url)
-                    removeAds()
-                }
-            }
-
             binding.resultWebView.setDownloadListener(DownloadListener { url, userAgent, contentDisposition, mimeType, contentLength ->
                 val request = DownloadManager.Request(Uri.parse(url))
                 request.setMimeType(mimeType)
@@ -126,16 +118,6 @@ class SearchFragment : Fragment() {
         }
     }
 
-    private fun removeAds() {
-        val script = "javascript:(function() { " +
-                "var ads = document.getElementsByClassName('ad'); " +
-                "for (var i = 0; i < ads.length; i++) { " +
-                "    ads[i].style.display = 'none'; " +
-                "} " +
-                "})()"
-        binding.resultWebView.loadUrl(script)
-    }
-
     override fun onStop() {
         super.onStop()
         mainActivity.hideKeyboard()
@@ -148,17 +130,19 @@ class SearchFragment : Fragment() {
     }
 
     private fun setupMenu() {
-        val onQueryListener = object : SearchView.OnQueryTextListener {
+        binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(newText: String): Boolean {
+                return true
+            }
+
             override fun onQueryTextChange(newText: String): Boolean {
                 if (newText.isNotEmpty()) search("%$newText%")
                 return true
             }
-            override fun onQueryTextSubmit(query: String): Boolean = true
-        }
+        })
 
         binding.searchView.apply {
             queryHint = getString(R.string.search_hint)
-            setOnQueryTextListener(onQueryListener)
         }
     }
 

@@ -34,4 +34,7 @@
     <string name="start_search">Начните вводить название трека, артиста или используйте глобальный поиск</string>
     <string name="loadingTW">Загрузка...</string>
     <string name="lyrics_placeholder">При наличии текст появится здесь...</string>
+    <string name="delete_song">Удалить с устройства</string>
+    <string name="num_of_tracks">вы супер как и этот плейлист</string>
+    <string name="add_playlist">Добавить плейлист</string>
 </resources>

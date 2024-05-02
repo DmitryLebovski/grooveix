@@ -2,9 +2,9 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item android:state_checked="false"
-        android:drawable="@drawable/play_arrow_player"/>
+        android:drawable="@drawable/baseline_play_queue"/>
 
     <item android:state_checked="true"
-        android:drawable="@drawable/pause_player"/>
+        android:drawable="@drawable/baseline_pause_queue"/>
 
 </selector>

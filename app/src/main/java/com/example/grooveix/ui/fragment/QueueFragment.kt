@@ -25,7 +25,7 @@ import com.example.grooveix.ui.media.QueueViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class QueueFragment : Fragment() {
+class  QueueFragment : Fragment() {
 
     private var _binding: FragmentQueueBinding? = null
     private val binding get() = _binding!!
@@ -98,8 +98,8 @@ class QueueFragment : Fragment() {
         binding.title.isSelected = true
 
         queueViewModel.playbackState.observe(viewLifecycleOwner) { state ->
-            if (state == PlaybackStateCompat.STATE_PLAYING) binding.btnPlay.setBackgroundResource(R.drawable.baseline_pause_24)
-            else binding.btnPlay.setBackgroundResource(R.drawable.baseline_play_arrow_24)
+            if (state == PlaybackStateCompat.STATE_PLAYING) binding.btnPlay.setBackgroundResource(R.drawable.baseline_pause_queue)
+            else binding.btnPlay.setBackgroundResource(R.drawable.baseline_play_queue)
         }
 
         queueViewModel.currentlyPlayingSongMetadata.observe(viewLifecycleOwner) {
@@ -163,32 +163,32 @@ class QueueFragment : Fragment() {
         }
 
         if (mainActivity.getShuffleMode() == PlaybackStateCompat.SHUFFLE_MODE_ALL) {
-            binding.btnShuffle.setBackgroundResource(R.drawable.ic_shuffle_on)
+            binding.btnShuffle.setBackgroundResource(R.drawable.ic_shuffle_on_queue)
         }
 
         binding.btnShuffle.setOnClickListener{
-            if (mainActivity.toggleShuffleMode()) binding.btnShuffle.setBackgroundResource(R.drawable.ic_shuffle_on)
-            else binding.btnShuffle.setBackgroundResource(R.drawable.ic_shuffle)
+            if (mainActivity.toggleShuffleMode()) binding.btnShuffle.setBackgroundResource(R.drawable.ic_shuffle_on_queue)
+            else binding.btnShuffle.setBackgroundResource(R.drawable.ic_shuffle_queue)
 
         }
 
         when (mainActivity.getRepeatMode()) {
-            PlaybackStateCompat.REPEAT_MODE_ALL -> binding.btnRepeat.setBackgroundResource(R.drawable.ic_repeat_all)
+            PlaybackStateCompat.REPEAT_MODE_ALL -> binding.btnRepeat.setBackgroundResource(R.drawable.ic_repeat_all_queue)
             PlaybackStateCompat.REPEAT_MODE_ONE -> {
-                binding.btnRepeat.setBackgroundResource(R.drawable.ic_repeat_one)
+                binding.btnRepeat.setBackgroundResource(R.drawable.ic_repeat_one_queue)
             }
         }
 
         binding.btnRepeat.setOnClickListener {
             when (mainActivity.toggleRepeatMode()) {
                 PlaybackStateCompat.REPEAT_MODE_NONE -> {
-                    binding.btnRepeat.setBackgroundResource(R.drawable.ic_repeat)
+                    binding.btnRepeat.setBackgroundResource(R.drawable.ic_repeat_queue)
                 }
                 PlaybackStateCompat.REPEAT_MODE_ALL -> {
-                    binding.btnRepeat.setBackgroundResource(R.drawable.ic_repeat_all)
+                    binding.btnRepeat.setBackgroundResource(R.drawable.ic_repeat_all_queue)
                 }
                 PlaybackStateCompat.REPEAT_MODE_ONE -> {
-                    binding.btnRepeat.setBackgroundResource(R.drawable.ic_repeat_one)
+                    binding.btnRepeat.setBackgroundResource(R.drawable.ic_repeat_one_queue)
                 }
             }
         }

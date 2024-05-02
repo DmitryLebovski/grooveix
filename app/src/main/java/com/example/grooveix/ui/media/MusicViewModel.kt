@@ -14,8 +14,7 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
     private val repository: MusicRepository
     val loadTracks: LiveData<List<Track>>
     val loadTracksArtist: LiveData<List<Track>>
-    var currentSortingOption = "loadTracks"
-    //val loadPlaylists: LiveData<List<Playlist>>
+    val loadPlaylists: LiveData<List<Playlist>>
 
 
     init {
@@ -23,7 +22,7 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
         repository = MusicRepository(musicRoom)
         loadTracks = repository.loadTracks
         loadTracksArtist = repository.loadTracksArtist
-        //loadPlaylists = repository.getAllPlaylists()
+        loadPlaylists = repository.loadPlaylist
     }
 
     fun deleteTrack(track: Track) = viewModelScope.launch(Dispatchers.IO) {
