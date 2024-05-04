@@ -150,7 +150,7 @@ class PlayerFragment : Fragment() {
             findNavController().navigate(R.id.nav_queue)
             mainActivity.collapsePanel()
             mainActivity.hideBar(true)
-        }
+         }
 
         binding.btnClose.setOnClickListener {
             mainActivity.collapsePanel()

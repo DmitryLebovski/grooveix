@@ -30,6 +30,7 @@
 
         <ImageView
             android:id="@+id/artwork"
+            android:background="@drawable/background_permission"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
     </androidx.cardview.widget.CardView>
@@ -61,7 +62,7 @@
                 android:fontFamily="@font/montserrat_bold"
                 android:marqueeRepeatLimit="marquee_forever"
                 android:singleLine="true"
-                android:text="yes, and?"
+                android:text="Включите трек :)"
                 android:textColor="@color/text_light"
                 android:textSize="16sp"
                 android:layout_marginEnd="4dp"
@@ -75,7 +76,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/montserrat_regular"
                 android:singleLine="true"
-                android:text="Ariana Grande"
+                android:text="Приехали..."
                 android:textColor="@color/text_light"
                 android:textSize="14sp"
                 android:layout_marginEnd="4dp"

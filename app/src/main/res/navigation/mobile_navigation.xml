@@ -33,4 +33,28 @@
         android:id="@+id/nav_currently_playing"
         android:name="com.example.grooveix.ui.fragment.PlayerFragment"
         tools:layout="@layout/fragment_player" />
+
+    <fragment
+        android:id="@+id/nav_edit_playlist"
+        android:name="com.example.grooveix.ui.fragment.EditPlaylistFragment"
+        tools:layout="@layout/fragment_edit_playlist" />
+
+    <fragment
+        android:id="@+id/nav_edit_track"
+        android:name="com.example.grooveix.ui.fragment.EditTrackFragment"
+        tools:layout="@layout/fragment_edit_track">
+        <argument
+            android:name="track"
+            android:defaultValue="@null"
+            app:nullable="true"
+            app:argType="com.example.grooveix.ui.media.entity.Track" />
+    </fragment>
+
+    <action
+        android:id="@+id/action_edit_track"
+        app:destination="@id/nav_edit_track" />
+
+    <action
+        android:id="@+id/action_tracks"
+        app:destination="@id/navigation_tracks" />
 </navigation>

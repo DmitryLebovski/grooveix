@@ -8,7 +8,7 @@
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="112dp"
         android:orientation="vertical"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         app:layout_scrollFlags="scroll|enterAlways|snap"
@@ -27,15 +27,15 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
+                android:id="@+id/toolbar_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/grooveix"
+                android:layout_marginTop="60dp"
                 android:layout_marginEnd="24dp"
-                android:layout_marginTop="64dp"
-                android:fontFamily="@font/redrocketacad"
-                android:textSize="34sp"
-                android:gravity = "center"
-                android:id="@+id/toolbar_title" />
+                android:fontFamily="@font/helveticaneuecyr_black"
+                android:gravity="center"
+                android:text="@string/title_tracks"
+                android:textSize="34sp" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/sortBtn"
@@ -44,7 +44,7 @@
                 android:layout_gravity="end|bottom"
                 android:background="@drawable/ic_sort_new"
                 android:visibility="visible"
-                android:layout_marginBottom="26dp"
+                android:layout_marginBottom="36dp"
                 android:layout_marginEnd="20dp"/>
         </androidx.appcompat.widget.Toolbar>
 

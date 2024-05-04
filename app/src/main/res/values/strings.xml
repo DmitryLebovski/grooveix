@@ -29,12 +29,22 @@
     <string name="search_extra">Глобальный поиск</string>
     <string name="lyrics_avaliable">доступен текст</string>
     <string name="sort">сортировка</string>
-    <string name="option_1">Название\n</string>
-    <string name="option_2">Исполнитель</string>
+    <string name="name">Название\n</string>
+    <string name="artist">Исполнитель</string>
     <string name="start_search">Начните вводить название трека, артиста или используйте глобальный поиск</string>
-    <string name="loadingTW">Загрузка...</string>
-    <string name="lyrics_placeholder">При наличии текст появится здесь...</string>
+    <string name="loadingTW">Загрузка…</string>
+    <string name="lyrics_placeholder">(В разработке)При наличии текст появится здесь…</string>
     <string name="delete_song">Удалить с устройства</string>
     <string name="num_of_tracks">вы супер как и этот плейлист</string>
     <string name="add_playlist">Добавить плейлист</string>
+    <string name="change_playlist_artwork">Поменять обложку</string>
+    <string name="delete_playlist_artwork">Удалить обложку</string>
+    <string name="save">Сохранить</string>
+    <string name="no_playlist_text">Ты еще не создал ни одного плейлиста! Самое время это исправить</string>
+    <string name="edit_track">Редактировать трек</string>
+    <string name="disk">Диск</string>
+    <string name="track">Трек</string>
+    <string name="year">Год</string>
+    <string name="details_saved">Данные изменены</string>
+    <string name="check_fields_not_empty">Не все поля заполнены</string>
 </resources>

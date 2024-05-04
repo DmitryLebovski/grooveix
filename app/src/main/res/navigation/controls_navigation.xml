@@ -16,5 +16,4 @@
         android:name="com.example.grooveix.ui.fragment.QueueFragment"
         tools:layout="@layout/fragment_queue" />
 
-
 </navigation>

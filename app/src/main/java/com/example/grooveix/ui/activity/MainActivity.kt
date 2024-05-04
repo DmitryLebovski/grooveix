@@ -48,11 +48,14 @@ import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.signature.ObjectKey
+import com.example.grooveix.MobileNavigationDirections
 import com.example.grooveix.R
 import com.example.grooveix.databinding.ActivityMainBinding
 import com.example.grooveix.ui.media.MediaContentObserver
@@ -73,7 +76,6 @@ import java.io.FileOutputStream
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-
     private var currentPlaybackPosition = 0
     private var currentPlaybackDuration = 0
     private var currentQueueItemId = -1L
@@ -135,11 +137,24 @@ class MainActivity : AppCompatActivity() {
     fun hideBar(hide: Boolean) {
         if (hide) {
             hideBottomSheet(binding.navView)
-            hideBottomSheet( binding.slidingPanel)
+            hideBottomSheet(binding.slidingPanel)
         }
         else {
-            showBottomSheet( binding.slidingPanel)
+            showBottomSheet(binding.slidingPanel)
         }
+    }
+
+    fun showBar() {
+        showBottomSheet(binding.navView)
+        showBottomSheet(binding.slidingPanel)
+    }
+
+    fun hidePanel() {
+        binding.slidingPanel.isGone = true
+    }
+
+    fun showPanel() {
+        binding.slidingPanel.isVisible = true
     }
 
     private fun hideBottomSheet(view: View) {
@@ -195,7 +210,7 @@ class MainActivity : AppCompatActivity() {
                         playQueueViewModel.playbackDuration.value = currentPlaybackDuration
                     }
                     playQueueViewModel.playbackPosition.value = currentPlaybackPosition
-                    binding.slidingPanel.isVisible = true
+                    //binding.slidingPanel.isVisible = true
                 }
                 STATE_STOPPED -> {
                     currentPlaybackDuration = 0
@@ -203,7 +218,7 @@ class MainActivity : AppCompatActivity() {
                     currentPlaybackPosition = 0
                     playQueueViewModel.playbackPosition.value = 0
                     playQueueViewModel.currentlyPlayingSongMetadata.value = null
-                    binding.slidingPanel.isGone = true
+                    //binding.slidingPanel.isGone = true
                 }
                 STATE_ERROR -> refreshMusicLibrary()
                 else -> return
@@ -426,6 +441,7 @@ class MainActivity : AppCompatActivity() {
             val bLike = findViewById<CardView>(R.id.addToFav)
             val bQueue = findViewById<CardView>(R.id.addToQueue)
             val bPlst = findViewById<CardView>(R.id.addToPlist)
+            val eTrack = findViewById<CardView>(R.id.editTrack)
 
             mArtwork?.let { loadArtwork(track.albumId, it) }
 
@@ -437,11 +453,17 @@ class MainActivity : AppCompatActivity() {
                 dismiss()
             }
 
+            eTrack?.setOnClickListener {
+                val action = MobileNavigationDirections.actionEditTrack(track)
+                findNavController(R.id.nav_host_fragment_activity_main).navigate(action)
+                dismiss()
+                hideBar(true)
+            }
             show()
         }
     }
 
-    private fun saveImage(albumId: String, image: Bitmap) {
+    fun saveImage(albumId: String, image: Bitmap) {
         val directory = ContextWrapper(application).getDir("albumArt", Context.MODE_PRIVATE)
         val path = File(directory, "$albumId.jpg")
 
@@ -672,5 +694,23 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         } catch (_: NumberFormatException) { refreshMusicLibrary() }
+    }
+
+    fun updateTrack(track: Track) {
+        musicViewModel.updateTrack(track)
+
+        val affectedQueueItems = playQueue.filter { it.description.mediaId == track.trackId.toString() }
+        if (affectedQueueItems.isEmpty()) return
+
+        val metadataBundle = Bundle().apply {
+            putString("album", track.album)
+            putString("album_id", track.albumId)
+            putString("artist", track.artist)
+            putString("title", track.title)
+        }
+        for (queueItem in affectedQueueItems) {
+            metadataBundle.putLong("queue_id", queueItem.queueId)
+            mediaController.sendCommand("UPDATE_QUEUE_ITEM", metadataBundle, null)
+        }
     }
 }

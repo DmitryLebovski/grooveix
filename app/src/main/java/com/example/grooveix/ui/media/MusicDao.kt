@@ -29,7 +29,7 @@ interface MusicDao {
     @Query("SELECT * FROM grooveix_library WHERE track_title LIKE :search OR track_artist LIKE :search OR track_album LIKE :search")
     suspend fun getTracksLikeSearch(search: String): List<Track>
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertPlaylist(playlist: Playlist)
 
     @Delete

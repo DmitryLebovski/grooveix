@@ -1,18 +1,16 @@
 package com.example.grooveix.ui.media
 
 import android.content.SharedPreferences
-import com.example.grooveix.ui.media.Constants.CURRENT_SONG_DURATION_KEY
-import com.example.grooveix.ui.media.Constants.POSITION_KEY
 
 object SharedPreferenceUtil {
-    fun saveCurrentPosition(sharedPreferences: SharedPreferences, currentPosition: Int) {
+    fun saveCurrent(sharedPreferences: SharedPreferences, value: Int) {
         with(sharedPreferences.edit()) {
-            putInt(CURRENT_SONG_DURATION_KEY, currentPosition)
+            putInt("playlistID", value)
             apply()
         }
     }
 
-    fun getPosition(sharedPreferences: SharedPreferences): Int {
-        return sharedPreferences.getInt(POSITION_KEY, 0)
+    fun getValue(sharedPreferences: SharedPreferences): Int {
+        return sharedPreferences.getInt("playlistID", 0)
     }
 }

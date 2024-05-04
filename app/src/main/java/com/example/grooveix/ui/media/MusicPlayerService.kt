@@ -569,7 +569,7 @@ class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListe
 
         val builder = NotificationCompat.Builder(applicationContext, channelId).apply {
             val mediaMetadata = mediaSessionCompat.controller.metadata
-            setSmallIcon(R.drawable.grooveix)
+            setSmallIcon(R.drawable.gx_logo)
             setContentIntent(activityIntent)
             setOngoing(isPlaying)
             setContentTitle(mediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE))

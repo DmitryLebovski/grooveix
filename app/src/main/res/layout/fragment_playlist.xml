@@ -31,7 +31,7 @@
                 android:id="@+id/toolbar_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="64dp"
+                android:layout_marginTop="60dp"
                 android:layout_marginEnd="24dp"
                 android:fontFamily="@font/helveticaneuecyr_black"
                 android:gravity="center"
@@ -42,7 +42,7 @@
     \>
 
     <RelativeLayout
-        android:id="@+id/add_button_view"
+        android:id="@+id/add_playlist_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
@@ -64,13 +64,30 @@
             android:textSize="13sp" />
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/add_playlist_button"
+            android:id="@+id/add_playlist_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/ic_add_playlist_template"
             android:visibility="visible" />
 
     </RelativeLayout>
+
+    <TextView
+        android:id="@+id/noPlaylist"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/montserrat_regular"
+        android:text="@string/no_playlist_text"
+        android:textColor="@color/text_color"
+        android:textSize="14sp"
+        android:visibility="gone"
+        android:gravity="center"
+        android:layout_marginTop="24dp"
+        android:layout_marginHorizontal="48dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/add_playlist_button" />
 
 
     <com.l4digital.fastscroll.FastScrollRecyclerView
@@ -82,10 +99,11 @@
         app:bubbleTextColor="#000000"
         app:bubbleTextSize="24sp"
         app:handleColor="#999999"
+        android:layout_marginBottom="100dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/add_button_view"
+        app:layout_constraintTop_toBottomOf="@+id/add_playlist_button"
         app:showBubble="true"
         app:showTrack="true" />
 
