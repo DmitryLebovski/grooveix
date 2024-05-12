@@ -61,25 +61,20 @@
         app:bubbleSize="small"
         app:bubbleTextSize="24sp"
         app:showTrack="true"
-        android:layout_marginBottom="88dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintBottom_toBottomOf="@+id/nav_controls_fragment"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="12dp"
-        android:layout_marginBottom="112dp"
+        android:layout_marginEnd="18dp"
+        android:layout_marginBottom="24dp"
         android:layout_gravity="end|bottom"
         android:text="@string/shuffle"
         app:icon="@drawable/ic_shuffle"
         app:iconSize="20dp"
         android:backgroundTint="@color/botttom_light_1"
         android:outlineSpotShadowColor="@color/text_color"
-        android:textColor="@color/text_color"
-        app:layout_constraintBottom_toBottomOf="@id/nav_controls_fragment"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:textColor="@color/text_color"/>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -37,7 +37,13 @@
     <fragment
         android:id="@+id/nav_edit_playlist"
         android:name="com.example.grooveix.ui.fragment.EditPlaylistFragment"
-        tools:layout="@layout/fragment_edit_playlist" />
+        tools:layout="@layout/fragment_edit_playlist">
+        <argument
+            android:name="playlist"
+            android:defaultValue="@null"
+            app:nullable="true"
+            app:argType="com.example.grooveix.ui.media.entity.Playlist" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_edit_track"

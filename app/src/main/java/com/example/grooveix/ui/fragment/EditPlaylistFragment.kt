@@ -7,16 +7,22 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.ImageDecoder
+import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.provider.Settings
+import android.text.SpannableStringBuilder
 import android.util.Base64
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
@@ -37,8 +43,10 @@ import com.example.grooveix.ui.adapter.PlaylistAdapter
 import com.example.grooveix.ui.media.MusicDatabase
 import com.example.grooveix.ui.media.MusicViewModel
 import com.example.grooveix.ui.media.entity.Playlist
+import com.example.grooveix.ui.media.entity.Track
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.FileNotFoundException
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -53,11 +61,36 @@ class EditPlaylistFragment : Fragment() {
     private var musicDatabase: MusicDatabase? = null
     private lateinit var onBackPressedCallback: OnBackPressedCallback
     private var playlistID: Long = 1
+    private var playlist: Playlist? = null
+    private var newArtwork: Bitmap? = null
+
+    private val registerResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == AppCompatActivity.RESULT_OK) {
+            try {
+                result.data?.data?.let { uri ->
+                    newArtwork = ImageDecoder.decodeBitmap(
+                        ImageDecoder.createSource(requireActivity().contentResolver, uri)
+                    )
+                    Glide.with(this)
+                        .load(uri)
+                        .centerCrop()
+                        .into(binding.artwork)
+                }
+            } catch (_: FileNotFoundException) {
+            } catch (_: IOException) { }
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        arguments?.let {
+            val safeArgs = EditPlaylistFragmentArgs.fromBundle(it)
+            EditPlaylistFragmentDirections
+            playlist = safeArgs.playlist
+        }
+
         _binding = FragmentEditPlaylistBinding.inflate(inflater, container, false)
         mainActivity = activity as MainActivity
         musicViewModel = ViewModelProvider(mainActivity)[MusicViewModel::class.java]
@@ -75,9 +108,14 @@ class EditPlaylistFragment : Fragment() {
 
         mainActivity.hidePanel()
 
+        if (playlist?.name != null) {
+            binding.playlistName.text = SpannableStringBuilder(playlist?.name)
+            mainActivity.loadArtwork(playlist?.artwork, binding.artwork)
+        }
+
         binding.addPlaylistButton.setOnClickListener {
             val playlistName = binding.playlistName.text.toString().trim()
-            val artworkPath = requireContext().getDrawable(R.drawable.grooveix).toString()
+            val artworkPath = newArtwork
             val newPlaylist = Playlist(playlistID + 1, playlistName, artworkPath.toString())
             musicViewModel.insertPlaylist(newPlaylist)
             playlistID++
@@ -87,6 +125,10 @@ class EditPlaylistFragment : Fragment() {
             findNavController().popBackStack()
             mainActivity.showPanel()
             mainActivity.showBar()
+        }
+
+        binding.addImage.setOnClickListener {
+            permissionsResultCallback.launch(Manifest.permission.READ_MEDIA_IMAGES)
         }
 
         binding.btnClose.setOnClickListener {
@@ -103,6 +145,20 @@ class EditPlaylistFragment : Fragment() {
         }
 
         mainActivity.onBackPressedDispatcher.addCallback(viewLifecycleOwner, onBackPressedCallback)
+    }
+
+    private val permissionsResultCallback = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()){
+        when (it) {
+            true -> {
+                registerResult.launch(Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI))
+            }
+            false -> {
+                Toast.makeText(requireContext(), this.getString(R.string.permission_error), Toast.LENGTH_LONG).show()
+                val intent: Intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                startActivity(intent)
+            }
+        }
     }
 
     override fun onDestroyView() {

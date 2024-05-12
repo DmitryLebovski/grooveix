@@ -46,7 +46,6 @@
             android:name="com.example.grooveix.ui.fragment.MiniPlayerFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
             tools:layout="@layout/fragment_mini_player" />
     </FrameLayout>
 
@@ -56,8 +55,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         app:labelVisibilityMode="selected"
+        android:background="@color/botttom_light_1"
         app:itemIconTint="@color/text_color"
-        android:background="@drawable/background_mini_player"
         app:menu="@menu/bottom_nav_menu" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

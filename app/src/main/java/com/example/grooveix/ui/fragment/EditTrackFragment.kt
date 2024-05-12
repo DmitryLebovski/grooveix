@@ -1,10 +1,12 @@
 package com.example.grooveix.ui.fragment
 
+import android.Manifest
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.os.Bundle
 import android.provider.MediaStore
+import android.provider.Settings
 import android.text.SpannableStringBuilder
 import android.view.LayoutInflater
 import android.view.Menu
@@ -116,7 +118,7 @@ class EditTrackFragment : Fragment() {
         mainActivity.loadArtwork(track?.albumId, binding.editSongArtwork)
 
         binding.editSongArtwork.setOnClickListener {
-            registerResult.launch(Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI))
+            permissionsResultCallback.launch(Manifest.permission.READ_MEDIA_AUDIO)
         }
 
         binding.editSongArtworkIcon.setOnClickListener {
@@ -133,6 +135,20 @@ class EditTrackFragment : Fragment() {
         mainActivity.hidePanel()
 
         mainActivity.onBackPressedDispatcher.addCallback(viewLifecycleOwner, onBackPressedCallback)
+    }
+
+    private val permissionsResultCallback = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()){
+        when (it) {
+            true -> {
+                registerResult.launch(Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI))
+            }
+            false -> {
+                Toast.makeText(requireContext(), this.getString(R.string.permission_error), Toast.LENGTH_LONG).show()
+                val intent: Intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                startActivity(intent)
+            }
+        }
     }
 
     override fun onDestroyView() {

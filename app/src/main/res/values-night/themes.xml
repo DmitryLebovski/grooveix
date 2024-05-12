@@ -34,4 +34,5 @@
     <color name="botttom_light_1">#323232</color>
     <color name="text_color">#EDEFEF</color>
 
+    <color name="transparent_color">@android:color/transparent</color>
 </resources>

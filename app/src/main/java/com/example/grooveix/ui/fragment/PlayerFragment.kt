@@ -2,8 +2,8 @@ package com.example.grooveix.ui.fragment
 
 import android.annotation.SuppressLint
 import android.graphics.BitmapFactory
-import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.GradientDrawable
+import android.media.AudioManager
 import android.os.Bundle
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
@@ -152,10 +152,6 @@ class PlayerFragment : Fragment() {
             mainActivity.hideBar(true)
          }
 
-        binding.btnClose.setOnClickListener {
-            mainActivity.collapsePanel()
-        }
-
         binding.currentSeekBar.setOnSeekBarChangeListener( object : SeekBar.OnSeekBarChangeListener {
             override fun onStopTrackingTouch(seekBar: SeekBar) {
                 val progress = seekBar.progress
@@ -165,6 +161,22 @@ class PlayerFragment : Fragment() {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 binding.currentPosition.text = SimpleDateFormat("mm:ss", Locale.UK).format(progress)
             }
+        })
+
+        val audioManager =  requireContext().getSystemService(AudioManager::class.java)
+
+        val currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
+        binding.volumeSeekBar.progress = currentVolume
+
+        val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
+        binding.volumeSeekBar.max = maxVolume
+
+        binding.volumeSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, progress, 0)
+            }
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
         })
     }
 
@@ -194,7 +206,7 @@ class PlayerFragment : Fragment() {
 
             val gradientDrawable = GradientDrawable(
                 GradientDrawable.Orientation.TOP_BOTTOM,
-                intArrayOf(requireContext().getColor(R.color.background_default), requireContext().getColor(R.color.background_default), dominantColor)
+                intArrayOf(requireContext().getColor(R.color.transparent_color), dominantColor, dominantColor)
             )
 
             val cornerRadii = floatArrayOf(
@@ -208,7 +220,8 @@ class PlayerFragment : Fragment() {
 
             binding.playerView.background = gradientDrawable
 
-            binding.dimBackground.background = BitmapDrawable(resources, bitmap)
+            //binding.dimBackground.background = BitmapDrawable(resources, bitmap)
+            binding.dimBackground.background = gradientDrawable
 
         } else {
             Glide.with(mainActivity)

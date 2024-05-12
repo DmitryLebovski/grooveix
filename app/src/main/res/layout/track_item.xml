@@ -50,7 +50,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="12dp"
                 android:layout_marginEnd="16dp"
-                android:layout_toStartOf="@id/btnFavorite"
+                android:layout_toStartOf="@id/btnMenu"
                 android:layout_toEndOf="@id/cardView"
                 android:orientation="vertical">
 
@@ -80,26 +80,17 @@
                     android:textStyle="bold" />
             </LinearLayout>
 
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btnFavorite"
-                android:layout_width="20dp"
-                android:layout_height="18dp"
-                android:layout_alignParentBottom="true"
-                android:layout_marginEnd="-12dp"
-                android:layout_marginBottom="28dp"
-                android:layout_toStartOf="@+id/btnMenu"
-                android:background="@drawable/outline_fav_icon" />
-
-
-            <androidx.appcompat.widget.AppCompatButton
+            <ImageButton
                 android:id="@+id/btnMenu"
-                android:layout_width="28dp"
-                android:layout_height="8dp"
-                android:layout_alignBottom="@+id/linearLayout"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_alignTop="@+id/cardView"
+                android:layout_alignBottom="@+id/cardView"
                 android:layout_alignParentEnd="true"
-                android:layout_marginHorizontal="24dp"
-                android:layout_marginBottom="14dp"
-                android:background="@drawable/settings_icon" />
+                android:layout_marginEnd="8dp"
+                android:background="@color/transparent_color"
+                android:rotation="90"
+                android:src="@drawable/settings_icon" />
         </RelativeLayout>
     </androidx.cardview.widget.CardView>
 </LinearLayout>

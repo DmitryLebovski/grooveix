@@ -3,7 +3,9 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("kotlin-parcelize")
     id("com.google.devtools.ksp") version "1.9.21-1.0.15"
+    id("androidx.navigation.safeargs.kotlin") version "2.7.7"
 }
+
 
 android {
     namespace = "com.example.grooveix"
@@ -79,7 +81,6 @@ dependencies {
     implementation("androidx.palette:palette-ktx:1.0.0")
     implementation("androidx.webkit:webkit:1.10.0")
     implementation("org.adblockplus:adblock-android:4.4.0")
-
 
     implementation("androidx.media:media:1.7.0")
     implementation("androidx.media3:media3-exoplayer:1.2.0")

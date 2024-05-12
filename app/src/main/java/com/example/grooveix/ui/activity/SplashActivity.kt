@@ -5,7 +5,9 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.os.Build
+import android.view.WindowManager
 import androidx.lifecycle.lifecycleScope
 import com.example.grooveix.R
 import kotlinx.coroutines.Dispatchers
@@ -18,6 +20,13 @@ class SplashActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
+
+//        window.setFlags(
+//            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+//            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+//        )
+        //window.statusBarColor = Color.TRANSPARENT
+        //window.navigationBarColor = Color.TRANSPARENT
 
         if (!hasStoragePermission()) {
             lifecycleScope.launch(Dispatchers.Main) {

@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -22,7 +23,7 @@ class TrackAdapter(private val activity: MainActivity):
             internal var mArtwork = itemView.findViewById<View>(R.id.artwork) as ImageView
             internal var mTitle = itemView.findViewById<View>(R.id.title) as TextView
             internal var mArtist = itemView.findViewById<View>(R.id.artist) as TextView
-            internal var mMenu = itemView.findViewById<Button>(R.id.btnMenu)
+            internal var mMenu = itemView.findViewById<ImageButton>(R.id.btnMenu)
 
             init {
                 itemView.isClickable = true

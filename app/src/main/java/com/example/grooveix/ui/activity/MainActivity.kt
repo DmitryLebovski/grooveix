@@ -9,6 +9,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.Cursor
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.media.AudioManager
 import android.media.session.PlaybackState
 import android.net.Uri
@@ -36,6 +37,8 @@ import android.support.v4.media.session.PlaybackStateCompat.STATE_STOPPED
 import android.util.Size
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewGroup.MarginLayoutParams
+import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -50,7 +53,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
@@ -86,6 +88,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var musicViewModel: MusicViewModel
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<FrameLayout>
     private lateinit var bottomSheetDialog: BottomSheetDialog
+    var bottomViewHeight = 0
 
     private val panelState: Int
         get() = bottomSheetBehavior.state
@@ -167,7 +170,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showBottomSheet(view: View) {
-        setMainViewMargins(194)
+
+        setMainViewMargins(bottomViewHeight)
         val height = view.height
         ObjectAnimator.ofFloat(view, View.TRANSLATION_Y, height.toFloat(), 0f).apply {
             duration = 300
@@ -243,6 +247,13 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+//        window.setFlags(
+//            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+//            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+//        )
+        //window.statusBarColor = Color.TRANSPARENT
+        //window.navigationBarColor = Color.TRANSPARENT
+
         mediaBrowser = MediaBrowserCompat(
             this,
             ComponentName(this, MusicPlayerService::class.java),
@@ -268,7 +279,9 @@ class MainActivity : AppCompatActivity() {
 
         binding.navView.post {
             val navViewHeight = binding.navView.height
-            bottomSheetBehavior.peekHeight = navViewHeight + 198
+            bottomSheetBehavior.peekHeight = navViewHeight + 200
+            setMargins(binding.navHostFragmentActivityMain, 0, 0,0, navViewHeight)
+            bottomViewHeight = bottomSheetBehavior.peekHeight
         }
 
 
@@ -277,6 +290,14 @@ class MainActivity : AppCompatActivity() {
         }
 
         bottomSheetDialog = BottomSheetDialog(this)
+    }
+
+    fun setMargins(view: View, left: Int, top: Int, right: Int, bottom: Int) {
+        if (view.layoutParams is MarginLayoutParams) {
+            val p = view.layoutParams as MarginLayoutParams
+            p.setMargins(left, top, right, bottom)
+            view.requestLayout()
+        }
     }
 
     override fun onBackPressed() {
@@ -420,11 +441,11 @@ class MainActivity : AppCompatActivity() {
 
     fun showPlayer() {
         binding.slidingPanel.isVisible = true
-        setMainViewMargins(194)
+        setMainViewMargins(bottomViewHeight)
     }
 
-    fun setMainViewMargins(margin: Int) {
-        val playParam = binding.navHostFragmentActivityMain.layoutParams as ViewGroup.MarginLayoutParams
+    private fun setMainViewMargins(margin: Int) {
+        val playParam = binding.navHostFragmentActivityMain.layoutParams as MarginLayoutParams
         playParam.setMargins(0,0,0,margin)
         binding.navHostFragmentActivityMain.layoutParams = playParam
     }

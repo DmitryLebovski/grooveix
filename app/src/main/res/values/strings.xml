@@ -13,7 +13,7 @@
     <string name="error">Произошла неизвестная ошибка. Перезайдите в приложение</string>
     <string name="memory_welcome">доступ к хранилищу для воспроизведения музыкальных файлов</string>
     <string name="grooveix">grooveix</string>
-    <string name="permission_error">Откройте разрешения и дайте доступ к хранилищу</string>
+    <string name="permission_error">Откройте разрешения и дайте необходимые разрешения</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_permission">PermissionActivity</string>
     <string name="unknown_album">Неизвестно</string>
@@ -47,4 +47,6 @@
     <string name="year">Год</string>
     <string name="details_saved">Данные изменены</string>
     <string name="check_fields_not_empty">Не все поля заполнены</string>
+    <string name="photo">Галерея</string>
+    <string name="photo_desc">Доступ к галерее для выбора изображения на замену старому в треке или плейлисте</string>
 </resources>
