@@ -1,8 +1,12 @@
 <h1 align="center">Offline Music Player "grooveix"</h1>
-<h2 align="center">made by KlausReinherz</h2>
 <h3 align="left">The current project is the graduation project as part of the studying at Samsung IT Campus 2023/2024.</h3>
 
-<h3 align="left">Screenshots: TBA</h3>
+
+### Screenshots:
+| <img src="screenshots/screenshot_onboarding.png" width="200"/>| <img src="screenshots/screenshot_main.png" width="200"/>| <img src="screenshots/screenshot_player.png" width="200"/>| <img src="screenshots/screenshot_search.png" width="200"/>||
+|:---:|:---:|:---:|:---:|:---:|
+| Onboarding | Tracks | Player | Search | Playlists(TBA) |
+
 
 
 ## Tech Stack:
