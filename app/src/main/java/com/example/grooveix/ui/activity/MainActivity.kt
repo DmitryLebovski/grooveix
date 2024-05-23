@@ -36,9 +36,11 @@ import android.support.v4.media.session.PlaybackStateCompat.STATE_PLAYING
 import android.support.v4.media.session.PlaybackStateCompat.STATE_STOPPED
 import android.util.Size
 import android.view.View
-import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
 import android.view.WindowManager
+import android.view.WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
+import android.view.WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+import android.view.WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
 import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -154,6 +156,7 @@ class MainActivity : AppCompatActivity() {
 
     fun hidePanel() {
         binding.slidingPanel.isGone = true
+        hideBottomSheet(binding.slidingPanel)
     }
 
     fun showPanel() {
@@ -214,7 +217,6 @@ class MainActivity : AppCompatActivity() {
                         playQueueViewModel.playbackDuration.value = currentPlaybackDuration
                     }
                     playQueueViewModel.playbackPosition.value = currentPlaybackPosition
-                    //binding.slidingPanel.isVisible = true
                 }
                 STATE_STOPPED -> {
                     currentPlaybackDuration = 0
@@ -222,7 +224,6 @@ class MainActivity : AppCompatActivity() {
                     currentPlaybackPosition = 0
                     playQueueViewModel.playbackPosition.value = 0
                     playQueueViewModel.currentlyPlayingSongMetadata.value = null
-                    //binding.slidingPanel.isGone = true
                 }
                 STATE_ERROR -> refreshMusicLibrary()
                 else -> return
@@ -247,12 +248,10 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-//        window.setFlags(
-//            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-//            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
-//        )
-        //window.statusBarColor = Color.TRANSPARENT
-        //window.navigationBarColor = Color.TRANSPARENT
+        window.setFlags(
+            FLAG_LAYOUT_NO_LIMITS,
+            FLAG_LAYOUT_NO_LIMITS
+        )
 
         mediaBrowser = MediaBrowserCompat(
             this,
@@ -450,7 +449,7 @@ class MainActivity : AppCompatActivity() {
         binding.navHostFragmentActivityMain.layoutParams = playParam
     }
 
-    fun showSongPopup(view: View, track: Track) {
+    fun showSongPopup(track: Track) {
 
         bottomSheetDialog.apply {
             setContentView(R.layout.fragment_info_track)

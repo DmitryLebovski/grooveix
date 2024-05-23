@@ -44,12 +44,13 @@ android {
 
 dependencies {
 
+    implementation("androidx.test.espresso:espresso-contrib:3.5.1")
     val roomVersion = "2.6.1"
-    val lifecycleVersion = "2.7.0"
+    val lifecycleVersion = "2.8.0"
 
-    implementation("androidx.core:core-ktx:1.12.0")
+    implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("com.google.android.material:material:1.11.0")
+    implementation("com.google.android.material:material:1.12.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
 
     implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
@@ -71,7 +72,7 @@ dependencies {
     implementation("androidx.core:core-splashscreen:1.0.1")
     implementation("androidx.cardview:cardview:1.0.0")
     implementation("pl.droidsonroids.gif:android-gif-drawable:1.2.28")
-    implementation("androidx.fragment:fragment-ktx:1.6.2")
+    implementation("androidx.fragment:fragment-ktx:1.7.1")
     implementation("androidx.legacy:legacy-support-v4:1.0.0")
     implementation("androidx.room:room-runtime:$roomVersion")
     implementation("androidx.room:room-ktx:$roomVersion")
@@ -79,16 +80,16 @@ dependencies {
     implementation("com.tbuonomo:dotsindicator:5.0")
     implementation("io.github.l4digital:fastscroll:2.1.0")
     implementation("androidx.palette:palette-ktx:1.0.0")
-    implementation("androidx.webkit:webkit:1.10.0")
+    implementation("androidx.webkit:webkit:1.11.0")
     implementation("org.adblockplus:adblock-android:4.4.0")
 
     implementation("androidx.media:media:1.7.0")
-    implementation("androidx.media3:media3-exoplayer:1.2.0")
-    implementation("androidx.media3:media3-exoplayer-dash:1.2.1")
-    implementation("androidx.media3:media3-ui:1.2.1")
+    implementation("androidx.media3:media3-exoplayer:1.3.1")
+    implementation("androidx.media3:media3-exoplayer-dash:1.3.1")
+    implementation("androidx.media3:media3-ui:1.3.1")
     implementation("com.squareup.okhttp3:okhttp:4.10.0")
-    implementation("androidx.media3:media3-exoplayer:1.2.1")
-    implementation("androidx.media3:media3-session:1.2.1")
+    implementation("androidx.media3:media3-exoplayer:1.3.1")
+    implementation("androidx.media3:media3-session:1.3.1")
 
 
     ksp("androidx.room:room-compiler:$roomVersion")
@@ -97,4 +98,7 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    androidTestImplementation("androidx.test:runner:1.5.2")
+    androidTestImplementation("androidx.test:rules:1.5.0")
+    androidTestImplementation("androidx.test.espresso:espresso-intents:3.5.1")
 }
