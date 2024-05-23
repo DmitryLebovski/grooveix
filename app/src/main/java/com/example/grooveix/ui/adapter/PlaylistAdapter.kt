@@ -3,14 +3,12 @@ package com.example.grooveix.ui.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.grooveix.R
 import com.example.grooveix.ui.activity.MainActivity
 import com.example.grooveix.ui.media.entity.Playlist
-import com.example.grooveix.ui.media.entity.Track
 import com.l4digital.fastscroll.FastScroller
 
 class PlaylistAdapter(private val activity: MainActivity):

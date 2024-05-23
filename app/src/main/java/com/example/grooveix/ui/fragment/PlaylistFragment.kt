@@ -7,24 +7,17 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.RecyclerView
 import com.example.grooveix.R
-import com.example.grooveix.databinding.FragmentHomeBinding
-import com.example.grooveix.databinding.FragmentInfoTrackBinding
 import com.example.grooveix.databinding.FragmentPlaylistBinding
 import com.example.grooveix.ui.activity.MainActivity
 import com.example.grooveix.ui.adapter.PlaylistAdapter
-import com.example.grooveix.ui.adapter.TrackAdapter
 import com.example.grooveix.ui.media.MusicDatabase
 import com.example.grooveix.ui.media.MusicViewModel
-import com.example.grooveix.ui.media.QueueViewModel
 import com.example.grooveix.ui.media.entity.Playlist
-import com.example.grooveix.ui.media.entity.Track
-import com.google.android.material.bottomsheet.BottomSheetDialog
 
 class PlaylistFragment : Fragment() {
     private var _binding: FragmentPlaylistBinding? = null

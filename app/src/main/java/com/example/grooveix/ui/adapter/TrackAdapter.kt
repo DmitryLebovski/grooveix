@@ -3,7 +3,6 @@ package com.example.grooveix.ui.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
@@ -33,7 +32,7 @@ class TrackAdapter(private val activity: MainActivity):
                 }
 
                 itemView.setOnLongClickListener{
-                    activity.showSongPopup(it, songs[layoutPosition])
+                    activity.showSongPopup(songs[layoutPosition])
                     return@setOnLongClickListener true
                 }
             }
@@ -51,7 +50,7 @@ class TrackAdapter(private val activity: MainActivity):
         holder.mTitle.text = current.title
         holder.mArtist.text = current.artist
         holder.mMenu.setOnClickListener {
-            activity.showSongPopup(it, current)
+            activity.showSongPopup(current)
         }
     }
     override fun getItemCount() = songs.size

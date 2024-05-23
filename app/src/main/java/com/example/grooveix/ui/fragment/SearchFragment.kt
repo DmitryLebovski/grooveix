@@ -11,8 +11,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.DownloadListener
 import android.webkit.URLUtil
-import android.webkit.WebView
-import android.webkit.WebViewClient
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import android.widget.SearchView

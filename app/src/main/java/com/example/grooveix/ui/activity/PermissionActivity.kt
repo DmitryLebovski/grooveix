@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.view.WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -22,6 +23,10 @@ class PermissionActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
+        window.setFlags(
+            FLAG_LAYOUT_NO_LIMITS,
+            FLAG_LAYOUT_NO_LIMITS
+        )
 
         binding.finishOnBoarding.setOnClickListener {
             permissionSetup()
