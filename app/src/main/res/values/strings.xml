@@ -49,4 +49,11 @@
     <string name="check_fields_not_empty">Не все поля заполнены</string>
     <string name="photo">Галерея</string>
     <string name="photo_desc">Доступ к галерее для выбора изображения на замену старому в треке или плейлисте</string>
+    <string name="playing_notification_name">Playing notification</string>
+    <string name="playing_notification_description">The playing notification provides actions for play/pause etc.</string>
+    <string name="action_previous">previous</string>
+    <string name="action_next">next</string>
+    <string name="action_cancel">quit\n</string>
+    <string name="action_play_pause">play/pause</string>
+
 </resources>

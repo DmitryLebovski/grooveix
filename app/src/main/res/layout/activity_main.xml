@@ -54,7 +54,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        app:labelVisibilityMode="selected"
+        app:labelVisibilityMode="unlabeled"
         android:background="@color/botttom_light_1"
         app:itemIconTint="@color/text_color"
         app:menu="@menu/bottom_nav_menu" />
