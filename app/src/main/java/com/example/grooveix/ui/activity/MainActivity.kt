@@ -9,7 +9,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.Cursor
 import android.graphics.Bitmap
-import android.graphics.Color
 import android.media.AudioManager
 import android.media.session.PlaybackState
 import android.net.Uri
@@ -37,10 +36,8 @@ import android.support.v4.media.session.PlaybackStateCompat.STATE_STOPPED
 import android.util.Size
 import android.view.View
 import android.view.ViewGroup.MarginLayoutParams
-import android.view.WindowManager
-import android.view.WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
 import android.view.WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
-import android.view.WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
+import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -62,6 +59,7 @@ import com.bumptech.glide.signature.ObjectKey
 import com.example.grooveix.MobileNavigationDirections
 import com.example.grooveix.R
 import com.example.grooveix.databinding.ActivityMainBinding
+import com.example.grooveix.ui.fragment.PlayerFragment
 import com.example.grooveix.ui.media.MediaContentObserver
 import com.example.grooveix.ui.media.MusicPlayerService
 import com.example.grooveix.ui.media.MusicViewModel
@@ -90,7 +88,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var musicViewModel: MusicViewModel
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<FrameLayout>
     private lateinit var bottomSheetDialog: BottomSheetDialog
+    private lateinit var playerFragment: PlayerFragment
     var bottomViewHeight = 0
+//    private var currentQueueItemUri: Uri? = null
 
     private val panelState: Int
         get() = bottomSheetBehavior.state
@@ -110,8 +110,20 @@ class MainActivity : AppCompatActivity() {
             setBottomNavigationViewTransition(slideOffset)
             binding.dimBackground.visibility = View.VISIBLE
             binding.dimBackground.alpha = slideOffset
+            playerFragment.closeWebView()
         }
     }
+
+//    private val broadcastReceiver = object : BroadcastReceiver() {
+//        override fun onReceive(context: Context?, intent: Intent?) {
+//            if (intent?.action == "com.example.ACTION_CURRENT_QUEUE_ITEM_URI") {
+//                val uriString = intent.getStringExtra("CURRENT_QUEUE_ITEM_URI")
+//                currentQueueItemUri = uriString?.let { Uri.parse(it) }
+//                Log.d("CHECKURI", "Received URI: $currentQueueItemUri")
+//                Toast.makeText(context, "Received URI: $currentQueueItemUri", Toast.LENGTH_SHORT).show()
+//            }
+//        }
+//    }
 
     private fun setMiniPlayerAlpha(slideOffset: Float) {
         val alpha = 1 - slideOffset
@@ -289,6 +301,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         bottomSheetDialog = BottomSheetDialog(this)
+        playerFragment = supportFragmentManager.findFragmentById(R.id.playerFragmentConatiner) as PlayerFragment
+
+//        val intentFilter = IntentFilter("com.example.ACTION_CURRENT_QUEUE_ITEM_URI")
+//        registerReceiver(broadcastReceiver, intentFilter, RECEIVER_EXPORTED)
+
     }
 
     fun setMargins(view: View, left: Int, top: Int, right: Int, bottom: Int) {
@@ -348,6 +365,7 @@ class MainActivity : AppCompatActivity() {
         mediaStoreContentObserver?.let {
             this.contentResolver.unregisterContentObserver(it)
         }
+//        unregisterReceiver(broadcastReceiver)
     }
 
     fun playNewPlayQueue(songs: List<Track>, startIndex: Int = 0, shuffle: Boolean = false)
@@ -421,12 +439,22 @@ class MainActivity : AppCompatActivity() {
 
         Glide.with(application)
             .load(file)
-            .error(R.drawable.grooveix)
+            .error(R.drawable.artwork_placeholder)
             .transition(DrawableTransitionOptions.withCrossFade())
             .centerCrop()
             .signature(ObjectKey(file?.path + file?.lastModified()))
             .override(600, 600)
             .into(view)
+
+        view.apply {
+            alpha = 0f
+            visibility = View.VISIBLE
+            animate()
+                .alpha(1f)
+                .setDuration(300)
+                .setInterpolator(AccelerateDecelerateInterpolator())
+                .start()
+        }
     }
 
     fun getArtwork(albumId: String?): File? {
@@ -458,10 +486,12 @@ class MainActivity : AppCompatActivity() {
             val mTitle = findViewById<TextView>(R.id.titleIN)
             val mArtist = findViewById<TextView>(R.id.artistIN)
 
-            val bLike = findViewById<CardView>(R.id.addToFav)
+            //val bLike = findViewById<CardView>(R.id.addToFav)
             val bQueue = findViewById<CardView>(R.id.addToQueue)
             val bPlst = findViewById<CardView>(R.id.addToPlist)
             val eTrack = findViewById<CardView>(R.id.editTrack)
+            val bLyrics = findViewById<CardView>(R.id.checkLyrics)
+            //val bDel = findViewById<CardView>(R.id.delTrack)
 
             mArtwork?.let { loadArtwork(track.albumId, it) }
 
@@ -479,9 +509,42 @@ class MainActivity : AppCompatActivity() {
                 dismiss()
                 hideBar(true)
             }
+
+            bLyrics?.setOnClickListener {
+                val url = playerFragment.convertToGeniusUrl("${track.artist} ${track.title}")
+                val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                startActivity(browserIntent)
+                dismiss()
+            }
+
+//            bDel?.setOnClickListener {
+//                currentQueueItemUri?.let { uri ->
+//                    deleteFromDevice(uri)
+//                }
+//                refreshMusicLibrary()
+//                dismiss()
+//            }
             show()
         }
     }
+
+//    fun deleteFromDevice(uri: Uri) {
+//        val fileToDelete = File(uri.path.toString())
+//        if (fileToDelete.exists()) {
+//            if (fileToDelete.delete()) {
+//                if (fileToDelete.exists()) {
+//                    fileToDelete.canonicalFile.delete()
+//                    if (fileToDelete.exists()) {
+//                        applicationContext.deleteFile(fileToDelete.name)
+//                    }
+//                }
+//                Toast.makeText(this, "File deleted successfully", Toast.LENGTH_SHORT).show()
+//            } else {
+//                Toast.makeText(this, "Failed to delete file", Toast.LENGTH_SHORT).show()
+//            }
+//        }
+////MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+//    }
 
     fun saveImage(albumId: String, image: Bitmap) {
         val directory = ContextWrapper(application).getDir("albumArt", Context.MODE_PRIVATE)

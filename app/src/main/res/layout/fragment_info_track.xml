@@ -89,28 +89,28 @@
     </androidx.cardview.widget.CardView>
 
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/addToFav"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        app:cardCornerRadius="12dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginTop="8dp"
-        app:cardElevation="0dp">
+<!--    <androidx.cardview.widget.CardView-->
+<!--        android:id="@+id/addToFav"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="56dp"-->
+<!--        app:cardCornerRadius="12dp"-->
+<!--        android:layout_marginStart="8dp"-->
+<!--        android:layout_marginEnd="8dp"-->
+<!--        android:layout_marginTop="8dp"-->
+<!--        app:cardElevation="0dp">-->
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/add_to_favorite"
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:textSize="16sp"
-            app:drawableLeftCompat="@drawable/baseline_favorite"
-            android:drawablePadding="16dp"/>
+<!--        <TextView-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="@string/add_to_favorite"-->
+<!--            android:layout_gravity="center_vertical"-->
+<!--            android:layout_marginStart="16dp"-->
+<!--            android:layout_marginEnd="16dp"-->
+<!--            android:textSize="16sp"-->
+<!--            app:drawableLeftCompat="@drawable/baseline_favorite"-->
+<!--            android:drawablePadding="16dp"/>-->
 
-    </androidx.cardview.widget.CardView>
+<!--    </androidx.cardview.widget.CardView>-->
 
     <androidx.cardview.widget.CardView
         android:id="@+id/addToQueue"
@@ -180,4 +180,50 @@
             android:drawablePadding="16dp"/>
 
     </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/checkLyrics"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        app:cardCornerRadius="12dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
+        app:cardElevation="0dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/find_lyrics"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:textSize="16sp"
+            app:drawableLeftCompat="@drawable/baseline_sticky_note_2_24"
+            android:drawablePadding="16dp"/>
+
+    </androidx.cardview.widget.CardView>
+
+<!--    <androidx.cardview.widget.CardView-->
+<!--        android:id="@+id/delTrack"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="56dp"-->
+<!--        app:cardCornerRadius="12dp"-->
+<!--        android:layout_marginStart="8dp"-->
+<!--        android:layout_marginEnd="8dp"-->
+<!--        android:layout_marginTop="8dp"-->
+<!--        app:cardElevation="0dp">-->
+
+<!--        <TextView-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="@string/delete_track"-->
+<!--            android:layout_gravity="center_vertical"-->
+<!--            android:layout_marginStart="16dp"-->
+<!--            android:layout_marginEnd="16dp"-->
+<!--            android:textSize="16sp"-->
+<!--            app:drawableLeftCompat="@drawable/baseline_delete_24"-->
+<!--            android:drawablePadding="16dp"/>-->
+
+<!--    </androidx.cardview.widget.CardView>-->
 </LinearLayout>

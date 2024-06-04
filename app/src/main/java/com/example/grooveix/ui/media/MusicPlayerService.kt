@@ -18,6 +18,7 @@ import android.media.AudioManager.AUDIOFOCUS_REQUEST_GRANTED
 import android.media.AudioManager.OnAudioFocusChangeListener
 import android.media.MediaPlayer
 import android.media.MediaPlayer.MEDIA_ERROR_IO
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -34,6 +35,7 @@ import android.support.v4.media.session.PlaybackStateCompat.REPEAT_MODE_ALL
 import android.support.v4.media.session.PlaybackStateCompat.REPEAT_MODE_ONE
 import android.support.v4.media.session.PlaybackStateCompat.STATE_PLAYING
 import android.text.TextUtils
+import android.util.Log
 import android.view.KeyEvent
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -135,6 +137,9 @@ class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListe
                     )
                     return
                 }
+                Log.d("SONGURI", currentQueueItemUri.toString())
+                sendCurrentQueueItemUri(currentQueueItemUri)
+
                 mediaPlayer = MediaPlayer().apply {
                     setAudioAttributes(
                         AudioAttributes.Builder()
@@ -594,6 +599,15 @@ class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListe
         )
         val manager = getSystemService(NotificationManager::class.java)
         manager?.createNotificationChannel(channel)
+    }
+
+    private fun sendCurrentQueueItemUri(currentQueueItemUri: Uri) {
+
+        currentQueueItemUri.let {
+            val intent = Intent("com.example.ACTION_CURRENT_QUEUE_ITEM_URI")
+            intent.putExtra("CURRENT_QUEUE_ITEM_URI", it.toString())
+            sendBroadcast(intent)
+        }
     }
 
     private fun setPlayQueue() {

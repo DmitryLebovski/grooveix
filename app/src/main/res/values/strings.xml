@@ -24,7 +24,7 @@
     <string name="play_queue">Очередь\n</string>
     <string name="shuffle">Перемешать</string>
     <string name="search_hint">Поиск песни</string>
-    <string name="added_to_queue">Трек %1$s добавлен в очередь</string>
+    <string name="added_to_queue">%1$s добавлен в очередь</string>
     <string name="now_playing">Сейчас играет:</string>
     <string name="search_extra">Глобальный поиск</string>
     <string name="lyrics_avaliable">доступен текст</string>
@@ -34,7 +34,8 @@
     <string name="start_search">Начните вводить название трека, артиста или используйте глобальный поиск</string>
     <string name="loadingTW">Загрузка…</string>
     <string name="lyrics_placeholder">(В разработке)При наличии текст появится здесь…</string>
-    <string name="delete_song">Удалить с устройства</string>
+    <string name="delete_track">Удалить с устройства</string>
+    <string name="find_lyrics">Найти слова трека</string>
     <string name="num_of_tracks">вы супер как и этот плейлист</string>
     <string name="add_playlist">Добавить плейлист</string>
     <string name="change_playlist_artwork">Поменять обложку</string>

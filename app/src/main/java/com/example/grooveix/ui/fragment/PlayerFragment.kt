@@ -11,10 +11,17 @@ import android.support.v4.media.session.PlaybackStateCompat.REPEAT_MODE_ALL
 import android.support.v4.media.session.PlaybackStateCompat.REPEAT_MODE_NONE
 import android.support.v4.media.session.PlaybackStateCompat.REPEAT_MODE_ONE
 import android.support.v4.media.session.PlaybackStateCompat.SHUFFLE_MODE_ALL
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AccelerateDecelerateInterpolator
+import android.webkit.WebResourceRequest
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import android.widget.SeekBar
+import androidx.core.view.isGone
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -28,6 +35,8 @@ import com.example.grooveix.ui.media.QueueViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -86,7 +95,10 @@ class PlayerFragment : Fragment() {
 
         binding.btnBackward.setOnClickListener{
             if (fastRewinding) fastRewinding = false
-            else mainActivity.skipBack()
+            else {
+                mainActivity.skipBack()
+                closeWebView()
+            }
         }
 
         binding.btnBackward.setOnLongClickListener {
@@ -102,7 +114,10 @@ class PlayerFragment : Fragment() {
 
         binding.btnForward.setOnClickListener{
             if (fastForwarding) fastForwarding = false
-            else mainActivity.skipForward()
+            else {
+                mainActivity.skipForward()
+                closeWebView()
+            }
         }
 
         binding.btnForward.setOnLongClickListener {
@@ -146,10 +161,44 @@ class PlayerFragment : Fragment() {
             }
         }
 
+        binding.currentLyricView.setOnClickListener {
+            showLyricWebCardView()
+            val trackTitle = binding.title.text.toString()
+            val trackArtist = binding.artist.text.toString()
+            val url = convertToGeniusUrl("$trackArtist $trackTitle")
+            binding.lyricWebView.loadUrl(url)
+            Log.d("CHECKWEBVIEW", url)
+        }
+
+        binding.lyricWebView.apply {
+            settings.apply {
+                javaScriptEnabled = true
+                domStorageEnabled = true
+                allowFileAccess = true
+                javaScriptCanOpenWindowsAutomatically = true
+                blockNetworkLoads = false
+                allowContentAccess = true
+            }
+
+            webViewClient = WebViewClient()
+
+            webViewClient = object : WebViewClient() {
+                override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
+                    view?.loadUrl(request?.url.toString())
+                    return true
+                }
+            }
+        }
+
+        binding.closeWeb.setOnClickListener {
+            closeWebView()
+        }
+
         binding.btnQueue.setOnClickListener {
             findNavController().navigate(R.id.nav_queue)
             mainActivity.collapsePanel()
             mainActivity.hideBar(true)
+            closeWebView()
          }
 
         binding.currentSeekBar.setOnSeekBarChangeListener( object : SeekBar.OnSeekBarChangeListener {
@@ -185,6 +234,56 @@ class PlayerFragment : Fragment() {
         _binding = null
     }
 
+    fun closeWebView() {
+        hideLyricWebCardView()
+    }
+
+    fun showLyricWebCardView() {
+        binding.lyricWebCardView.apply {
+            alpha = 0f
+            visibility = View.VISIBLE
+            animate()
+                .alpha(1f)
+                .setDuration(300)
+                .setInterpolator(AccelerateDecelerateInterpolator())
+                .start()
+        }
+    }
+    fun hideLyricWebCardView() {
+        binding.lyricWebCardView.apply {
+            animate()
+                .alpha(0f)
+                .setDuration(300)
+                .setInterpolator(AccelerateDecelerateInterpolator())
+                .withEndAction { visibility = View.GONE }
+                .start()
+        }
+    }
+
+    fun convertToGeniusUrl(artistTitle: String): String {
+        val baseUrl = "https://genius.com/"
+        val searchBaseUrl = "https://genius.com/search?q="
+
+        val separatorIndex = artistTitle.indexOfFirst { it == ',' || it == '/' }
+        val (artist, title) = if (separatorIndex != -1) {
+            val artist = artistTitle.substring(0, separatorIndex).trim()
+            val title = artistTitle.substring(separatorIndex + 1).trim()
+            artist to title
+        } else {
+            val parts = artistTitle.split(" ", limit = 2)
+            if (parts.size == 2) parts[0] to parts[1] else artistTitle to ""
+        }
+
+        val formattedArtist = artist.replace(" ", "-").replace("+", "-").toLowerCase()
+        val formattedTitle = title.replace(" ", "-").replace("+", "-").toLowerCase()
+
+        return if (separatorIndex != -1) {
+            "$searchBaseUrl${artist.replace(" ", "%20")}%20${title.replace(" ", "%20")}"
+        } else {
+            "$baseUrl${formattedArtist}-${formattedTitle}-lyrics"
+        }
+    }
+
     private fun updateCurrentlyDisplayedMetadata(metadata: MediaMetadataCompat?) = lifecycleScope.launch(
         Dispatchers.Main) {
         binding.title.text = metadata?.getString(MediaMetadataCompat.METADATA_KEY_TITLE)
@@ -217,8 +316,6 @@ class PlayerFragment : Fragment() {
             )
 
             gradientDrawable.cornerRadii = cornerRadii
-
-            binding.playerView.background = gradientDrawable
 
             //binding.dimBackground.background = BitmapDrawable(resources, bitmap)
             binding.dimBackground.background = gradientDrawable

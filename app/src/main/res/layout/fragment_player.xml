@@ -5,8 +5,47 @@
     android:id="@+id/player_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background_mini_player"
+    android:background="@color/button_background_default"
     android:fitsSystemWindows="false">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/lyricWebCardView"
+        android:layout_width="match_parent"
+        android:layout_height="400dp"
+        android:visibility="gone"
+        android:layout_marginHorizontal="12dp"
+        android:backgroundTint="@color/white"
+        android:elevation="30dp"
+        app:cardCornerRadius="24dp"
+        android:layout_marginBottom="24dp"
+        app:layout_constraintBottom_toTopOf="@+id/cardView3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/webViewLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/closeWeb"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/baseline_clear_24"
+                android:elevation="48dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <WebView
+                android:id="@+id/lyricWebView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
 
     <ImageView
         android:id="@+id/artwork"
@@ -21,10 +60,10 @@
         android:id="@+id/dimBackground"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="250dp"
         android:clickable="true"
         android:focusable="true"
         android:visibility="visible"
-        android:layout_marginTop="250dp"
         app:layout_constraintBottom_toBottomOf="parent" />
 
 
@@ -37,8 +76,7 @@
         android:backgroundTint="#3F3BBD"
         android:elevation="10dp"
         app:cardCornerRadius="24dp"
-        app:layout_constraintBottom_toBottomOf="@+id/dimBackground"
-        tools:layout_editor_absoluteX="0dp">
+        app:layout_constraintBottom_toBottomOf="@+id/dimBackground">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -167,6 +205,16 @@
                 app:layout_constraintTop_toBottomOf="@+id/up_volume">
 
                 <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/currentLyricView"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/baseline_sticky_note_player"
+                    app:layout_constraintEnd_toStartOf="@+id/currentButtonRepeat"
+                    app:layout_constraintTop_toTopOf="@+id/currentButtonRepeat" />
+
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/currentButtonRepeat"
                     android:layout_width="28dp"
                     android:layout_height="28dp"
@@ -203,9 +251,9 @@
                 android:id="@+id/currentPosition"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
                 android:fontFamily="@font/helveticaneuecyr_roman"
                 android:text="00:00"
-                android:layout_marginStart="20dp"
                 android:textColor="@color/white"
                 android:textSize="14sp"
                 app:layout_constraintStart_toStartOf="parent"
@@ -215,9 +263,9 @@
                 android:id="@+id/currentMax"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
                 android:fontFamily="@font/helveticaneuecyr_roman"
                 android:text="02:34"
-                android:layout_marginEnd="20dp"
                 android:textColor="@color/white"
                 android:textSize="14sp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -227,10 +275,10 @@
                 android:id="@+id/btnFavorite"
                 android:layout_width="28dp"
                 android:layout_height="28dp"
-                android:layout_weight="1"
-                android:visibility="gone"
                 android:layout_marginStart="8dp"
+                android:layout_weight="1"
                 android:background="@drawable/outline_favorite_border_24"
+                android:visibility="gone"
                 app:layout_constraintBottom_toTopOf="@+id/artist"
                 app:layout_constraintEnd_toStartOf="@+id/title"
                 app:layout_constraintStart_toStartOf="parent"

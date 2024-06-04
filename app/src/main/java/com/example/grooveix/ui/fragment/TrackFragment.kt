@@ -126,6 +126,7 @@ class TrackFragment : Fragment() {
 
         binding.fab.setOnClickListener {
             mainActivity.playNewPlayQueue(songs, shuffle = true)
+            mainActivity.showPlayer()
         }
 
         adapter.processNewSongs(songs)
