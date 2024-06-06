@@ -22,7 +22,11 @@
         android:id="@+id/navigation_playlists"
         android:name="com.example.grooveix.ui.fragment.PlaylistFragment"
         android:label="@string/title_playlists"
-        tools:layout="@layout/fragment_playlist" />
+        tools:layout="@layout/fragment_playlist">
+        <action
+            android:id="@+id/action_playlistFragment_to_playlistTracksFragment"
+            app:destination="@id/navigation_current_playlist" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_queue"
@@ -44,6 +48,17 @@
             app:nullable="true"
             app:argType="com.example.grooveix.ui.media.entity.Playlist" />
     </fragment>
+
+    <fragment
+        android:id="@+id/navigation_current_playlist"
+        android:name="com.example.grooveix.ui.fragment.PlaylistTracksFragment"
+        android:label="@string/title_current_playlist"
+        tools:layout="@layout/fragment_playlist_tracks">
+    </fragment>
+
+    <action
+        android:id="@+id/action_open_playlist"
+        app:destination="@id/navigation_current_playlist" />
 
     <fragment
         android:id="@+id/nav_edit_track"

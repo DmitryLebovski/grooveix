@@ -34,6 +34,7 @@ import android.support.v4.media.session.PlaybackStateCompat.STATE_PAUSED
 import android.support.v4.media.session.PlaybackStateCompat.STATE_PLAYING
 import android.support.v4.media.session.PlaybackStateCompat.STATE_STOPPED
 import android.util.Size
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup.MarginLayoutParams
 import android.view.WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
@@ -44,6 +45,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.core.view.isGone
@@ -53,12 +55,15 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.signature.ObjectKey
 import com.example.grooveix.MobileNavigationDirections
 import com.example.grooveix.R
 import com.example.grooveix.databinding.ActivityMainBinding
+import com.example.grooveix.ui.adapter.LitePlaylistAdapter
 import com.example.grooveix.ui.fragment.PlayerFragment
 import com.example.grooveix.ui.media.MediaContentObserver
 import com.example.grooveix.ui.media.MusicPlayerService
@@ -90,7 +95,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var bottomSheetDialog: BottomSheetDialog
     private lateinit var playerFragment: PlayerFragment
     var bottomViewHeight = 0
-//    private var currentQueueItemUri: Uri? = null
 
     private val panelState: Int
         get() = bottomSheetBehavior.state
@@ -113,17 +117,6 @@ class MainActivity : AppCompatActivity() {
             playerFragment.closeWebView()
         }
     }
-
-//    private val broadcastReceiver = object : BroadcastReceiver() {
-//        override fun onReceive(context: Context?, intent: Intent?) {
-//            if (intent?.action == "com.example.ACTION_CURRENT_QUEUE_ITEM_URI") {
-//                val uriString = intent.getStringExtra("CURRENT_QUEUE_ITEM_URI")
-//                currentQueueItemUri = uriString?.let { Uri.parse(it) }
-//                Log.d("CHECKURI", "Received URI: $currentQueueItemUri")
-//                Toast.makeText(context, "Received URI: $currentQueueItemUri", Toast.LENGTH_SHORT).show()
-//            }
-//        }
-//    }
 
     private fun setMiniPlayerAlpha(slideOffset: Float) {
         val alpha = 1 - slideOffset
@@ -235,7 +228,7 @@ class MainActivity : AppCompatActivity() {
                     playQueueViewModel.playbackDuration.value = 0
                     currentPlaybackPosition = 0
                     playQueueViewModel.playbackPosition.value = 0
-                    playQueueViewModel.currentlyPlayingSongMetadata.value = null
+                    playQueueViewModel.currentlyPlayingTrackMetadata.value = null
                 }
                 STATE_ERROR -> refreshMusicLibrary()
                 else -> return
@@ -246,11 +239,11 @@ class MainActivity : AppCompatActivity() {
             super.onMetadataChanged(metadata)
 
             if (metadata?.description?.mediaId !=
-                playQueueViewModel.currentlyPlayingSongMetadata.value?.description?.mediaId) {
+                playQueueViewModel.currentlyPlayingTrackMetadata.value?.description?.mediaId) {
                 playQueueViewModel.playbackPosition.value = 0
             }
 
-            playQueueViewModel.currentlyPlayingSongMetadata.value = metadata
+            playQueueViewModel.currentlyPlayingTrackMetadata.value = metadata
         }
     }
 
@@ -302,10 +295,6 @@ class MainActivity : AppCompatActivity() {
 
         bottomSheetDialog = BottomSheetDialog(this)
         playerFragment = supportFragmentManager.findFragmentById(R.id.playerFragmentConatiner) as PlayerFragment
-
-//        val intentFilter = IntentFilter("com.example.ACTION_CURRENT_QUEUE_ITEM_URI")
-//        registerReceiver(broadcastReceiver, intentFilter, RECEIVER_EXPORTED)
-
     }
 
     fun setMargins(view: View, left: Int, top: Int, right: Int, bottom: Int) {
@@ -333,16 +322,16 @@ class MainActivity : AppCompatActivity() {
         volumeControlStream = AudioManager.STREAM_MUSIC
 
         if(!hasStoragePermission()) {
-            lifecycleScope.launch(Dispatchers.Main) {
-                delay(500L)
-                Intent(this@MainActivity, PermissionActivity::class.java).also {
-                    startActivity(it)
-                    this@MainActivity.finish()
-                }
+            Intent(this@MainActivity, PermissionActivity::class.java).also {
+                startActivity(it)
+                this@MainActivity.finish()
             }
         }
 
-        refreshMusicLibrary()
+        lifecycleScope.launch(Dispatchers.Main) {
+            delay(3000L)
+            refreshMusicLibrary()
+        }
     }
 
     private fun hasStoragePermission(): Boolean {
@@ -365,31 +354,30 @@ class MainActivity : AppCompatActivity() {
         mediaStoreContentObserver?.let {
             this.contentResolver.unregisterContentObserver(it)
         }
-//        unregisterReceiver(broadcastReceiver)
     }
 
-    fun playNewPlayQueue(songs: List<Track>, startIndex: Int = 0, shuffle: Boolean = false)
+    fun playNewPlayQueue(tracks: List<Track>, startIndex: Int = 0, shuffle: Boolean = false)
             = lifecycleScope.launch(Dispatchers.Default) {
-        if (songs.isEmpty() || startIndex >= songs.size) {
+        if (tracks.isEmpty() || startIndex >= tracks.size) {
             Toast.makeText(this@MainActivity, getString(R.string.error), Toast.LENGTH_LONG).show()
             return@launch
         }
 
         mediaController.transportControls.stop()
 
-        val startSongIndex = if (shuffle) (songs.indices).random()
+        val startTrackIndex = if (shuffle) (tracks.indices).random()
         else startIndex
 
-        val startSongDesc = buildMediaDescription(songs[startSongIndex], startSongIndex.toLong())
+        val startTrackDesc = buildMediaDescription(tracks[startTrackIndex], startTrackIndex.toLong())
 
         val mediaControllerCompat = MediaControllerCompat.getMediaController(this@MainActivity)
-        mediaControllerCompat.addQueueItem(startSongDesc)
-        skipToAndPlayQueueItem(startSongIndex.toLong())
+        mediaControllerCompat.addQueueItem(startTrackDesc)
+        skipToAndPlayQueueItem(startTrackIndex.toLong())
 
-        for ((index, song) in songs.withIndex()) {
-            if (index == startSongIndex) continue
-            val songDesc = buildMediaDescription(song, index.toLong())
-            mediaControllerCompat.addQueueItem(songDesc, index)
+        for ((index, track) in tracks.withIndex()) {
+            if (index == startTrackIndex) continue
+            val trackDesc = buildMediaDescription(track, index.toLong())
+            mediaControllerCompat.addQueueItem(trackDesc, index)
         }
 
         when {
@@ -400,10 +388,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun buildMediaDescription(song: Track, queueId: Long? = null): MediaDescriptionCompat {
+    private fun buildMediaDescription(track: Track, queueId: Long? = null): MediaDescriptionCompat {
         val extrasBundle = Bundle().apply {
-            putString("album", song.album)
-            putString("album_id", song.albumId)
+            putString("album", track.album)
+            putString("album_id", track.albumId)
             queueId?.let {
                 putLong("queue_id", queueId)
             }
@@ -411,9 +399,9 @@ class MainActivity : AppCompatActivity() {
 
         return MediaDescriptionCompat.Builder()
             .setExtras(extrasBundle)
-            .setMediaId(song.trackId.toString())
-            .setSubtitle(song.artist)
-            .setTitle(song.title)
+            .setMediaId(track.trackId.toString())
+            .setSubtitle(track.artist)
+            .setTitle(track.title)
             .build()
     }
 
@@ -477,7 +465,7 @@ class MainActivity : AppCompatActivity() {
         binding.navHostFragmentActivityMain.layoutParams = playParam
     }
 
-    fun showSongPopup(track: Track) {
+    fun showTrackPopup(track: Track) {
 
         bottomSheetDialog.apply {
             setContentView(R.layout.fragment_info_track)
@@ -486,7 +474,6 @@ class MainActivity : AppCompatActivity() {
             val mTitle = findViewById<TextView>(R.id.titleIN)
             val mArtist = findViewById<TextView>(R.id.artistIN)
 
-            //val bLike = findViewById<CardView>(R.id.addToFav)
             val bQueue = findViewById<CardView>(R.id.addToQueue)
             val bPlst = findViewById<CardView>(R.id.addToPlist)
             val eTrack = findViewById<CardView>(R.id.editTrack)
@@ -503,6 +490,11 @@ class MainActivity : AppCompatActivity() {
                 dismiss()
             }
 
+            bPlst?.setOnClickListener {
+                showPlaylistsDialog(track.trackId)
+                dismiss()
+            }
+
             eTrack?.setOnClickListener {
                 val action = MobileNavigationDirections.actionEditTrack(track)
                 findNavController(R.id.nav_host_fragment_activity_main).navigate(action)
@@ -516,35 +508,33 @@ class MainActivity : AppCompatActivity() {
                 startActivity(browserIntent)
                 dismiss()
             }
-
-//            bDel?.setOnClickListener {
-//                currentQueueItemUri?.let { uri ->
-//                    deleteFromDevice(uri)
-//                }
-//                refreshMusicLibrary()
-//                dismiss()
-//            }
             show()
         }
     }
 
-//    fun deleteFromDevice(uri: Uri) {
-//        val fileToDelete = File(uri.path.toString())
-//        if (fileToDelete.exists()) {
-//            if (fileToDelete.delete()) {
-//                if (fileToDelete.exists()) {
-//                    fileToDelete.canonicalFile.delete()
-//                    if (fileToDelete.exists()) {
-//                        applicationContext.deleteFile(fileToDelete.name)
-//                    }
-//                }
-//                Toast.makeText(this, "File deleted successfully", Toast.LENGTH_SHORT).show()
-//            } else {
-//                Toast.makeText(this, "Failed to delete file", Toast.LENGTH_SHORT).show()
-//            }
-//        }
-////MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
-//    }
+    private fun showPlaylistsDialog(trackId: Long) {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_playlist, null)
+        val recyclerView: RecyclerView = dialogView.findViewById(R.id.playlists_recycler_view)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+
+        val alertDialog = AlertDialog.Builder(this)
+            .setTitle(getString(R.string.choose_playlist))
+            .setView(dialogView)
+            .setNegativeButton(getString(R.string.cancel), null)
+            .show()
+
+        val adapter = LitePlaylistAdapter(this) { playlist ->
+            musicViewModel.addTrackToPlaylist(playlist.playlistId, trackId)
+            Toast.makeText(this, this.getString(R.string.track_added_success), Toast.LENGTH_LONG).show()
+            alertDialog.dismiss()
+        }
+        recyclerView.adapter = adapter
+
+        musicViewModel.loadPlaylists.observe(this) { playlists ->
+            adapter.processPlaylists(playlists)
+        }
+    }
+
 
     fun saveImage(albumId: String, image: Bitmap) {
         val directory = ContextWrapper(application).getDir("albumArt", Context.MODE_PRIVATE)
@@ -574,14 +564,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun playNext(song: Track) {
+    private fun playNext(track: Track) {
         val index = playQueue.indexOfFirst { it.queueId == currentQueueItemId } + 1
 
-        val songDesc = buildMediaDescription(song)
+        val trackDesc = buildMediaDescription(track)
         val mediaControllerCompat = MediaControllerCompat.getMediaController(this@MainActivity)
-        mediaControllerCompat.addQueueItem(songDesc, index)
+        mediaControllerCompat.addQueueItem(trackDesc, index)
 
-        Toast.makeText(this, getString(R.string.added_to_queue, song.title), Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, getString(R.string.added_to_queue, track.title), Toast.LENGTH_SHORT).show()
     }
 
     fun hideKeyboard() {
@@ -674,30 +664,30 @@ class MainActivity : AppCompatActivity() {
     fun refreshMusicLibrary() = lifecycleScope.launch(Dispatchers.Default) {
         getMediaStoreCursor()?.use { cursor ->
             val idColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID)
-            val songIds = mutableListOf<Long>()
+            val trackIds = mutableListOf<Long>()
             while (cursor.moveToNext()) {
-                val songId = cursor.getLong(idColumn)
-                songIds.add(songId)
-                val existingSong = musicViewModel.getTrackById(songId)
-                if (existingSong == null) {
-                    val song = createSongFromCursor(cursor)
-                    musicViewModel.insertTrack(song)
+                val trackId = cursor.getLong(idColumn)
+                trackIds.add(trackId)
+                val existingTrack = musicViewModel.getTrackById(trackId)
+                if (existingTrack == null) {
+                    val track = createTrackFromCursor(cursor)
+                    musicViewModel.insertTrack(track)
                 }
             }
 
-            val songsToBeDeleted = musicViewModel.loadTracks.value?.filterNot {
-                songIds.contains(it.trackId)
+            val tracksToBeDeleted = musicViewModel.loadTracks.value?.filterNot {
+                trackIds.contains(it.trackId)
             }
-            songsToBeDeleted?.let { songs ->
-                for (song in songs) {
-                    musicViewModel.deleteTrack(song)
-                    findSongIdInPlayQueueToRemove(song.trackId)
+            tracksToBeDeleted?.let { tracks ->
+                for (track in tracks) {
+                    musicViewModel.deleteTrack(track)
+                    findTrackIdInPlayQueueToRemove(track.trackId)
                 }
             }
         }
     }
 
-    private fun createSongFromCursor(cursor: Cursor): Track {
+    private fun createTrackFromCursor(cursor: Cursor): Track {
         val idColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID)
         val trackColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TRACK)
         val titleColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE)
@@ -726,7 +716,7 @@ class MainActivity : AppCompatActivity() {
             1001
         }
 
-        val title = cursor.getString(titleColumn) ?: "Unknown song"
+        val title = cursor.getString(titleColumn) ?: "Unknown track"
         val artist = cursor.getString(artistColumn) ?: "Unknown artist"
         val album = cursor.getString(albumColumn) ?: "Unknown album"
         val albumId = cursor.getString(albumIDColumn) ?: "unknown_album_id"
@@ -745,34 +735,34 @@ class MainActivity : AppCompatActivity() {
         return Track(id, track, title, artist, album, albumId)
     }
 
-    private fun findSongIdInPlayQueueToRemove(songId: Long) = lifecycleScope.launch(Dispatchers.Default) {
-        val queueItemsToRemove = playQueue.filter { it.description.mediaId == songId.toString() }
+    private fun findTrackIdInPlayQueueToRemove(trackId: Long) = lifecycleScope.launch(Dispatchers.Default) {
+        val queueItemsToRemove = playQueue.filter { it.description.mediaId == trackId.toString() }
         for (item in queueItemsToRemove) removeQueueItemById(item.queueId)
     }
 
     fun handleChangeToContentUri(uri: Uri) = lifecycleScope.launch(Dispatchers.IO) {
-        val songIdString = uri.toString().removePrefix(
+        val trackIdString = uri.toString().removePrefix(
             MediaStore.Audio.Media.EXTERNAL_CONTENT_URI.toString() + "/")
         try {
             val selection = MediaStore.Audio.Media._ID + "=?"
-            val selectionArgs = arrayOf(songIdString)
+            val selectionArgs = arrayOf(trackIdString)
             val cursor = getMediaStoreCursor(selection, selectionArgs)
 
-            val songId = songIdString.toLong()
-            val existingSong = musicViewModel.getTrackById(songId)
+            val trackId = trackIdString.toLong()
+            val existingTrack = musicViewModel.getTrackById(trackId)
 
             when {
-                existingSong == null && cursor?.count!! > 0 -> {
+                existingTrack == null && cursor?.count!! > 0 -> {
                     cursor.apply {
                         this.moveToNext()
-                        val createdSong = createSongFromCursor(this)
-                        musicViewModel.insertTrack(createdSong)
+                        val createdTrack = createTrackFromCursor(this)
+                        musicViewModel.insertTrack(createdTrack)
                     }
                 }
                 cursor?.count == 0 -> {
-                    existingSong?.let {
-                        musicViewModel.deleteTrack(existingSong)
-                        findSongIdInPlayQueueToRemove(songId)
+                    existingTrack?.let {
+                        musicViewModel.deleteTrack(existingTrack)
+                        findTrackIdInPlayQueueToRemove(trackId)
                     }
                 }
             }

@@ -13,10 +13,10 @@ import com.example.grooveix.ui.media.entity.Track
 import com.l4digital.fastscroll.FastScroller
 
 class TrackAdapter(private val activity: MainActivity):
-    RecyclerView.Adapter<TrackAdapter.SongsViewHolder>(), FastScroller.SectionIndexer {
-    val songs = mutableListOf<Track>()
+    RecyclerView.Adapter<TrackAdapter.TracksViewHolder>(), FastScroller.SectionIndexer {
+    val tracks = mutableListOf<Track>()
 
-    inner class SongsViewHolder(itemView: View) :
+    inner class TracksViewHolder(itemView: View) :
         RecyclerView.ViewHolder(itemView) {
 
             internal var mArtwork = itemView.findViewById<View>(R.id.artwork) as ImageView
@@ -27,63 +27,63 @@ class TrackAdapter(private val activity: MainActivity):
             init {
                 itemView.isClickable = true
                 itemView.setOnClickListener {
-                    activity.playNewPlayQueue(songs, layoutPosition)
+                    activity.playNewPlayQueue(tracks, layoutPosition)
                     activity.showPlayer()
                 }
 
                 itemView.setOnLongClickListener{
-                    activity.showSongPopup(songs[layoutPosition])
+                    activity.showTrackPopup(tracks[layoutPosition])
                     return@setOnLongClickListener true
                 }
             }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SongsViewHolder {
-        return SongsViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.track_item, parent, false))
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TracksViewHolder {
+        return TracksViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.track_item, parent, false))
     }
 
-    override fun onBindViewHolder(holder: SongsViewHolder, position: Int) {
-        val current = songs[position]
+    override fun onBindViewHolder(holder: TracksViewHolder, position: Int) {
+        val current = tracks[position]
 
         activity.loadArtwork(current.albumId, holder.mArtwork)
 
         holder.mTitle.text = current.title
         holder.mArtist.text = current.artist
         holder.mMenu.setOnClickListener {
-            activity.showSongPopup(current)
+            activity.showTrackPopup(current)
         }
     }
-    override fun getItemCount() = songs.size
+    override fun getItemCount() = tracks.size
 
-    fun processNewSongs(newSongs: List<Track>) {
-        for ((index, song) in newSongs.withIndex()) {
+    fun processNewTracks(newTracks: List<Track>) {
+        for ((index, track) in newTracks.withIndex()) {
             when {
-                songs.isEmpty() -> {
-                    songs.addAll(newSongs)
-                    notifyItemRangeInserted(0, newSongs.size)
+                tracks.isEmpty() -> {
+                    tracks.addAll(newTracks)
+                    notifyItemRangeInserted(0, newTracks.size)
                 }
-                index >= songs.size -> {
-                    songs.add(song)
+                index >= tracks.size -> {
+                    tracks.add(track)
                     notifyItemInserted(index)
                 }
-                song.trackId != songs[index].trackId -> {
-                    val songIsNewEntry = songs.find { it.trackId == song.trackId } == null
-                    if (songIsNewEntry) {
-                        songs.add(index, song)
+                track.trackId != tracks[index].trackId -> {
+                    val trackIsNewEntry = tracks.find { it.trackId == track.trackId } == null
+                    if (trackIsNewEntry) {
+                        tracks.add(index, track)
                         notifyItemInserted(index)
                         continue
                     }
 
-                    fun songIdsDoNotMatchAtCurrentIndex(): Boolean {
-                        return newSongs.find { it.trackId == songs[index].trackId } == null
+                    fun trackIdsDoNotMatchAtCurrentIndex(): Boolean {
+                        return newTracks.find { it.trackId == tracks[index].trackId } == null
                     }
 
-                    if (songIdsDoNotMatchAtCurrentIndex()) {
+                    if (trackIdsDoNotMatchAtCurrentIndex()) {
                         var numberOfItemsRemoved = 0
                         do {
-                            songs.removeAt(index)
+                            tracks.removeAt(index)
                             ++numberOfItemsRemoved
-                        } while (index < songs.size && songIdsDoNotMatchAtCurrentIndex())
+                        } while (index < tracks.size && trackIdsDoNotMatchAtCurrentIndex())
 
                         when {
                             numberOfItemsRemoved == 1 -> notifyItemRemoved(index)
@@ -91,22 +91,22 @@ class TrackAdapter(private val activity: MainActivity):
                                 numberOfItemsRemoved)
                         }
 
-                        if (song.trackId == songs[index].trackId) continue
+                        if (track.trackId == tracks[index].trackId) continue
                     }
                 }
-                song != songs[index] -> {
-                    songs[index] = song
+                track != tracks[index] -> {
+                    tracks[index] = track
                     notifyItemChanged(index)
                 }
             }
         }
 
-        if (songs.size > newSongs.size) {
-            val numberItemsToRemove = songs.size - newSongs.size
-            repeat(numberItemsToRemove) { songs.removeLast() }
-            notifyItemRangeRemoved(newSongs.size, numberItemsToRemove)
+        if (tracks.size > newTracks.size) {
+            val numberItemsToRemove = tracks.size - newTracks.size
+            repeat(numberItemsToRemove) { tracks.removeLast() }
+            notifyItemRangeRemoved(newTracks.size, numberItemsToRemove)
         }
     }
 
-    override fun getSectionText(position: Int) = songs[position].title.firstOrNull()?.toString()
+    override fun getSectionText(position: Int) = tracks[position].title.firstOrNull()?.toString()
 }

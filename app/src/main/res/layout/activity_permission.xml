@@ -137,7 +137,7 @@
             android:backgroundTint="@color/white"
             android:fontFamily="@font/helveticaneuecyr_roman"
             android:shadowColor="@color/text_dark"
-            android:text="@string/cancel"
+            android:text="@string/deny"
             android:textAllCaps="false"
             android:textColor="@color/text_dark"
             app:cornerRadius="8dp"

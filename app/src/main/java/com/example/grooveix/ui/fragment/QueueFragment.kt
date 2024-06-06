@@ -102,7 +102,7 @@ class  QueueFragment : Fragment() {
             else binding.btnPlay.setBackgroundResource(R.drawable.baseline_play_queue)
         }
 
-        queueViewModel.currentlyPlayingSongMetadata.observe(viewLifecycleOwner) {
+        queueViewModel.currentlyPlayingTrackMetadata.observe(viewLifecycleOwner) {
             updateCurrentlyDisplayedMetadata(it)
         }
 

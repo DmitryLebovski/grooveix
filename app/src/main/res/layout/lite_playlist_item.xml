@@ -81,7 +81,7 @@
                 android:layout_height="24dp"
                 android:layout_alignParentEnd="true"
                 android:layout_marginHorizontal="8dp"
-                android:background="@drawable/baseline_chevron_right_24"
+                android:background="@drawable/baseline_add_24"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />

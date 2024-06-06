@@ -35,7 +35,7 @@ class MiniPlayerFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        playQueueViewModel.currentlyPlayingSongMetadata.observe(viewLifecycleOwner) {
+        playQueueViewModel.currentlyPlayingTrackMetadata.observe(viewLifecycleOwner) {
             updateCurrentlyDisplayedMetadata(it)
         }
 

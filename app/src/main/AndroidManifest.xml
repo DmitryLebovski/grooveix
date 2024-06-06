@@ -53,6 +53,7 @@
         <service
             android:name=".ui.media.MusicPlayerService"
             android:foregroundServiceType="mediaPlayback"
+            android:enabled="true"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.media.browse.MediaBrowserService" />

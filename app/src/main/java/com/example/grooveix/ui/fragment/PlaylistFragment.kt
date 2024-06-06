@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
@@ -26,6 +27,7 @@ class PlaylistFragment : Fragment() {
     private lateinit var musicViewModel: MusicViewModel
     private lateinit var adapter: PlaylistAdapter
     private var musicDatabase: MusicDatabase? = null
+    private lateinit var onBackPressedCallback: OnBackPressedCallback
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -55,6 +57,14 @@ class PlaylistFragment : Fragment() {
             findNavController().navigate(R.id.nav_edit_playlist)
             mainActivity.hideBar(true)
         }
+
+        onBackPressedCallback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                findNavController().navigate(R.id.navigation_tracks)
+            }
+        }
+
+        mainActivity.onBackPressedDispatcher.addCallback(viewLifecycleOwner, onBackPressedCallback)
     }
 
     private fun updateRecyclerView(playlists: List<Playlist>) {

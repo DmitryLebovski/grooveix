@@ -7,8 +7,8 @@ import com.example.grooveix.ui.media.entity.Track
 
 class MusicRepository(private val musicRoom: MusicDao) {
 
-    val loadTracks: LiveData<List<Track>> = musicRoom.getSongListOrderByTitle()
-    val loadTracksArtist: LiveData<List<Track>> = musicRoom.getSongListOrderByArtist()
+    val loadTracks: LiveData<List<Track>> = musicRoom.getTrackListOrderByTitle()
+    val loadTracksArtist: LiveData<List<Track>> = musicRoom.getTrackListOrderByArtist()
     val loadPlaylist: LiveData<List<Playlist>> = musicRoom.getAllPlaylists()
 
 
@@ -30,8 +30,8 @@ class MusicRepository(private val musicRoom: MusicDao) {
         musicRoom.insertPlaylist(playlist)
     }
 
-    suspend fun deletePlaylist(playlist: Playlist) {
-        musicRoom.deletePlaylist(playlist)
+    fun deletePlaylist(playlistId: Long) {
+        musicRoom.deletePlaylist(playlistId)
     }
 
     suspend fun updatePlaylist(playlist: Playlist) {
@@ -50,7 +50,15 @@ class MusicRepository(private val musicRoom: MusicDao) {
         musicRoom.removeTrackFromPlaylist(playlistId, trackId)
     }
 
-    suspend fun getTracksInPlaylist(playlistId: Long): List<PlaylistTrackCrossRef> {
+    fun getTracksInPlaylist(playlistId: Long): List<Track> {
         return musicRoom.getTracksInPlaylist(playlistId)
+    }
+
+    fun getPlaylistInfo(playlistId: Long): Playlist {
+        return musicRoom.getPlaylistInfo(playlistId)
+    }
+
+    fun getTracksLikeSearch(query: String): List<Track> {
+        return musicRoom.getTracksLikeSearch(query)
     }
 }

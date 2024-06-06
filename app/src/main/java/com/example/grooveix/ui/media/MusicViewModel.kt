@@ -5,7 +5,6 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
 import com.example.grooveix.ui.media.entity.Playlist
-import com.example.grooveix.ui.media.entity.PlaylistTrackCrossRef
 import com.example.grooveix.ui.media.entity.Track
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -15,7 +14,6 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
     val loadTracks: LiveData<List<Track>>
     val loadTracksArtist: LiveData<List<Track>>
     val loadPlaylists: LiveData<List<Playlist>>
-
 
     init {
         val musicRoom = MusicDatabase.getDatabase(application).musicDao()
@@ -43,8 +41,8 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
         repository.insertPlaylist(playlist)
     }
 
-    fun deletePlaylist(playlist: Playlist) = viewModelScope.launch(Dispatchers.IO) {
-        repository.deletePlaylist(playlist)
+    fun deletePlaylist(playlistId: Long) = viewModelScope.launch(Dispatchers.IO) {
+        repository.deletePlaylist(playlistId)
     }
 
     fun addTrackToPlaylist(playlistId: Long, trackId: Long) = viewModelScope.launch(Dispatchers.IO) {
@@ -55,7 +53,15 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
         repository.removeTrackFromPlaylist(playlistId, trackId)
     }
 
-    suspend fun getTracksInPlaylist(playlistId: Long): List<PlaylistTrackCrossRef> {
+    fun getTracksInPlaylist(playlistId: Long): List<Track> {
         return repository.getTracksInPlaylist(playlistId)
+    }
+
+    fun getPlaylistInfo(playlistId: Long): Playlist {
+        return repository.getPlaylistInfo(playlistId)
+    }
+
+    fun getTracksLikeSearch(query: String): List<Track> {
+        return repository.getTracksLikeSearch(query)
     }
 }

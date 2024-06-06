@@ -5,7 +5,7 @@
     android:id="@+id/player_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/button_background_default"
+    android:background="@color/text_dark"
     android:fitsSystemWindows="false">
 
     <androidx.cardview.widget.CardView

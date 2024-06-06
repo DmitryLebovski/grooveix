@@ -11,97 +11,93 @@
         android:paddingBottom="12dp" >
 
         <ImageView
-            android:id="@+id/editSongArtwork"
+            android:id="@+id/editTrackArtwork"
             android:layout_width="match_parent"
             android:layout_height="300dp"
             android:clickable="true"
             android:layout_alignParentTop="true" />
 
         <ImageView
-            android:id="@+id/editSongArtworkIcon"
+            android:id="@+id/editTrackArtworkIcon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/baseline_edit_24"
             android:clickable="true"
             android:layout_margin="12dp"
             android:contentDescription="@string/set_album_artwork"
-            android:layout_alignBottom="@id/editSongArtwork"
-            android:layout_alignEnd="@id/editSongArtwork" />
+            android:layout_alignBottom="@id/editTrackArtwork"
+            android:layout_alignEnd="@id/editTrackArtwork" />
 
 
-        <EditText
-            android:id="@+id/editSongTitle"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textField1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="8dp"
-            android:textSize="16sp"
-            android:inputType="text"
-            android:maxLength="100"
             android:hint="@string/name"
-            android:importantForAutofill="no"
-            android:layout_below="@id/editSongArtworkIcon" />
+            android:layout_marginTop="16dp"
+            android:layout_marginHorizontal="24dp"
+            android:layout_below="@id/editTrackArtworkIcon" >
 
-        <EditText
-            android:id="@+id/editSongArtist"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editTrackTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textField2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="8dp"
-            android:textSize="16sp"
-            android:inputType="text"
-            android:maxLength="100"
-            android:hint="@string/artist"
-            android:importantForAutofill="no"
-            android:layout_below="@id/editSongTitle" />
+            android:layout_below="@+id/textField1"
+            android:layout_marginTop="12dp"
+            android:layout_marginHorizontal="24dp"
+            android:hint="@string/artist">
 
-        <TextView
-            android:id="@+id/editSongDiscHeading"
-            android:layout_width="60dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:text="@string/disk"
-            android:textSize="12sp"
-            android:layout_below="@id/editSongArtist" />
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editTrackArtist"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <EditText
-            android:id="@+id/editSongDisc"
-            android:layout_width="60dp"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textField3"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="8dp"
-            android:textSize="16sp"
-            android:inputType="number"
-            android:maxLength="1"
-            android:hint="1"
-            android:importantForAutofill="no"
-            android:layout_below="@id/editSongDiscHeading" />
+            android:layout_below="@+id/textField2"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginTop="16dp"
+            android:hint="@string/disk">
 
-        <TextView
-            android:id="@+id/editSongTrackHeading"
-            android:layout_width="60dp"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginVertical="8dp"
-            android:text="@string/track"
-            android:textSize="12sp"
-            android:layout_below="@id/editSongArtist"
-            android:layout_toEndOf="@id/editSongDiscHeading" />
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editTrackDisc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:importantForAutofill="no"
+                android:inputType="number" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <EditText
-            android:id="@+id/editSongTrack"
-            android:layout_width="60dp"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textField4"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:inputType="number"
-            android:maxLength="3"
-            android:hint="1"
-            android:importantForAutofill="no"
-            android:layout_below="@id/editSongTrackHeading"
-            android:layout_alignStart="@id/editSongTrackHeading" />
+            android:layout_alignTop="@+id/textField3"
+            android:layout_marginHorizontal="24dp"
+            android:layout_toEndOf="@+id/textField3"
+            android:hint="@string/track">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editTrackTrack"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:importantForAutofill="no"
+                android:inputType="number" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <RelativeLayout
             android:id="@+id/update_track_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/editSongTrack"
+            android:layout_below="@+id/textField3"
             android:layout_alignParentStart="true"
             android:layout_alignParentEnd="true"
             android:layout_marginHorizontal="86dp"

@@ -45,7 +45,7 @@ class EditTrackFragment : Fragment() {
                     Glide.with(this)
                         .load(uri)
                         .centerCrop()
-                        .into(binding.editSongArtwork)
+                        .into(binding.editTrackArtwork)
                 }
             } catch (_: FileNotFoundException) {
             } catch (_: IOException) { }
@@ -66,10 +66,10 @@ class EditTrackFragment : Fragment() {
         _binding = FragmentEditTrackBinding.inflate(inflater, container, false)
         mainActivity = activity as MainActivity
         binding.updateTrackButton.setOnClickListener {
-            val newTitle = binding.editSongTitle.text.toString()
-            val newArtist = binding.editSongArtist.text.toString()
-            val newDisc = binding.editSongDisc.text.toString()
-            val newTrack = binding.editSongTrack.text.toString()
+            val newTitle = binding.editTrackTitle.text.toString()
+            val newArtist = binding.editTrackArtist.text.toString()
+            val newDisc = binding.editTrackDisc.text.toString()
+            val newTrack = binding.editTrackTrack.text.toString()
 
             if (newTitle.isNotEmpty() && newArtist.isNotEmpty() && newDisc.isNotEmpty() && newTrack.isNotEmpty()) {
                 val completeTrack = when (newTrack.length) {
@@ -103,19 +103,19 @@ class EditTrackFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.editSongTitle.text = SpannableStringBuilder(track?.title)
-        binding.editSongArtist.text = SpannableStringBuilder(track?.artist)
-        binding.editSongDisc.text = SpannableStringBuilder(track?.track.toString().substring(0, 1))
-        binding.editSongTrack.text = SpannableStringBuilder(track?.track.toString().substring(1, 4)
+        binding.editTrackTitle.text = SpannableStringBuilder(track?.title)
+        binding.editTrackArtist.text = SpannableStringBuilder(track?.artist)
+        binding.editTrackDisc.text = SpannableStringBuilder(track?.track.toString().substring(0, 1))
+        binding.editTrackTrack.text = SpannableStringBuilder(track?.track.toString().substring(1, 4)
             .toInt().toString())
 
-        mainActivity.loadArtwork(track?.albumId, binding.editSongArtwork)
+        mainActivity.loadArtwork(track?.albumId, binding.editTrackArtwork)
 
-        binding.editSongArtwork.setOnClickListener {
+        binding.editTrackArtwork.setOnClickListener {
             permissionsResultCallback.launch(Manifest.permission.READ_MEDIA_AUDIO)
         }
 
-        binding.editSongArtworkIcon.setOnClickListener {
+        binding.editTrackArtworkIcon.setOnClickListener {
             registerResult.launch(Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI))
         }
 

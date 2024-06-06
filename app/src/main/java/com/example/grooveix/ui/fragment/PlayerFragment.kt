@@ -1,6 +1,10 @@
 package com.example.grooveix.ui.fragment
 
 import android.annotation.SuppressLint
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.graphics.BitmapFactory
 import android.graphics.drawable.GradientDrawable
 import android.media.AudioManager
@@ -11,7 +15,6 @@ import android.support.v4.media.session.PlaybackStateCompat.REPEAT_MODE_ALL
 import android.support.v4.media.session.PlaybackStateCompat.REPEAT_MODE_NONE
 import android.support.v4.media.session.PlaybackStateCompat.REPEAT_MODE_ONE
 import android.support.v4.media.session.PlaybackStateCompat.SHUFFLE_MODE_ALL
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,8 +23,6 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.SeekBar
-import androidx.core.view.isGone
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -35,8 +36,6 @@ import com.example.grooveix.ui.media.QueueViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -49,6 +48,8 @@ class PlayerFragment : Fragment() {
     private var fastForwarding = false
     private var fastRewinding = false
     private lateinit var mainActivity: MainActivity
+    private lateinit var audioManager: AudioManager
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -56,6 +57,7 @@ class PlayerFragment : Fragment() {
     ): View {
         _binding = FragmentPlayerBinding.inflate(inflater, container, false)
         mainActivity = activity as MainActivity
+        audioManager = requireContext().getSystemService(Context.AUDIO_SERVICE) as AudioManager
         return binding.root
     }
 
@@ -68,7 +70,7 @@ class PlayerFragment : Fragment() {
 
         binding.title.isSelected = true
 
-        queueViewModel.currentlyPlayingSongMetadata.observe(viewLifecycleOwner) {
+        queueViewModel.currentlyPlayingTrackMetadata.observe(viewLifecycleOwner) {
             updateCurrentlyDisplayedMetadata(it)
         }
 
@@ -167,7 +169,6 @@ class PlayerFragment : Fragment() {
             val trackArtist = binding.artist.text.toString()
             val url = convertToGeniusUrl("$trackArtist $trackTitle")
             binding.lyricWebView.loadUrl(url)
-            Log.d("CHECKWEBVIEW", url)
         }
 
         binding.lyricWebView.apply {
@@ -212,8 +213,21 @@ class PlayerFragment : Fragment() {
             }
         })
 
-        val audioManager =  requireContext().getSystemService(AudioManager::class.java)
+        initializeVolumeControl()
+    }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val filter = IntentFilter("android.media.VOLUME_CHANGED_ACTION")
+        requireContext().registerReceiver(volumeReceiver, filter)
+    }
+
+    private fun initializeVolumeControl() {
         val currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
         binding.volumeSeekBar.progress = currentVolume
 
@@ -222,16 +236,23 @@ class PlayerFragment : Fragment() {
 
         binding.volumeSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, progress, 0)
+                if (fromUser) {
+                    audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, progress, 0)
+                }
             }
+
             override fun onStartTrackingTouch(seekBar: SeekBar?) {}
             override fun onStopTrackingTouch(seekBar: SeekBar?) {}
         })
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+    private val volumeReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (intent?.action == "android.media.VOLUME_CHANGED_ACTION") {
+                val currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
+                binding.volumeSeekBar.progress = currentVolume
+            }
+        }
     }
 
     fun closeWebView() {

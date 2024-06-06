@@ -137,7 +137,6 @@ class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListe
                     )
                     return
                 }
-                Log.d("SONGURI", currentQueueItemUri.toString())
                 sendCurrentQueueItemUri(currentQueueItemUri)
 
                 mediaPlayer = MediaPlayer().apply {
@@ -209,7 +208,7 @@ class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListe
                                     onPlay()
                                 }
                             }
-                            setMediaPlaybackState(STATE_PLAYING, getBundleWithSongDuration())
+                            setMediaPlaybackState(STATE_PLAYING, getBundleWithTrackDuration())
                             refreshNotification()
                         } catch (_: NullPointerException) {
                             onError(mediaPlayer, MediaPlayer.MEDIA_ERROR_UNKNOWN, 0)
@@ -224,7 +223,7 @@ class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListe
         override fun onPause() {
             super.onPause()
             mediaPlayer?.pause()
-            setMediaPlaybackState(PlaybackStateCompat.STATE_PAUSED, getBundleWithSongDuration())
+            setMediaPlaybackState(PlaybackStateCompat.STATE_PAUSED, getBundleWithTrackDuration())
             refreshNotification()
         }
 
@@ -309,8 +308,8 @@ class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListe
 
                 if (wasPlaying) {
                     this.start()
-                    setMediaPlaybackState(STATE_PLAYING, getBundleWithSongDuration())
-                } else setMediaPlaybackState(PlaybackStateCompat.STATE_PAUSED, getBundleWithSongDuration())
+                    setMediaPlaybackState(STATE_PLAYING, getBundleWithTrackDuration())
+                } else setMediaPlaybackState(PlaybackStateCompat.STATE_PAUSED, getBundleWithTrackDuration())
             }
         }
 
@@ -527,7 +526,7 @@ class MusicPlayerService : MediaBrowserServiceCompat(), MediaPlayer.OnErrorListe
         mediaSessionCompat.setPlaybackState(playbackStateBuilder.build())
     }
 
-    private fun getBundleWithSongDuration(): Bundle {
+    private fun getBundleWithTrackDuration(): Bundle {
         val playbackDuration = mediaPlayer?.duration ?: 0
         return Bundle().apply {
             putInt("duration", playbackDuration)

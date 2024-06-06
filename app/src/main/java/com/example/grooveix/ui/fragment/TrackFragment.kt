@@ -1,7 +1,6 @@
 package com.example.grooveix.ui.fragment
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -22,8 +21,6 @@ import com.example.grooveix.ui.media.entity.Track
 
 
 class TrackFragment : Fragment() {
-
-
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
     private var isUpdating = false
@@ -72,20 +69,8 @@ class TrackFragment : Fragment() {
 
         binding.sortBtn.setOnClickListener {
             showMenu(it, R.menu.sort_menu)
-            //adapter.songs.clear()
-            Log.d("CHECKCHECK", musicViewModel.loadTracks.value.toString())
-            Log.d("CHECKCHECK2", musicViewModel.loadTracksArtist.value.toString())
-
         }
     }
-
-//    currentSortingOption = if (currentSortingOption == "loadTracks") {
-//        "loadTracksArtist"
-//    } else {
-//        "loadTracks"
-//    }
-//    val songs = musicDatabase!!.musicDao().getSongListOrderBy(currentSortingOption)
-//    adapter.songs.addAll(songs)
 
     private fun showMenu(v: View, @MenuRes menuRes: Int) {
         val popup = PopupMenu(requireContext(), v)
@@ -94,7 +79,7 @@ class TrackFragment : Fragment() {
         popup.setOnMenuItemClickListener { menuItem: MenuItem ->
             return@setOnMenuItemClickListener when (menuItem.itemId) {
                         R.id.option_1 -> {
-                            adapter.songs.clear()
+                            adapter.tracks.clear()
                             musicViewModel.loadTracks.observe(viewLifecycleOwner) {
                                 updateRecyclerView(it)
                             }
@@ -103,7 +88,7 @@ class TrackFragment : Fragment() {
                         }
 
                         R.id.option_2 -> {
-                            adapter.songs.clear()
+                            adapter.tracks.clear()
                             musicViewModel.loadTracksArtist.observe(viewLifecycleOwner) {
                                 updateRecyclerView(it)
                             }
@@ -113,11 +98,10 @@ class TrackFragment : Fragment() {
                         else -> false
             }
         }
-
         popup.show()
     }
 
-    private fun updateRecyclerView(songs: List<Track>) {
+    private fun updateRecyclerView(tracks: List<Track>) {
         if (isUpdating) {
             unhandledRequestReceived = true
             return
@@ -125,17 +109,16 @@ class TrackFragment : Fragment() {
         isUpdating = true
 
         binding.fab.setOnClickListener {
-            mainActivity.playNewPlayQueue(songs, shuffle = true)
+            mainActivity.playNewPlayQueue(tracks, shuffle = true)
             mainActivity.showPlayer()
         }
 
-        adapter.processNewSongs(songs)
+        adapter.processNewTracks(tracks)
 
         isUpdating = false
         if (unhandledRequestReceived) {
             unhandledRequestReceived = false
             musicViewModel.loadTracks.value?.let { updateRecyclerView(it) }
-                //musicViewModel.loadTracks.value?.let { updateRecyclerView(it) }
         }
     }
 

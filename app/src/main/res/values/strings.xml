@@ -2,11 +2,18 @@
     <string name="app_name">grooveix</string>
     <string name="title_tracks">Треки</string>
     <string name="title_playlists">Плейлисты</string>
+    <string name="title_current_playlist">Плейлист</string>
     <string name="title_favorite">Избранное</string>
     <string name="title_search">Поиск</string>
     <string name="search_failed">Трек не найден</string>
     <string name="continue1">Предоставить</string>
-    <string name="cancel">Отказать</string>
+    <string name="deny">Отказать</string>
+    <string name="cancel">Отмена</string>
+    <string name="choose_playlist">Выберите плейлист</string>
+    <string name="delete_playlist">Удалить плейлист?</string>
+    <string name="delete_playlist_success">Плейлист успешно удален</string>
+    <string name="track_added_success">Трек добавлен в плейлист!</string>
+    <string name="track_added_failure">Трек уже находится в данном плейлисте</string>
     <string name="welcome2">Приложению также необходимо предоставить следующие разрешения:</string>
     <string name="memory">Хранилище</string>
     <string name="remove_from_queue">Удалить из очереди</string>
@@ -35,6 +42,7 @@
     <string name="loadingTW">Загрузка…</string>
     <string name="lyrics_placeholder">(В разработке)При наличии текст появится здесь…</string>
     <string name="delete_track">Удалить с устройства</string>
+    <string name="delete">Удалить</string>
     <string name="find_lyrics">Найти слова трека</string>
     <string name="num_of_tracks">вы супер как и этот плейлист</string>
     <string name="add_playlist">Добавить плейлист</string>
@@ -42,6 +50,7 @@
     <string name="delete_playlist_artwork">Удалить обложку</string>
     <string name="save">Сохранить</string>
     <string name="no_playlist_text">Ты еще не создал ни одного плейлиста! Самое время это исправить</string>
+    <string name="no_song_in_playlist">Плейлист пуст!</string>
     <string name="edit_track">Редактировать трек</string>
     <string name="disk">Диск</string>
     <string name="track">Трек</string>
@@ -56,5 +65,35 @@
     <string name="action_next">next</string>
     <string name="action_cancel">quit\n</string>
     <string name="action_play_pause">play/pause</string>
+    <string name="notification_channel_name">Grooveix player</string>
+    <string name="notification_channel_descr">Listen grooveix player</string>
 
+    <string name="content">With the idea of imparting programming
+      knowledge, Mr. Sandeep Jain, an IIT Roorkee alumnus started a
+      dream, GeeksforGeeks. Whether programming excites you or you feel
+      stifled, wondering how to prepare for interview questions or how to
+      ace data structures and algorithms, GeeksforGeeks is a one-stop solution.
+      With every tick of time, we are adding arrows in our quiver. From articles
+      on various computer science subjects to programming problems for practice,
+      from basic to premium courses, from technologies to entrance examinations,
+      we have been building ample content with superior quality. In a short span,
+      we have built a community of 1 Million+ Geeks around the world, 20,000+
+      Contributors and 500+ Campus Ambassadors in various colleges across the nation.
+      Our success stories include a lot of students who benefitted in their placements
+      and landed jobs at tech giants. Our vision is to build a gigantic network of
+      geeks and we are only a fraction of it yet. With the idea of imparting programming
+      knowledge, Mr. Sandeep Jain, an IIT Roorkee alumnus started a
+      dream, GeeksforGeeks. Whether programming excites you or you feel
+      stifled, wondering how to prepare for interview questions or how to
+      ace data structures and algorithms, GeeksforGeeks is a one-stop solution.
+      With every tick of time, we are adding arrows in our quiver. From articles
+      on various computer science subjects to programming problems for practice,
+      from basic to premium courses, from technologies to entrance examinations,
+      we have been building ample content with superior quality. In a short span,
+      we have built a community of 1 Million+ Geeks around the world, 20,000+
+      Contributors and 500+ Campus Ambassadors in various colleges across the nation.
+      Our success stories include a lot of students who benefitted in their placements
+      and landed jobs at tech giants. Our vision is to build a gigantic network of
+      geeks and we are only a fraction of it yet.
+  </string>
 </resources>

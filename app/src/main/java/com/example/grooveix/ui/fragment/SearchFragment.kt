@@ -18,6 +18,7 @@ import android.widget.SearchView
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -26,6 +27,7 @@ import com.example.grooveix.databinding.FragmentSearchBinding
 import com.example.grooveix.ui.activity.MainActivity
 import com.example.grooveix.ui.adapter.TrackAdapter
 import com.example.grooveix.ui.media.MusicDatabase
+import com.example.grooveix.ui.media.MusicViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -38,6 +40,7 @@ class SearchFragment : Fragment() {
     private var _binding: FragmentSearchBinding? = null
     private val binding get() = _binding!!
     private var musicDatabase: MusicDatabase? = null
+    private lateinit var musicViewModel: MusicViewModel
     private lateinit var adapter: TrackAdapter
     private lateinit var mainActivity: MainActivity
     private lateinit var onBackPressedCallback: OnBackPressedCallback
@@ -50,6 +53,7 @@ class SearchFragment : Fragment() {
         _binding = FragmentSearchBinding.inflate(inflater, container, false)
         mainActivity = activity as MainActivity
         musicDatabase = MusicDatabase.getDatabase(requireContext())
+        musicViewModel = ViewModelProvider(mainActivity)[MusicViewModel::class.java]
 
         return binding.root
     }
@@ -108,7 +112,6 @@ class SearchFragment : Fragment() {
 
             val encodedQuery = URLEncoder.encode(binding.searchView.query.toString(), StandardCharsets.UTF_8.toString())
             binding.resultWebView.loadUrl("https://rus.hitmotop.com/search?q=$encodedQuery")
-            Log.d("ZMMZMZMZMZ", encodedQuery)
         }
 
         binding.closeWeb.setOnClickListener {
@@ -147,16 +150,16 @@ class SearchFragment : Fragment() {
     }
 
     private fun search(query: String) = lifecycleScope.launch(Dispatchers.IO) {
-        val songs = musicDatabase!!.musicDao().getTracksLikeSearch(query).take(10)
+        val tracks = musicViewModel.getTracksLikeSearch(query).take(10)
 
         withContext(Dispatchers.Main) {
             binding.noResults.isGone = true
             binding.startSearch.isGone = true
-            if (songs.isEmpty()) {
+            if (tracks.isEmpty()) {
                 binding.searchButton.isVisible = true
                 binding.noResults.isVisible = true
             }
-            adapter.processNewSongs(songs)
+            adapter.processNewTracks(tracks)
         }
     }
 }

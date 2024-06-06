@@ -37,15 +37,18 @@
                 android:text="@string/title_tracks"
                 android:textSize="34sp" />
 
-            <androidx.appcompat.widget.AppCompatButton
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/sortBtn"
-                android:layout_width="32dp"
-                android:layout_height="24dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_gravity="end|bottom"
-                android:background="@drawable/ic_sort_new"
+                android:text="@string/sort"
+                android:fontFamily="@font/montserrat_regular"
+                android:backgroundTint="#3F3BBD"
+                android:textColor="@color/text_light"
                 android:visibility="visible"
-                android:layout_marginBottom="36dp"
-                android:layout_marginEnd="20dp"/>
+                android:layout_marginEnd="36dp"
+                android:layout_marginBottom="12dp"/>
         </androidx.appcompat.widget.Toolbar>
 
     </com.google.android.material.appbar.AppBarLayout>
@@ -72,9 +75,11 @@
         android:layout_marginBottom="24dp"
         android:layout_gravity="end|bottom"
         android:text="@string/shuffle"
-        app:icon="@drawable/ic_shuffle"
+        android:fontFamily="@font/montserrat_regular"
+        android:textColor="@color/text_light"
+        app:icon="@drawable/ic_shuffle_on"
+        app:iconTint="@color/text_light"
         app:iconSize="20dp"
-        android:backgroundTint="@color/botttom_light_1"
-        android:outlineSpotShadowColor="@color/text_color"
-        android:textColor="@color/text_color"/>
+        android:backgroundTint="#3F3BBD"
+        android:outlineSpotShadowColor="@color/text_color"/>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

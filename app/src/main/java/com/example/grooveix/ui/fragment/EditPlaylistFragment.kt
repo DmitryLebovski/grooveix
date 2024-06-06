@@ -110,11 +110,12 @@ class EditPlaylistFragment : Fragment() {
         }
 
         binding.addImage.setOnClickListener {
-            permissionsResultCallback.launch(Manifest.permission.READ_MEDIA_IMAGES)
+            permissionsResultCallback.launch(Manifest.permission.READ_MEDIA_AUDIO)
         }
 
         binding.btnClose.setOnClickListener {
             findNavController().popBackStack()
+            mainActivity.showPanel()
             mainActivity.showBar()
         }
 

@@ -4,6 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="false"
+    android:id="@+id/playlist_view"
+    android:background="@color/background_default"
     android:theme="@style/Theme.Grooveix">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -39,7 +41,6 @@
                 android:textSize="34sp" />
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
-    \>
 
     <RelativeLayout
         android:id="@+id/add_playlist_button"
@@ -99,7 +100,6 @@
         app:bubbleTextColor="#000000"
         app:bubbleTextSize="24sp"
         app:handleColor="#999999"
-        android:layout_marginBottom="100dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         app:layout_constraintBottom_toBottomOf="parent"

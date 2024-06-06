@@ -5,56 +5,94 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
+import androidx.core.view.isGone
+import androidx.core.view.isInvisible
+import androidx.core.view.isVisible
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.DefaultItemAnimator
 import com.example.grooveix.R
+import com.example.grooveix.databinding.FragmentPlaylistTracksBinding
+import com.example.grooveix.ui.activity.MainActivity
+import com.example.grooveix.ui.adapter.TrackAdapter
+import com.example.grooveix.ui.media.MusicDatabase
+import com.example.grooveix.ui.media.MusicViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [PlaylistTracksFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class PlaylistTracksFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private var _binding: FragmentPlaylistTracksBinding? = null
+    private val binding get() = _binding!!
+    private var playlistId: Long = -1
+    private var musicDatabase: MusicDatabase? = null
+    private lateinit var musicViewModel: MusicViewModel
+    private lateinit var adapter: TrackAdapter
+    private lateinit var mainActivity: MainActivity
+    private lateinit var onBackPressedCallback: OnBackPressedCallback
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_playlist_tracks, container, false)
+        _binding = FragmentPlaylistTracksBinding.inflate(inflater, container, false)
+        mainActivity = activity as MainActivity
+        musicDatabase = MusicDatabase.getDatabase(requireContext())
+        musicViewModel = ViewModelProvider(mainActivity)[MusicViewModel::class.java]
+
+        arguments?.let {
+            playlistId = it.getLong("playlistId", -1)
+        }
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment PlaylistTracksFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            PlaylistTracksFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        adapter = TrackAdapter(mainActivity)
+        binding.recyclerView.adapter = adapter
+        binding.recyclerView.itemAnimator = DefaultItemAnimator()
+
+        onBackPressedCallback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                backStack()
             }
+        }
+
+        mainActivity.onBackPressedDispatcher.addCallback(viewLifecycleOwner, onBackPressedCallback)
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val tracks = musicViewModel.getTracksInPlaylist(playlistId)
+            val playListName = musicViewModel.getPlaylistInfo(playlistId)
+
+            withContext(Dispatchers.Main) {
+                binding.noTracks.isGone = true
+                binding.recyclerView.isVisible = true
+                if (tracks.isEmpty()) {
+                    binding.noTracks.isVisible = true
+                    binding.recyclerView.isGone = true
+                    binding.shufflePlaylist.isInvisible = true
+                }
+                binding.collapsingToolbar.title = playListName.name
+                adapter.processNewTracks(tracks)
+            }
+
+            binding.shufflePlButton.setOnClickListener {
+                mainActivity.playNewPlayQueue(tracks, shuffle = true)
+                mainActivity.showPlayer()
+            }
+
+            binding.btnClose.setOnClickListener {
+                backStack()
+            }
+        }
+
+        mainActivity.onBackPressedDispatcher.addCallback(viewLifecycleOwner, onBackPressedCallback)
     }
+    fun backStack() {
+        mainActivity.supportFragmentManager.beginTransaction().replace(R.id.playlist_tracks_view, PlaylistFragment()).commit()
+    }
+
 }
