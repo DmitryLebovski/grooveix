@@ -3,7 +3,7 @@
 
 
 ### Screenshots:
-| <img src="screenshots/screenshot_onboarding.png" width="200"/>| <img src="screenshots/screenshot_main.png" width="200"/>| <img src="screenshots/screenshot_player.png" width="200"/>| <img src="screenshots/screenshot_search.png" width="200"/>||
+| <img src="screenshots/screenshot_onboarding.png" width="200"/>| <img src="screenshots/screenshot_main.png" width="200"/>| <img src="screenshots/screenshot_player.png" width="200"/>| <img src="screenshots/screenshot_search.png" width="200"/>|<img src="screenshots/screenshot_playlist.png" width="200"/>|
 |:---:|:---:|:---:|:---:|:---:|
 | Onboarding | Tracks | Player | Search | Playlists(TBA) |
 
