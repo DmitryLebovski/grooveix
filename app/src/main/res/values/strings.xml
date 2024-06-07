@@ -33,7 +33,7 @@
     <string name="search_hint">Поиск песни</string>
     <string name="added_to_queue">%1$s добавлен в очередь</string>
     <string name="now_playing">Сейчас играет:</string>
-    <string name="search_extra">Глобальный поиск</string>
+    <string name="search_extra">Доп. поиск</string>
     <string name="lyrics_avaliable">доступен текст</string>
     <string name="sort">сортировка</string>
     <string name="name">Название\n</string>
@@ -67,33 +67,4 @@
     <string name="action_play_pause">play/pause</string>
     <string name="notification_channel_name">Grooveix player</string>
     <string name="notification_channel_descr">Listen grooveix player</string>
-
-    <string name="content">With the idea of imparting programming
-      knowledge, Mr. Sandeep Jain, an IIT Roorkee alumnus started a
-      dream, GeeksforGeeks. Whether programming excites you or you feel
-      stifled, wondering how to prepare for interview questions or how to
-      ace data structures and algorithms, GeeksforGeeks is a one-stop solution.
-      With every tick of time, we are adding arrows in our quiver. From articles
-      on various computer science subjects to programming problems for practice,
-      from basic to premium courses, from technologies to entrance examinations,
-      we have been building ample content with superior quality. In a short span,
-      we have built a community of 1 Million+ Geeks around the world, 20,000+
-      Contributors and 500+ Campus Ambassadors in various colleges across the nation.
-      Our success stories include a lot of students who benefitted in their placements
-      and landed jobs at tech giants. Our vision is to build a gigantic network of
-      geeks and we are only a fraction of it yet. With the idea of imparting programming
-      knowledge, Mr. Sandeep Jain, an IIT Roorkee alumnus started a
-      dream, GeeksforGeeks. Whether programming excites you or you feel
-      stifled, wondering how to prepare for interview questions or how to
-      ace data structures and algorithms, GeeksforGeeks is a one-stop solution.
-      With every tick of time, we are adding arrows in our quiver. From articles
-      on various computer science subjects to programming problems for practice,
-      from basic to premium courses, from technologies to entrance examinations,
-      we have been building ample content with superior quality. In a short span,
-      we have built a community of 1 Million+ Geeks around the world, 20,000+
-      Contributors and 500+ Campus Ambassadors in various colleges across the nation.
-      Our success stories include a lot of students who benefitted in their placements
-      and landed jobs at tech giants. Our vision is to build a gigantic network of
-      geeks and we are only a fraction of it yet.
-  </string>
 </resources>

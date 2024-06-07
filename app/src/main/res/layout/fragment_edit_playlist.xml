@@ -115,19 +115,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textField">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="90dp"
-            android:layout_marginTop="36dp"
-            android:elevation="10dp"
-            android:fontFamily="@font/montserrat_regular"
-            android:gravity="center"
-            android:text="@string/save"
-            android:textAllCaps="true"
-            android:textColor="@color/white"
-            android:textSize="13sp" />
-
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/add_playlist_button"
             android:layout_width="wrap_content"
@@ -136,6 +123,21 @@
             android:background="@drawable/ic_add_playlist_template"
             android:visibility="visible" />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:elevation="10dp"
+            android:fontFamily="@font/montserrat_regular"
+            android:gravity="center"
+            android:text="@string/save"
+            android:layout_marginBottom="8dp"
+            android:textAllCaps="true"
+            android:textColor="@color/white"
+            android:textSize="13sp"
+            android:layout_centerVertical="true"
+            android:layout_alignTop="@id/add_playlist_button"
+            android:layout_alignBottom="@id/add_playlist_button"
+            android:layout_centerHorizontal="true" />
     </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

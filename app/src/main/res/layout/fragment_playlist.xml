@@ -54,15 +54,20 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="60dp"
-            android:layout_marginTop="22dp"
             android:elevation="10dp"
             android:fontFamily="@font/montserrat_regular"
             android:gravity="center"
             android:text="@string/add_playlist"
+            android:layout_marginBottom="8dp"
             android:textAllCaps="true"
             android:textColor="@color/white"
-            android:textSize="13sp" />
+            android:textSize="13sp"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="62dp"
+            android:layout_alignStart="@id/add_playlist_view"
+            android:layout_alignTop="@id/add_playlist_view"
+            android:layout_alignBottom="@id/add_playlist_view"
+            android:layout_centerHorizontal="true" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/add_playlist_view"
